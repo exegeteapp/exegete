@@ -20,16 +20,22 @@ def get_env(k):
         return None
     return os.environ[k]
 
+import random
+import string
+random_secret_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=50))
+def get_secret_key():
+    key = get_env("SECRET_KEY")
+    if key is None:
+        print("warning: no SECRET_KEY set, using random key. sessions will be invalidated after restart.")
+        key = random_secret_key
+    return key
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "hhrg^#xnjo#1z$2n0w!czy5q8k9s)c8t7egcnk1cn=^xn=3&28"
+SECRET_KEY = get_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
