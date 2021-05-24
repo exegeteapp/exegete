@@ -50,7 +50,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
-    "rest_auth",
+    "dj_rest_auth",
     "exegete.textapi",
 ]
 
