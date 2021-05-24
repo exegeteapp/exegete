@@ -10,11 +10,11 @@ FROM base as builder
 
 ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PIP_NO_CACHE_DIR=1 \
-    POETRY_VERSION=1.0.5
+    PIP_NO_CACHE_DIR=1
 
-RUN apk add --no-cache gcc libffi-dev musl-dev postgresql-dev
-RUN pip install "poetry==$POETRY_VERSION"
+RUN apk add --no-cache rust cargo gcc libffi-dev musl-dev postgresql-dev openssl-dev
+RUN pip install -U setuptools pip
+RUN pip install -U poetry
 RUN python -m venv /venv
 
 COPY pyproject.toml poetry.lock ./
@@ -28,5 +28,9 @@ FROM base as final
 RUN apk add --no-cache libffi libpq
 COPY --from=builder /venv /venv
 COPY . /app
-CMD ["./docker-entrypoint.sh"]
+
+ENV PYTHONPATH=/venv \
+    PATH=/venv/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 

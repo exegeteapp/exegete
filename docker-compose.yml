@@ -1,0 +1,30 @@
+version: "3"
+services:
+  db:
+    build: postgis/
+    environment:
+      - POSTGRES_DB=localdev
+      - POSTGRES_PASSWORD=localdev
+    volumes:
+      - db_pgdata:/var/lib/postgresql/data
+  redis:
+    image: redis:6
+  web:
+    build: exegete/
+    command: runserver
+    volumes:
+      - ./exegete/:/app:delegated
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - REDIS_LOCATION=redis://redis:6379/1
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=localdev
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=localdev
+    depends_on:
+      - db
+      - redis
+volumes:
+  db_pgdata:
