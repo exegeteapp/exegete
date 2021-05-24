@@ -23,6 +23,7 @@ services:
       - DB_NAME=localdev
       - DB_USERNAME=postgres
       - DB_PASSWORD=localdev
+      - DEBUG=1
     depends_on:
       - db
       - redis

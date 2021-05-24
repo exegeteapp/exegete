@@ -20,13 +20,21 @@ def get_env(k):
         return None
     return os.environ[k]
 
+
 import random
 import string
-random_secret_key = ''.join(random.choices(string.ascii_uppercase + string.digits, k=50))
+
+random_secret_key = "".join(
+    random.choices(string.ascii_uppercase + string.digits, k=50)
+)
+
+
 def get_secret_key():
     key = get_env("SECRET_KEY")
     if key is None:
-        print("warning: no SECRET_KEY set, using random key. sessions will be invalidated after restart.")
+        print(
+            "warning: no SECRET_KEY set, using random key. sessions will be invalidated after restart."
+        )
         key = random_secret_key
     return key
 
@@ -38,11 +46,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = get_secret_key()
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = get_env("DEBUG") == "1"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["exegete.app"]
 if get_env("APP_DOMAIN"):
     ALLOWED_HOSTS.append(get_env("APP_DOMAIN"))
+if DEBUG:
+    ALLOWED_HOSTS += ["localhost"]
 
 
 # Application definition
@@ -154,3 +164,11 @@ USE_TZ = True
 
 STATIC_URL = "/django-static/"
 STATIC_ROOT = "./django-static/"
+
+if not DEBUG:
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_SECONDS = 60
+    SECURE_SSL_REDIRECT = True
+    SECURE_HSTS_PRELOAD = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
