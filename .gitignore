@@ -1,0 +1,14 @@
+.*swp
+*.pyc
+*.pyo
+.DS_Store
+__pycache__
+*.egg-info
+.ropeproject
+build/
+dist/
+.idea/
+.tox
+.cache
+.vscode/
+tmp/

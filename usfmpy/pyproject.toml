@@ -1,0 +1,61 @@
+[build-system]
+requires = ["poetry"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry]
+name = "usfmpy"
+version = "0.1.0"
+authors = ["Grahame Bowland <grahame@oreamnos.com.au>"]
+description = "Unified Standard Format Markers (USFM) parser"
+readme = "README.md"
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+]
+include  = ['data/usfm/usfm.sty']
+
+[tool.poetry.scripts]
+usfmpy = 'usfmpy.cli:cli'
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+requests = "^2.23.0"
+
+[tool.poetry.dev-dependencies]
+black = "^19.10b0"
+tox = "^3.14.6"
+flake8 = "^3.7.9"
+pytest = "^5.4.1"
+
+[tool.tox]
+legacy_tox_ini = """
+
+[tox]
+envlist = py39
+isolated_build = True
+
+[testenv]
+deps=pytest
+commands=pytest
+"""
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | tests/.*/setup.py
+)/
+'''
