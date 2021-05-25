@@ -88,7 +88,7 @@ jobs:
         with:
           context: postgis/
           file: ./postgis/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.docker_meta_postgis.outputs.tags }}
           labels: ${{ steps.docker_meta_postgis.outputs.labels }}
@@ -98,7 +98,7 @@ jobs:
         with:
           context: exegete/
           file: ./exegete/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.docker_meta_django.outputs.tags }}
           labels: ${{ steps.docker_meta_django.outputs.labels }}
@@ -108,7 +108,7 @@ jobs:
         with:
           context: static/
           file: ./static/Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.docker_meta_static.outputs.tags }}
           labels: ${{ steps.docker_meta_static.outputs.labels }}
