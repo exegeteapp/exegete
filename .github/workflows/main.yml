@@ -29,7 +29,7 @@ jobs:
           tag-sha: true
 
       - name: Docker meta (postgis)
-        id: docker_meta_django
+        id: docker_meta_postgis
         uses: crazy-max/ghaction-docker-meta@v1
         with:
           images: ghcr.io/exegeteapp/exegete-postgis
