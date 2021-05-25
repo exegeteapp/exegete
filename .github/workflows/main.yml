@@ -28,6 +28,13 @@ jobs:
           images: ghcr.io/exegeteapp/exegete-django
           tag-sha: true
 
+      - name: Docker meta (postgis)
+        id: docker_meta_django
+        uses: crazy-max/ghaction-docker-meta@v1
+        with:
+          images: ghcr.io/exegeteapp/exegete-postgis
+          tag-sha: true
+
       - name: Set up SSH
         run: 'mkdir -p /home/runner/.ssh && echo "$SSH_KEY" > /home/runner/.ssh/id_rsa && chmod 600 /home/runner/.ssh/id_rsa'
         shell: bash
@@ -75,6 +82,16 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
+
+      - name: Push to GitHub Container Registry (postgis)
+        uses: docker/build-push-action@v2
+        with:
+          context: postgis/
+          file: ./postgis/Dockerfile
+          platforms: linux/amd64
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.docker_meta_postgis.outputs.tags }}
+          labels: ${{ steps.docker_meta_postgis.outputs.labels }}
 
       - name: Push to GitHub Container Registry (django)
         uses: docker/build-push-action@v2
