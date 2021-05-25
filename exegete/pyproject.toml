@@ -5,7 +5,7 @@ description = "backend for grahame.dev"
 authors = ["Grahame Bowland <grahame@oreamnos.com.au>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.8"
 Django = "^3.1.5"
 redis-lock = "^0.2.0"
 psycopg2 = "^2.8.6"
