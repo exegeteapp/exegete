@@ -4,8 +4,9 @@ function postgres_ready(){
 python << END
 import sys
 import psycopg2
+from os import getenv
 try:
-    conn = psycopg2.connect(dbname="$DB_NAME", user="$DB_USERNAME", password="$DB_PASSWORD", host="$DB_HOST")
+    conn = psycopg2.connect(dbname=getenv("DB_NAME"), user=getenv("DB_USERNAME"), password=getenv("DB_PASSWORD"), host=getenv("DB_HOST"))
 except psycopg2.OperationalError:
     sys.exit(-1)
 sys.exit(0)

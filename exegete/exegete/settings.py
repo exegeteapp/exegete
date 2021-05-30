@@ -2,9 +2,10 @@ from pathlib import Path
 import os
 
 
-def get_env(k):
+def get_env(k, warn=True):
     if k not in os.environ:
-        print("warning: environment variable {} not set, returning None".format(k))
+        if warn:
+            print("warning: environment variable {} not set, returning None".format(k))
         return None
     return os.environ[k]
 
@@ -37,7 +38,7 @@ SECRET_KEY = get_secret_key()
 DEBUG = get_env("DEBUG") == "1"
 
 ALLOWED_HOSTS = ["exegete.app"]
-if get_env("APP_DOMAIN"):
+if get_env("APP_DOMAIN", False):
     ALLOWED_HOSTS.append(get_env("APP_DOMAIN"))
 if DEBUG:
     ALLOWED_HOSTS += ["localhost"]
