@@ -12,6 +12,10 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1
 
+RUN apt-get update && apt-get install -y \
+    lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN pip install -U poetry
 RUN python -m venv /venv
 
