@@ -30,6 +30,9 @@ FROM base as final
 COPY --from=builder /venv /venv
 COPY . /app
 
+RUN useradd -m -u 1000 exegete
+USER exegete
+
 ENV PYTHONPATH=/venv \
     PATH=/venv/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
