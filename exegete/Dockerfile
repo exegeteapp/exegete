@@ -1,4 +1,4 @@
-FROM python:3.9-alpine as base
+FROM python:3.9 as base
 
 ENV PYTHONFAULTHANDLER=1 \
     PYTHONHASHSEED=random \
@@ -12,7 +12,6 @@ ENV PIP_DEFAULT_TIMEOUT=100 \
     PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_NO_CACHE_DIR=1
 
-RUN apk add --no-cache rust cargo gcc libffi-dev musl-dev postgresql-dev openssl-dev
 RUN pip install -U setuptools pip
 RUN pip install -U poetry
 RUN python -m venv /venv
@@ -25,7 +24,6 @@ RUN poetry build && /venv/bin/pip install dist/*.whl
 
 FROM base as final
 
-RUN apk add --no-cache libffi libpq
 COPY --from=builder /venv /venv
 COPY . /app
 
