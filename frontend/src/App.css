@@ -1,0 +1,35 @@
+#main {
+    padding-top: 60px;
+}
+
+@font-face {
+    font-family: 'SBL Hebrew';
+    src: url('fonts/sbl_hebrew.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'SBL Greek';
+    src: url('fonts/sbl_greek.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.biblical-text-hebrew {
+    font-family: 'SBL Hebrew';
+    font-weight: normal;
+    font-style: normal;
+}
+
+.biblical-text-greek {
+    font-family: 'SBL Greek';
+    font-weight: normal;
+    font-style: normal;
+}
+
+.biblical-text-english {
+    font-family: 'Times';
+    font-weight: normal;
+    font-style: normal;
+}
