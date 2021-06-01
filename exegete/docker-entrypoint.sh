@@ -27,13 +27,6 @@ waitfordb()
 
 CMD="$1"
 echo "command is: " $CMD
-if [ "$CMD" = "runserver" ]; then
-   waitfordb
-   python manage.py migrate
-   python manage.py check
-   python manage.py runserver 0.0.0.0:8000
-   exit
-fi
 if [ "$CMD" = "uvicorn" ]; then
    waitfordb
    python manage.py migrate

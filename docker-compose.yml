@@ -11,7 +11,7 @@ services:
     image: redis:6
   web:
     build: exegete/
-    command: runserver
+    command: uvicorn
     volumes:
       - ./exegete/:/app:delegated
       - ./data/:/data
