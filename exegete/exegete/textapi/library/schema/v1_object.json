@@ -1,0 +1,75 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://exegete.app/schema/v1_object.json",
+    "title": "Object within a Biblical text",
+    "description": "Each object is placed within an ordered linear stream of objects which represents an Biblical text",
+    "type": "object",
+    "properties": {
+        "type": {
+            "description": "the type of the object",
+            "type": "string",
+            "enum": [ "chapter-start", "chapter-end", "verse"]
+        },
+        "chapter": {
+            "description": "the chapter of the object",
+            "type": "integer"
+        },
+        "verse": {
+            "description": "the verse of the object",
+            "type": "integer"
+        },
+        "text": {
+            "description": "array of word objects",
+            "type": "array",
+            "items": { "$ref": "#/$defs/word" }
+        },
+        "poetry": {
+            "type": "boolean"
+        },
+        "quote": {
+            "type": "boolean"
+        }
+    },
+    "$defs": {
+        "word": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
+                },
+                "punctuation": {
+                    "type": "boolean"
+                },
+                "strong": {
+                    "type": "boolean"
+                },
+                "em": {
+                    "type": "boolean"
+                },
+                "br": {
+                    "type": "boolean"
+                },
+                "superscript": {
+                    "type": "boolean"
+                },
+                "small-caps": {
+                    "type": "boolean"
+                },
+                "c-strongs": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "language": {
+                    "type": "string",
+                    "enum": [ "hbo", "ecg", "eng" ]
+                }
+            },
+            "additionalProperties": false,
+            "required": ["value"]
+        }
+    },
+    "additionalProperties": false,
+    "required": ["type"]
+}

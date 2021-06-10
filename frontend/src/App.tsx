@@ -1,5 +1,6 @@
 import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
+import { RouteComponentProps } from 'react-router';
 import { Container, Navbar, NavbarBrand } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { faBook } from '@fortawesome/free-solid-svg-icons'
@@ -16,11 +17,15 @@ function Header() {
     );
 }
 
-function Exegete({ match }: { match: any }) {
+interface MatchParams {
+    slug?: string | undefined;
+}
+
+function Exegete(props :RouteComponentProps<MatchParams>) {
     return <>
         <Header />
         <Container id="main">
-            <p></p>
+            <p>slug: { props.match.params.slug } </p>
         </Container>
     </>;
 }
@@ -28,7 +33,7 @@ function Exegete({ match }: { match: any }) {
 function App() {
     return (
         <HashRouter>
-            <Route path="/:slug?" render={(props) => <Exegete match={props.match} />} />
+            <Route path="/:slug?" component={Exegete} />
         </HashRouter>
     );
 }
