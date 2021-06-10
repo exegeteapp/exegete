@@ -16,7 +16,7 @@ def netbible_ingest(path):
     metadata = MetaData()
     mod = manager.create_module(
         v1.Module,
-        type="bible",
+        type=v1.ModuleType.bible,
         name="NET Bible®",
         shortcode="NET",
         language=v1.Language.english,

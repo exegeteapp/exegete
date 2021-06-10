@@ -12,6 +12,10 @@ import datetime
 from ..manager import Manager
 
 
+class ModuleType(enum.Enum):
+    bible = "bible"
+
+
 class ObjectType(enum.Enum):
     chapter_start = "cs"
     chapter_end = "ce"
@@ -55,7 +59,7 @@ class Module:
             Column(
                 "id", Integer, nullable=False, primary_key=True
             ),  # but there will only ever be one row
-            Column("type", Text, nullable=True),
+            Column("type", Enum(ModuleType), nullable=True),
             Column("shortcode", Text, nullable=False),
             Column("name", Text, nullable=False),
             Column("url", Text, nullable=False),
