@@ -8,14 +8,22 @@
         "type": {
             "description": "the type of the object",
             "type": "string",
-            "enum": [ "chapter-start", "chapter-end", "verse"]
+            "enum": [ "chapter-start", "chapter-end", "title", "verse", "footnote"]
         },
-        "chapter": {
-            "description": "the chapter of the object",
+        "chapter_start": {
+            "description": "the starting chapter of the object",
             "type": "integer"
         },
-        "verse": {
-            "description": "the verse of the object",
+        "verse_start": {
+            "description": "the starting verse of the object",
+            "type": "integer"
+        },
+        "chapter_end": {
+            "description": "the ending chapter of the object",
+            "type": "integer"
+        },
+        "verse_end": {
+            "description": "the ending verse of the object",
             "type": "integer"
         },
         "text": {
@@ -67,7 +75,7 @@
                 }
             },
             "additionalProperties": false,
-            "required": ["value"]
+            "required": ["value", "language"]
         }
     },
     "additionalProperties": false,

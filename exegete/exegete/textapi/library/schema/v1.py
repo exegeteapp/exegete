@@ -4,6 +4,7 @@ from sqlalchemy.sql.schema import UniqueConstraint
 from sqlalchemy.types import Text, JSON, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
 from jsonschema import validate
+import jsonschema
 import hashlib
 import json
 import enum
@@ -20,6 +21,8 @@ class ObjectType(enum.Enum):
     chapter_start = "cs"
     chapter_end = "ce"
     verse = "v"
+    title = "t"
+    footnote = "f"
 
     @classmethod
     def from_json(cls, obj):
@@ -30,6 +33,12 @@ class ObjectType(enum.Enum):
             return ObjectType.chapter_end
         elif typ == "verse":
             return ObjectType.verse
+        elif typ == "title":
+            return ObjectType.title
+        elif typ == "footnote":
+            return ObjectType.footnote
+        else:
+            raise Exception("invalid ObjectType: {}".format(typ))
 
 
 class Language(enum.Enum):
@@ -59,12 +68,14 @@ class Module:
             Column(
                 "id", Integer, nullable=False, primary_key=True
             ),  # but there will only ever be one row
-            Column("type", Enum(ModuleType), nullable=True),
+            Column("type", Enum(ModuleType, schema=schema_name), nullable=True),
             Column("shortcode", Text, nullable=False),
             Column("name", Text, nullable=False),
+            Column("license_text", Text, nullable=False),
+            Column("license_url", Text, nullable=False),
             Column("url", Text, nullable=False),
             Column("description", Text, nullable=False),
-            Column("language", Enum(Language), nullable=False),
+            Column("language", Enum(Language, schema=schema_name), nullable=False),
             Column("input_sha256", String(64), nullable=True),
             Column(
                 "date_created",
@@ -80,7 +91,7 @@ class Module:
                 "id", Integer, nullable=False, primary_key=True
             ),  # monotonically increasing in canonical order
             Column("name", Text, nullable=False),
-            Column("division", Enum(Division), nullable=False),
+            Column("division", Enum(Division, schema=schema_name), nullable=False),
         )
 
         mkt(
@@ -101,14 +112,15 @@ class Module:
                 nullable=False,
                 primary_key=True,
             ),
-            Column("chapter", Integer, nullable=True),
-            Column("verse", Integer, nullable=True),
-            Column("type", Enum(ObjectType), nullable=False),
+            Column("chapter_start", Integer, nullable=True),
+            Column("verse_start", Integer, nullable=True),
+            Column("chapter_end", Integer, nullable=True),
+            Column("verse_end", Integer, nullable=True),
+            Column("type", Enum(ObjectType, schema=schema_name), nullable=False),
             Column(
                 "linear_id", Integer, nullable=False
             ),  # this will monotonically increase in the book
             Column("content", JSONB, nullable=False),
-            Index("i_book_chapter_verse", "book_id", "chapter", "verse", unique=True),
             UniqueConstraint("book_id", "linear_id"),
         )
 
@@ -144,12 +156,18 @@ class Module:
         object = self._entities["object"]
         with self._manager.engine.connect() as conn:
             for obj in entities_iter:
-                validate(obj, self._object_schema)
+                try:
+                    validate(obj, self._object_schema)
+                except jsonschema.exceptions.ValidationError as e:
+                    print("validation of this object failed: {}".format(obj))
+                    raise e
                 conn.execute(
                     insert(object).values(
                         book_id=book_id,
-                        chapter=obj.get("chapter"),
-                        verse=obj.get("verse"),
+                        chapter_start=obj.get("chapter_start"),
+                        verse_start=obj.get("verse_start"),
+                        chapter_end=obj.get("chapter_end"),
+                        verse_end=obj.get("verse_end"),
                         type=ObjectType.from_json(obj),
                         linear_id=linear_id,
                         content=obj,
