@@ -26,6 +26,9 @@ jobs:
       - name: Add .local/bin to PATH
         run: echo "$HOME/.local/bin" >> $GITHUB_PATH
 
+      - name: Set up .env_local
+        run: echo "SECRET_KEY=AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" > .env_local
+
       - name: Docker meta (static)
         id: docker_meta_static
         uses: crazy-max/ghaction-docker-meta@v1
