@@ -1,7 +1,7 @@
 import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import { RouteComponentProps } from 'react-router';
-import { Container, Navbar, NavbarBrand } from 'reactstrap';
+import { Container, Navbar, NavbarBrand, Jumbotron } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { faBook } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
