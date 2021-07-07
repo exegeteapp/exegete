@@ -21,11 +21,16 @@ interface MatchParams {
     slug?: string | undefined;
 }
 
-function Exegete(props :RouteComponentProps<MatchParams>) {
+function Exegete(props: RouteComponentProps<MatchParams>) {
     return <>
         <Header />
         <Container id="main">
-            <p>slug: { props.match.params.slug } </p>
+            <Jumbotron>
+                <h1 className="display-3">Welcome!</h1>
+                <p className="lead">
+                    exegete.app is an online environment for biblical exegesis, currently under active development.
+                </p>
+            </Jumbotron>
         </Container>
     </>;
 }
