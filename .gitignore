@@ -14,3 +14,8 @@ dist/
 tmp/
 data/
 .env_local
+**/.yarn/*
+!**/.yarn/releases
+!**/.yarn/plugins
+**/.pnp.*
+**/.pnp.*
