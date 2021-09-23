@@ -17,7 +17,8 @@ SQLAlchemy = "^1.4.17"
 whitenoise = "^5.2.0"
 jsonschema = "^3.2.0"
 lxml = "^4.6.3"
-django-allauth = "^0.45.0"
+dj-rest-auth = {extras = ["with_social"], version = "^2.1.11"}
+django-anymail = {extras = ["mailgun"], version = "^8.4"}
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"

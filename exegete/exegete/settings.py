@@ -56,11 +56,11 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "rest_framework.authtoken",
-    "dj_rest_auth",
+    "exegete.textapi",
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "exegete.textapi",
+    "dj_rest_auth",
 ]
 
 MIDDLEWARE = [
@@ -114,7 +114,7 @@ DATABASES = {
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
-    "allauth.account.auth_backends.AuthenticationBackend",
+#   "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 CACHES = {
