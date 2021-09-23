@@ -157,6 +157,15 @@ USE_L10N = True
 
 USE_TZ = True
 
+ANYMAIL = {
+    # (exact settings here depend on your ESP...)
+    "MAILGUN_API_KEY": get_env("MAILGUN_API_KEY"),
+    "MAILGUN_SENDER_DOMAIN": get_env("MAILGUN_SENDER_DOMAIN"),
+}
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"  # or sendgrid.EmailBackend, or...
+DEFAULT_FROM_EMAIL = get_env("DEFAULT_FROM_EMAIL")
+SERVER_EMAIL = get_env("SERVER_EMAIL")
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
