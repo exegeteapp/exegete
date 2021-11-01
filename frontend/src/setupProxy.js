@@ -9,14 +9,14 @@ module.exports = function(app) {
     })
   );
   app.use(
-    '/admin',
+    '/docs',
     createProxyMiddleware({
       target: 'http://localhost:8000',
       changeOrigin: true,
     })
   );
   app.use(
-    '/django-static',
+    '/openapi.json',
     createProxyMiddleware({
       target: 'http://localhost:8000',
       changeOrigin: true,

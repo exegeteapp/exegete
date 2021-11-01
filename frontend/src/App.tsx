@@ -1,45 +1,34 @@
 import React from 'react';
-import { HashRouter, Route } from 'react-router-dom';
-import { RouteComponentProps } from 'react-router';
-import { Container, Navbar, NavbarBrand, Jumbotron } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { faBook } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { HashRouter as Router, Route } from 'react-router-dom';
+import { UserProvider } from './user/User';
+import { ConfigProvider } from './config/Config';
+import { IConfigContext, ConfigContext } from './config/Config';
+import Home from './components/Home';
+import Register from './components/Register';
+import Header from './components/Header';
 import './App.css';
 
-function Header() {
-    return (
-        <Navbar className="d-print-none" fixed="top" color="dark" dark expand="md">
-            <Container>
-                <NavbarBrand tag={Link} to="/"><FontAwesomeIcon color="purple" icon={faBook} /> exegete.app</NavbarBrand>
-            </Container>
-        </Navbar>
-    );
-}
+function RouterComponent() {
+    const { state } = React.useContext<IConfigContext>(ConfigContext);
 
-interface MatchParams {
-    slug?: string | undefined;
-}
+    if (!state.valid) {
+        return <div></div>;
+    }
 
-function Exegete(props: RouteComponentProps<MatchParams>) {
-    return <>
+    return <Router>
         <Header />
-        <Container id="main">
-            <Jumbotron>
-                <h1 className="display-3">Welcome!</h1>
-                <p className="lead">
-                    exegete.app is an online environment for biblical exegesis, currently under active development.
-                </p>
-            </Jumbotron>
-        </Container>
-    </>;
-}
+        <Route path="/" exact component={Home} />
+        <Route path="/register" exact component={Register} />
+    </Router>
+};
 
 function App() {
     return (
-        <HashRouter>
-            <Route path="/:slug?" component={Exegete} />
-        </HashRouter>
+        <ConfigProvider>
+            <UserProvider>
+                <RouterComponent />
+            </UserProvider>
+        </ConfigProvider>
     );
 }
 

@@ -36,11 +36,11 @@ jobs:
           images: ghcr.io/exegeteapp/exegete-static
           tag-sha: true
 
-      - name: Docker meta (django)
-        id: docker_meta_django
+      - name: Docker meta (backend)
+        id: docker_meta_backend
         uses: crazy-max/ghaction-docker-meta@v1
         with:
-          images: ghcr.io/exegeteapp/exegete-django
+          images: ghcr.io/exegeteapp/exegete-backend
           tag-sha: true
 
       - name: Set up SSH
@@ -60,7 +60,7 @@ jobs:
       - name: Lint (Python)
         run: |
           pip3 install -U black
-          black --check exegete --exclude migrations
+          black --check backend --exclude migrations
 
       - name: Install (Typescript)
         working-directory: frontend
@@ -72,12 +72,7 @@ jobs:
         run: |
           yarn test
 
-      - name: Tests (Python/Django)
-        run: |
-          docker-compose build --pull
-          docker-compose run web test
-
-      - name: Build and merge static assets (django+static)
+      - name: Build static assets (frontend)
         run: |
           bash ./collectstatic.sh
 
@@ -88,15 +83,15 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Push to GitHub Container Registry (django)
+      - name: Push to GitHub Container Registry (backend)
         uses: docker/build-push-action@v2
         with:
-          context: exegete/
-          file: ./exegete/Dockerfile
+          context: backend/
+          file: ./backend/Dockerfile
           platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.docker_meta_django.outputs.tags }}
-          labels: ${{ steps.docker_meta_django.outputs.labels }}
+          tags: ${{ steps.docker_meta_backend.outputs.tags }}
+          labels: ${{ steps.docker_meta_backend.outputs.labels }}
 
       - name: Push to GitHub Container Registry (static)
         uses: docker/build-push-action@v2
