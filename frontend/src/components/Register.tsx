@@ -35,10 +35,13 @@ function Register(props: RouteComponentProps) {
     const password = useInput("");
     const password2 = useInput("");
 
-    const submitDisabled = () => name.value.length === 0 || password.value.length === 0 || (password.value !== password2.value) || email.value.length === 0;
+    const submitDisabled = () => password.value.length === 0 || password2.value.length === 0 || password.value.length < 8 || password.value !== password2.value ;
     const passwordError = () => {
         if ((password.value.length > 0) && (password2.value.length > 0) && (password.value !== password2.value)) {
             return "Passwords do not match";
+        }
+        if (password.value.length < 8) {
+            return "Password is too short";
         }
     }
 

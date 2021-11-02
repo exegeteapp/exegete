@@ -24,10 +24,13 @@ function ResetPassword(props: RouteComponentProps<ResetParams>) {
         }
     };
 
-    const submitDisabled = () => password.value.length === 0 || password2.value.length === 0 || password.value !== password2.value ;
+    const submitDisabled = () => password.value.length === 0 || password2.value.length === 0 || password.value.length < 8 || password.value !== password2.value ;
     const passwordError = () => {
         if ((password.value.length > 0) && (password2.value.length > 0) && (password.value !== password2.value)) {
             return "Passwords do not match";
+        }
+        if (password.value.length < 8) {
+            return "Password is too short";
         }
     }
 
