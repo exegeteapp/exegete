@@ -23,7 +23,7 @@ function Verify(props: RouteComponentProps<VerifyParams>) {
         }
         bootstrap();
     },
-        [] // only run once
+        [token]
     );
 
     return <>
