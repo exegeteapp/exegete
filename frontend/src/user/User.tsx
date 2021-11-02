@@ -16,17 +16,20 @@ interface UserState {
     // have we bootstrapped the user process?
     valid: boolean;
     // was there an error obtaining the state?
-    error: string | undefined;
+    user_error: string | undefined;
     // was there an error logging in?
     login_error: string | undefined;
+    // was there an error registering?
+    registration_error: string | undefined;
     // if the user is undefined, we are not logged in
     user: User | undefined;
 }
 
 const initialUserState = {
     valid: false,
-    error: undefined,
+    user_error: undefined,
     login_error: undefined,
+    registration_error: undefined,
     user: undefined,
 };
 
@@ -34,6 +37,8 @@ type UserAction =
     | { "type": "user_start" }
     | { "type": "user_logout" }
     | { "type": "user_login_error", "error": string }
+    | { "type": "user_registration_success" }
+    | { "type": "user_registration_error", "error": string }
     | { "type": "user_error", "error": string }
     | { "type": "user_login", "user": User | undefined };
 
@@ -48,7 +53,8 @@ const user_reducer = (state: UserState, action: UserAction): UserState => {
             return {
                 ...state,
                 valid: false,
-                error: action.error,
+                user: undefined,
+                user_error: action.error,
             }
         case 'user_login_error':
             return {
@@ -56,6 +62,16 @@ const user_reducer = (state: UserState, action: UserAction): UserState => {
                 valid: true,
                 user: undefined,
                 login_error: action.error,
+            }
+        case 'user_registration_error':
+            return {
+                ...state,
+                registration_error: action.error,
+            }
+        case 'user_registration_success':
+            return {
+                ...state,
+                registration_error: undefined
             }
         case 'user_login':
             return {
@@ -84,7 +100,12 @@ export const UserContext = React.createContext<IUserContext>({
 });
 
 export const Register = async (dispatch: React.Dispatch<UserAction>, user: object) => {
-    await axios.post<User>('/api/v1/auth/register', user);
+    try {
+        dispatch({ type: 'user_registration_success'});
+        await axios.post<User>('/api/v1/auth/register', user);
+    } catch (exc) {
+        dispatch({ type: 'user_registration_error', error: 'account registration failed' })
+    }
     await getUser(dispatch);
 };
 
@@ -103,6 +124,7 @@ export const Login = async (dispatch: React.Dispatch<UserAction>, username: stri
 
 export const Logout = async (dispatch: React.Dispatch<UserAction>) => {
     deleteJWT();
+    dispatch({ type: 'user_logout'});
     await getUser(dispatch);
 }
 

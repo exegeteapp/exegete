@@ -1,5 +1,5 @@
 import React from 'react';
-import { Input, Form, FormGroup, Label, Row, Button, Col, Container } from 'reactstrap';
+import { Alert, Input, Form, FormGroup, Label, Row, Button, Col, Container } from 'reactstrap';
 import { RouteComponentProps, useHistory } from 'react-router';
 import { IConfigContext, ConfigContext } from '../config/Config';
 import useInput from '../util/useInput';
@@ -8,9 +8,26 @@ import { IUserContext, UserContext, Register as RegisterD, Login as LoginD } fro
 
 function Register(props: RouteComponentProps) {
     const history = useHistory();
-    const { state } = React.useContext<IConfigContext>(ConfigContext);
-    const { dispatch } = React.useContext<IUserContext>(UserContext);
+    const { state: configState } = React.useContext<IConfigContext>(ConfigContext);
+    const { state: userState, dispatch: userDispatch } = React.useContext<IUserContext>(UserContext);
     const [captcha, setCaptcha] = React.useState('');
+
+    // hack: this page isn't useful if we're already registered.
+    // as a side-effect, this redirects away from the form on success
+    if (userState.user) {
+        console.log(userState.user);
+        history.push('/');
+    }
+
+    const failureMessage = () => {
+        if (userState.registration_error) {
+            return (
+                <Alert color="danger">
+                    Account registration failed: {userState.registration_error}
+                </Alert>
+            )
+        }
+    };
 
     const name = useInput("");
     const affiliation = useInput("");
@@ -27,15 +44,14 @@ function Register(props: RouteComponentProps) {
 
     function submit(e: React.FormEvent<HTMLFormElement>) {
         const doLogin = async () => {
-            await RegisterD(dispatch, {
+            await RegisterD(userDispatch, {
                 name: name.value,
                 affiliation: affiliation.value,
                 email: email.value,
                 password: password.value,
                 captcha: captcha
             });
-            await LoginD(dispatch, email.value, password.value);
-            history.push('/');
+            await LoginD(userDispatch, email.value, password.value);
         };
 
         e.preventDefault()
@@ -47,6 +63,7 @@ function Register(props: RouteComponentProps) {
             <Row>
                 <Col sm={{ size: 6, offset: 3 }}>
                     <h1 className="display-3">Sign up</h1>
+                    {failureMessage()}
                     <Form inline onSubmit={submit}>
                         <FormGroup>
                             <Label
@@ -124,7 +141,7 @@ function Register(props: RouteComponentProps) {
                         </FormGroup>
                         {passwordError()}
                         <FormGroup>
-                            <ReCAPTCHA onChange={(token: string | null) => { setCaptcha(token || "") }} sitekey={state.config?.recaptcha_site_key || ""} />
+                            <ReCAPTCHA onChange={(token: string | null) => { setCaptcha(token || "") }} sitekey={configState.config?.recaptcha_site_key || ""} />
                         </FormGroup>
                         <div className="d-grid gap-2">
                             <Button color="success" disabled={submitDisabled()}>Create New Account</Button>
