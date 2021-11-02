@@ -17,6 +17,10 @@ export const getJwt = (): IJwt | null => {
     return null;
 };
 
+export const deleteJWT = () => {
+    localStorage.removeItem('jwt');
+};
+
 export const ApiAxiosRequestConfig = (): AxiosRequestConfig => {
     var headers: any = {'Content-Type': 'application/json'};
     const token = getJwt();

@@ -1,7 +1,7 @@
 
 import React from 'react';
 import axios from 'axios';
-import { IJwt, storeJwt, ApiAxiosRequestConfig } from './JWT';
+import { IJwt, storeJwt, ApiAxiosRequestConfig, deleteJWT } from './JWT';
 
 
 interface User {
@@ -102,7 +102,8 @@ export const Login = async (dispatch: React.Dispatch<UserAction>, username: stri
 };
 
 export const Logout = async (dispatch: React.Dispatch<UserAction>) => {
-    // delete the JWT token from local storage
+    deleteJWT();
+    await getUser(dispatch);
 }
 
 const getUser = async (dispatch: React.Dispatch<UserAction>) => {
