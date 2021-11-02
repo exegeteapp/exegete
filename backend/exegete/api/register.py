@@ -28,11 +28,11 @@ def get_register_captcha_router(
         user_manager: BaseUserManager[models.UC, models.UD] = Depends(get_user_manager),
     ):
         captcha = user.captcha
-        captcha_check =  await recaptcha_check(captcha)
-        if captcha_check.get('success', False) is not True:
+        captcha_check = await recaptcha_check(captcha)
+        if captcha_check.get("success", False) is not True:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
-                detail=captcha_check.get('error-codes', [])
+                detail=captcha_check.get("error-codes", []),
             )
         try:
             created_user = await user_manager.create(user, safe=True, request=request)
