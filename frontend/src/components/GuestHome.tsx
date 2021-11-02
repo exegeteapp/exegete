@@ -21,7 +21,7 @@ function GuestHome(props: RouteComponentProps) {
                     <p className="text-center">Already have an account? Sign in.</p>
                     <Login />
                     <div className="d-grid gap-2">
-                        <p className="text-center">Forgotten password?</p>
+                        <p className="text-center"><Link to="/forgotpassword">Forgotten password?</Link></p>
                         <hr style={{ margin: "0 0 1rem 0" }} />
                         <Button color="success" tag={Link} to="/register">Create New Account</Button>
                     </div>

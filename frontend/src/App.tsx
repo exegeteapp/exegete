@@ -8,6 +8,8 @@ import Register from './components/Register';
 import Header from './components/Header';
 import Verify from './components/Verify';
 import './App.css';
+import ForgotPassword from './components/ForgotPassword';
+import ResetPassword from './components/ResetPassword';
 
 function RouterComponent() {
     const { state } = React.useContext<IConfigContext>(ConfigContext);
@@ -20,7 +22,9 @@ function RouterComponent() {
         <Header />
         <Route path="/" exact component={Home} />
         <Route path="/register" exact component={Register} />
+        <Route path="/forgotpassword" exact component={ForgotPassword} />
         <Route path="/verify/:token" component={Verify} />
+        <Route path="/resetpassword/:token" component={ResetPassword} />
     </Router>
 };
 

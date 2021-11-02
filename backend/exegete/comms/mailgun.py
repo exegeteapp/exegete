@@ -61,7 +61,7 @@ async def forgot_password_email(user: UserDB, token: str):
             "to": user.email,
             "subject": "exegete.app: reset password",
             "text": f"""
-Dear {user.first_name},
+Dear {user.name},
 
 Welcome to exegete.app.
 
