@@ -2,15 +2,19 @@ from fastapi_users import models
 
 
 class User(models.BaseUser):
-    pass
+    name: str
+    affiliation: str
 
 
 class UserCreate(models.BaseUserCreate):
-    pass
+    name: str
+    affiliation: str
+    captcha: str
 
 
 class UserUpdate(models.BaseUserUpdate):
-    pass
+    name: str
+    affiliation: str
 
 
 class UserDB(User, models.BaseUserDB):

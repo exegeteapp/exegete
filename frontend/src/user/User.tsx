@@ -82,6 +82,11 @@ export const UserContext = React.createContext<IUserContext>({
     dispatch: () => null
 });
 
+export const Register = async (dispatch: React.Dispatch<UserAction>, user: object) => {
+    await axios.post<User>('/api/v1/auth/register', user);
+    await getUser(dispatch);
+};
+
 export const Login = async (dispatch: React.Dispatch<UserAction>, username: string, password: string) => {
     try {
         await axios.post<User>('/api/v1/auth/login/', {

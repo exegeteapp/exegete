@@ -26,6 +26,8 @@ def get_register_captcha_router(
         user: user_create_model,  # type: ignore
         user_manager: BaseUserManager[models.UC, models.UD] = Depends(get_user_manager),
     ):
+        captcha = user.captcha
+        # validate the captcha
         try:
             created_user = await user_manager.create(user, safe=True, request=request)
         except UserAlreadyExists:

@@ -4,10 +4,12 @@ import { RouteComponentProps } from 'react-router';
 import { IConfigContext, ConfigContext } from '../config/Config';
 import useInput from '../util/useInput';
 import ReCAPTCHA from "react-google-recaptcha";
+import { IUserContext, UserContext, Register as RegisterD } from "../user/User";
 
 function Register(props: RouteComponentProps) {
     const { state } = React.useContext<IConfigContext>(ConfigContext);
-    const [ captcha, setCaptcha ] = React.useState('');
+    const { dispatch } = React.useContext<IUserContext>(UserContext);
+    const [captcha, setCaptcha] = React.useState('');
 
     const name = useInput("");
     const affiliation = useInput("");
@@ -16,8 +18,18 @@ function Register(props: RouteComponentProps) {
     const password2 = useInput("");
 
     function submit(e: React.FormEvent<HTMLFormElement>) {
+        const doLogin = async () => {
+            await RegisterD(dispatch, {
+                name: name.value,
+                affiliation: affiliation.value,
+                email: email.value,
+                password: password.value,
+                captcha: captcha
+            });
+        };
+
         e.preventDefault()
-        console.log(captcha);
+        doLogin();
     }
 
     return <>
@@ -101,7 +113,7 @@ function Register(props: RouteComponentProps) {
                             />
                         </FormGroup>
                         <FormGroup>
-                           <ReCAPTCHA onChange={(token: string|null) => {setCaptcha(token||"")}} sitekey={state.config?.recaptcha_site_key || ""} />
+                            <ReCAPTCHA onChange={(token: string | null) => { setCaptcha(token || "") }} sitekey={state.config?.recaptcha_site_key || ""} />
                         </FormGroup>
                         <div className="d-grid gap-2">
                             <Button color="success">Create New Account</Button>
