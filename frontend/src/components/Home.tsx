@@ -1,6 +1,7 @@
-import { Input, Form, FormGroup, Label, Row, Button, Col, Container } from 'reactstrap';
+import { Row, Button, Col, Container } from 'reactstrap';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
+import Login from './Login';
 
 function Home(props: RouteComponentProps) {
     return <>
@@ -18,43 +19,12 @@ function Home(props: RouteComponentProps) {
                 </Col>
                 <Col md={{ size: 3, offset: 1 }}>
                     <p className="text-center">Already have an account? Sign in.</p>
-                    <Form inline>
-                        <FormGroup>
-                            <Label
-                                for="email"
-                                hidden
-                            >
-                                Email
-                            </Label>
-                            <Input
-                                id="email"
-                                name="email"
-                                placeholder="Email"
-                                type="email"
-                            />
-                        </FormGroup>
-                        {' '}
-                        <FormGroup>
-                            <Label
-                                for="password"
-                                hidden
-                            >
-                                Password
-                            </Label>
-                            <Input
-                                id="password"
-                                name="password"
-                                placeholder="Password"
-                                type="password"
-                            />
-                        </FormGroup>
-                        <div className="d-grid gap-2">
-                            <Button color="primary">Log in</Button>
-                            <p className="text-center">Forgotten password?</p>
-                            <hr style={{ margin: "0 0 1rem 0" }} />
-                            <Button color="success" tag={Link} to="/register">Create New Account</Button>
-                        </div>
-                    </Form>
+                    <Login />
+                    <div className="d-grid gap-2">
+                        <p className="text-center">Forgotten password?</p>
+                        <hr style={{ margin: "0 0 1rem 0" }} />
+                        <Button color="success" tag={Link} to="/register">Create New Account</Button>
+                    </div>
                 </Col>
             </Row>
         </Container>

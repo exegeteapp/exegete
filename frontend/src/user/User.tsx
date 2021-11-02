@@ -1,6 +1,7 @@
 
 import React from 'react';
 import axios from 'axios';
+import { IJwt, storeJwt, ApiAxiosRequestConfig } from './JWT';
 
 
 interface User {
@@ -89,13 +90,14 @@ export const Register = async (dispatch: React.Dispatch<UserAction>, user: objec
 
 export const Login = async (dispatch: React.Dispatch<UserAction>, username: string, password: string) => {
     try {
-        await axios.post<User>('/api/v1/auth/login/', {
-            username: username,
-            password: password
-        });
+        const params = new URLSearchParams();
+        params.append('username', username);
+        params.append('password', password);
+        const resp = await axios.post<IJwt>('/api/v1/auth/login', params);
+        storeJwt(resp.data);
         await getUser(dispatch);
     } catch (exc) {
-        dispatch({type: 'user_login_error', error: 'username or password incorrect'})
+        dispatch({ type: 'user_login_error', error: 'username or password incorrect' })
     }
 };
 
@@ -105,17 +107,17 @@ export const Logout = async (dispatch: React.Dispatch<UserAction>) => {
 
 const getUser = async (dispatch: React.Dispatch<UserAction>) => {
     try {
-        const resp = await axios.get<User>('/api/v1/users/me');
-        dispatch({type: 'user_login', user: resp.data});
+        const resp = await axios.get<User>('/api/v1/users/me', ApiAxiosRequestConfig());
+        dispatch({ type: 'user_login', user: resp.data });
     } catch (error: any) {
-        if (axios.isAxiosError(error))  {
+        if (axios.isAxiosError(error)) {
             if (error.response && error.response.status === 403) {
                 // we're not logged in
-                dispatch({type: 'user_login', user: undefined});
+                dispatch({ type: 'user_login', user: undefined });
                 return;
             }
         }
-        dispatch({type: 'user_error', error: 'unable to contact user API'});
+        dispatch({ type: 'user_error', error: 'unable to contact user API' });
         return;
     }
 }
@@ -125,7 +127,7 @@ export const UserProvider: React.FC = ({ children }) => {
 
     React.useEffect(() => {
         async function bootstrap() {
-            dispatch({type: 'user_start'});
+            dispatch({ type: 'user_start' });
             await getUser(dispatch);
         }
         bootstrap();
