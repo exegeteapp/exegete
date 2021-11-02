@@ -5,11 +5,14 @@ import { IJwt, storeJwt, ApiAxiosRequestConfig, deleteJWT } from './JWT';
 
 
 interface User {
-    pk: number,
-    username: string,
     email: string,
-    first_name: string,
-    last_name: string
+    is_active?: boolean,
+    is_superuser?: boolean,
+    is_verified?: boolean,
+    password?: string,
+    name: string,
+    affiliation?: string,
+    captcha?: string,
 }
 
 interface UserState {
@@ -99,10 +102,11 @@ export const UserContext = React.createContext<IUserContext>({
     dispatch: () => null
 });
 
-export const Register = async (dispatch: React.Dispatch<UserAction>, user: object) => {
+export const Register = async (dispatch: React.Dispatch<UserAction>, user: User) => {
     try {
         dispatch({ type: 'user_registration_success'});
         await axios.post<User>('/api/v1/auth/register', user);
+        await axios.post('/api/v1/auth/request-verify-token', {email: user.email});
     } catch (exc) {
         dispatch({ type: 'user_registration_error', error: 'account registration failed' })
     }

@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     token_secret: str
     recaptcha_site_key: str
     recaptcha_secret_key: str
+    redis_location: str
 
 
 settings = Settings()

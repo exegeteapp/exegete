@@ -8,6 +8,7 @@ from fastapi_users.db import SQLAlchemyUserDatabase
 from .database import get_user_db
 from .models import User, UserCreate, UserDB, UserUpdate
 from exegete.settings import settings
+from exegete.comms.mailgun import forgot_password_email, registration_email
 
 
 class UserManager(BaseUserManager[UserCreate, UserDB]):
@@ -16,17 +17,18 @@ class UserManager(BaseUserManager[UserCreate, UserDB]):
     verification_token_secret = settings.token_secret
 
     async def on_after_register(self, user: UserDB, request: Optional[Request] = None):
-        print(f"User {user.id} has registered.")
+        # we send the verification email via the after_request_verify hook
+        pass
 
     async def on_after_forgot_password(
         self, user: UserDB, token: str, request: Optional[Request] = None
     ):
-        print(f"User {user.id} has forgot their password. Reset token: {token}")
+        await forgot_password_email(user, token)
 
     async def on_after_request_verify(
         self, user: UserDB, token: str, request: Optional[Request] = None
     ):
-        print(f"Verification requested for user {user.id}. Verification token: {token}")
+        await registration_email(user, token)
 
 
 def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db)):
