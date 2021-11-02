@@ -1,12 +1,13 @@
 import React from 'react';
 import { Input, Form, FormGroup, Label, Row, Button, Col, Container } from 'reactstrap';
-import { RouteComponentProps } from 'react-router';
+import { RouteComponentProps, useHistory } from 'react-router';
 import { IConfigContext, ConfigContext } from '../config/Config';
 import useInput from '../util/useInput';
 import ReCAPTCHA from "react-google-recaptcha";
-import { IUserContext, UserContext, Register as RegisterD } from "../user/User";
+import { IUserContext, UserContext, Register as RegisterD, Login as LoginD } from "../user/User";
 
 function Register(props: RouteComponentProps) {
+    const history = useHistory();
     const { state } = React.useContext<IConfigContext>(ConfigContext);
     const { dispatch } = React.useContext<IUserContext>(UserContext);
     const [captcha, setCaptcha] = React.useState('');
@@ -17,6 +18,13 @@ function Register(props: RouteComponentProps) {
     const password = useInput("");
     const password2 = useInput("");
 
+    const submitDisabled = () => name.value.length === 0 || password.value.length === 0 || (password.value !== password2.value) || email.value.length === 0;
+    const passwordError = () => {
+        if ((password.value.length > 0) && (password2.value.length > 0) && (password.value !== password2.value)) {
+            return "Passwords do not match";
+        }
+    }
+
     function submit(e: React.FormEvent<HTMLFormElement>) {
         const doLogin = async () => {
             await RegisterD(dispatch, {
@@ -26,6 +34,8 @@ function Register(props: RouteComponentProps) {
                 password: password.value,
                 captcha: captcha
             });
+            await LoginD(dispatch, email.value, password.value);
+            history.push('/');
         };
 
         e.preventDefault()
@@ -112,11 +122,12 @@ function Register(props: RouteComponentProps) {
                                 {...password2}
                             />
                         </FormGroup>
+                        {passwordError()}
                         <FormGroup>
                             <ReCAPTCHA onChange={(token: string | null) => { setCaptcha(token || "") }} sitekey={state.config?.recaptcha_site_key || ""} />
                         </FormGroup>
                         <div className="d-grid gap-2">
-                            <Button color="success">Create New Account</Button>
+                            <Button color="success" disabled={submitDisabled()}>Create New Account</Button>
                         </div>
                     </Form>
                 </Col>
