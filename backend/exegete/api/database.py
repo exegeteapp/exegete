@@ -16,11 +16,6 @@ class UserTable(Base, SQLAlchemyBaseUserTable):
     affiliation = Column(Text, default=False, nullable=False)
 
 
-def make_tables():
-    engine = sqlalchemy.create_engine(settings.pg_dsn)
-    Base.metadata.create_all(engine)
-
-
 def get_user_db():
     users = UserTable.__table__
     yield SQLAlchemyUserDatabase(UserDB, database, users)

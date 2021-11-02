@@ -15,6 +15,7 @@ jsonschema = "^4.1.2"
 lxml = "^4.6.3"
 databases = {extras = ["postgresql"], version = "^0.5.3"}
 aiohttp = "^3.8.0"
+alembic = "^1.7.4"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
