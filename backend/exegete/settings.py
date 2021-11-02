@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     recaptcha_site_key: str
     recaptcha_secret_key: str
     redis_location: str
+    base_url: str
 
 
 settings = Settings()

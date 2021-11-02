@@ -6,6 +6,7 @@ import { IConfigContext, ConfigContext } from './config/Config';
 import Home from './components/Home';
 import Register from './components/Register';
 import Header from './components/Header';
+import Verify from './components/Verify';
 import './App.css';
 
 function RouterComponent() {
@@ -19,6 +20,7 @@ function RouterComponent() {
         <Header />
         <Route path="/" exact component={Home} />
         <Route path="/register" exact component={Register} />
+        <Route path="/verify/:token" component={Verify} />
     </Router>
 };
 
