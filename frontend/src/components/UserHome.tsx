@@ -1,10 +1,8 @@
 import React from 'react';
 import { Container } from 'reactstrap';
 import { RouteComponentProps } from 'react-router';
-import { IUserContext, UserContext, Logout } from "../user/User";
 
 function UserHome(props: RouteComponentProps) {
-    const { dispatch } = React.useContext<IUserContext>(UserContext);
 
     return <>
         <Container id="main">
