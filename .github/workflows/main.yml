@@ -59,8 +59,9 @@ jobs:
 
       - name: Lint (Python)
         run: |
-          pip3 install -U black
-          black --check backend --exclude migrations
+          cd backend
+          poetry install
+          poetry run black --check exegete
 
       - name: Install (Typescript)
         working-directory: frontend
