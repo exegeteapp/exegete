@@ -31,14 +31,14 @@ jobs:
 
       - name: Docker meta (static)
         id: docker_meta_static
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: docker/metadata-action@v3
         with:
           images: ghcr.io/exegeteapp/exegete-static
           tag-sha: true
 
       - name: Docker meta (backend)
         id: docker_meta_backend
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: docker/metadata-action@v3
         with:
           images: ghcr.io/exegeteapp/exegete-backend
           tag-sha: true
