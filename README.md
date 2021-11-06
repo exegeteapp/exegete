@@ -2,3 +2,17 @@
 
 Under active development.
 
+## Importing biblical data
+
+1. clone https://github.com/exegeteapp/exegete-data in `data/`
+
+2. run up the `docker-compose` environment.
+
+3. Import the NET Bible and the SBL-GNT
+
+```bash
+docker compose exec backend bash
+python -m exegete.text.ingest.netbible /data/exegete-data/NET-bible/json/
+python -m exegete.text.ingest.sblgnt /data/exegete-data/SBLGNT/
+```
+
