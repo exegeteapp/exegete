@@ -84,12 +84,6 @@ You can download it at https://bible.org/downloads
             text = json.load(fd)
 
         chapter = int(text[0]["chapter"])
-        yield {
-            "type": "chapter-start",
-            "chapter_start": chapter,
-            "chapter_end": chapter,
-        }
-
         punctuation_re = re.compile(r"^[{}]+$".format(re.escape(". -–—¡!")))
         strongs_re = re.compile(r"^\d+[b]?$")
         parser = etree.HTMLParser()
@@ -213,9 +207,6 @@ You can download it at https://bible.org/downloads
                 "verse_end": int(hunk["verse"]),
                 "text": words,
             }
-
-        chapter = int(text[0]["chapter"])
-        yield {"type": "chapter-end", "chapter_start": chapter, "chapter_end": chapter}
 
     def load_books(dir_id):
         for division in ("ot", "nt"):

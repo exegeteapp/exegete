@@ -8,10 +8,8 @@ from typing import Callable, TypeVar
 
 class Manager:
     def __init__(self):
-        self.engine = sqlalchemy.create_engine(
-            settings.pg_dsn,
+        self.engine = settings.create_engine(
             echo="INGEST_DEBUG" in os.environ,
-            future=True,
         )
 
     ModuleInstance = TypeVar("ModuleInstance")
@@ -28,3 +26,21 @@ class Manager:
         entities = module_cls.make_entities(metadata, module_schema)
         metadata.create_all(self.engine)
         return module_cls.create(self, metadata, entities, **kwargs)
+
+    def list_modules(self, module_cls: Callable[[], ModuleInstance]) -> list:
+        inspector = sqlalchemy.inspect(self.engine)
+        schemas = [
+            t
+            for t in inspector.get_schema_names()
+            if t.startswith(module_cls.SCHEMA_PREFIX)
+        ]
+        return schemas
+
+    @staticmethod
+    def module_entities(
+        module_cls: Callable[[], ModuleInstance], schema_name: str
+    ) -> ModuleInstance:
+        metadata = MetaData()
+        # we don't reflect them, it's better to use the Python definitions
+        entities = module_cls.make_entities(metadata, schema_name)
+        return entities

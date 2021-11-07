@@ -1,3 +1,4 @@
+import sqlalchemy
 from pydantic import (
     BaseSettings,
     PostgresDsn,
@@ -15,6 +16,13 @@ class Settings(BaseSettings):
     recaptcha_secret_key: str
     redis_location: str
     base_url: str
+
+    def create_engine(self, **kwargs):
+        return sqlalchemy.create_engine(
+            self.pg_dsn,
+            future=True,
+            **kwargs,
+        )
 
 
 settings = Settings()

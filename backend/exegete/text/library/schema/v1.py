@@ -18,8 +18,6 @@ class ModuleType(enum.Enum):
 
 
 class ObjectType(enum.Enum):
-    chapter_start = "cs"
-    chapter_end = "ce"
     verse = "v"
     title = "t"
     footnote = "f"
@@ -27,11 +25,7 @@ class ObjectType(enum.Enum):
     @classmethod
     def from_json(cls, obj):
         typ = obj["type"]
-        if typ == "chapter-start":
-            return ObjectType.chapter_start
-        elif typ == "chapter-end":
-            return ObjectType.chapter_end
-        elif typ == "verse":
+        if typ == "verse":
             return ObjectType.verse
         elif typ == "title":
             return ObjectType.title

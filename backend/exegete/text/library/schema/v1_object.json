@@ -8,7 +8,7 @@
         "type": {
             "description": "the type of the object",
             "type": "string",
-            "enum": [ "chapter-start", "chapter-end", "title", "verse", "footnote"]
+            "enum": [ "title", "verse", "footnote"]
         },
         "chapter_start": {
             "description": "the starting chapter of the object",
