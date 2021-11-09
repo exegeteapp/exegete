@@ -90,13 +90,16 @@ class ScriptureCatalog:
                 ent = self.schema_entities[schema]
                 module_info = ent["module_info"]
                 obj = conn.execute(sqlalchemy.select(module_info)).one()._asdict()
+                obj.pop("id")
+                shortcode = obj.pop("shortcode")
+                obj["schema"] = schema
                 obj["type"] = obj["type"].value
                 obj["language"] = obj["language"].value
                 obj["date_created"] = str(obj["date_created"])
                 obj["books"] = books_toc(schema)
-                return obj
+                return shortcode, obj
 
-            return {schema: schema_toc(schema) for schema in self.schemas}
+            return dict(schema_toc(schema) for schema in self.schemas)
 
 
 catalog = ScriptureCatalog()
