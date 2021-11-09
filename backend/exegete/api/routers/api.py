@@ -40,7 +40,7 @@ api_router.include_router(
 api_router.include_router(config_router)
 
 
-@api_router.get("/catalog")
+@api_router.get("/catalog", tags=["scripture"])
 async def get_catalog():
     catalog = await redis.get("catalog")
     assert catalog is not None
