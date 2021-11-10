@@ -1,8 +1,8 @@
 import React from 'react';
 import { HashRouter as Router, Route } from 'react-router-dom';
 import { UserProvider } from './user/User';
-import { ConfigProvider } from './config/Config';
-import { IConfigContext, ConfigContext } from './config/Config';
+import { ScriptureProvider } from './scripture/Scripture';
+import { IConfigContext, ConfigContext, ConfigProvider } from './config/Config';
 import Home from './components/Home';
 import Register from './components/Register';
 import Header from './components/Header';
@@ -32,7 +32,9 @@ function App() {
     return (
         <ConfigProvider>
             <UserProvider>
-                <RouterComponent />
+                <ScriptureProvider>
+                    <RouterComponent />
+                </ScriptureProvider>
             </UserProvider>
         </ConfigProvider>
     );

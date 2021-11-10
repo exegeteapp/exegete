@@ -37,8 +37,3 @@ api_router.include_router(
 )
 api_router.include_router(config_router)
 api_router.include_router(scripture_router)
-
-
-@api_router.get("/authenticated-route")
-async def authenticated_route(user: UserDB = Depends(current_active_user)):
-    return {"message": f"Hello {user.email}!"}

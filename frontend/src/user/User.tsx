@@ -136,6 +136,7 @@ const getUser = async (dispatch: React.Dispatch<UserAction>) => {
     try {
         const resp = await axios.get<User>('/api/v1/users/me', ApiAxiosRequestConfig());
         dispatch({ type: 'user_login', user: resp.data });
+        // tell the scripture catalog to load
     } catch (error: any) {
         if (axios.isAxiosError(error)) {
             if (error.response && error.response.status === 403) {
