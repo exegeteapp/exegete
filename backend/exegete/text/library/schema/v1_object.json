@@ -74,8 +74,7 @@
                     "enum": [ "hbo", "ecg", "eng" ]
                 }
             },
-            "additionalProperties": false,
-            "required": ["value", "language"]
+            "additionalProperties": false
         }
     },
     "additionalProperties": false,

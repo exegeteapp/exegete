@@ -116,6 +116,14 @@ class Module:
             ),  # this will monotonically increase in the book
             Column("content", JSONB, nullable=False),
             UniqueConstraint("book_id", "linear_id"),
+            Index(
+                "index_bi_cs_ce_vs_ve",
+                "book_id",
+                "chapter_start",
+                "chapter_end",
+                "verse_start",
+                "verse_end",
+            ),
         )
 
         return entities

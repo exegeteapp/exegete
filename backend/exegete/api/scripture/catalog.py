@@ -1,6 +1,7 @@
 from exegete.text.library.manager import Manager
 from exegete.text.library.schema.v1 import Module as V1Module
 from exegete.settings import settings
+from exegete.api.database import database
 import sqlalchemy
 
 
@@ -14,12 +15,40 @@ class ScriptureCatalog:
         self.schema_entities = {
             schema: Manager.module_entities(V1Module, schema) for schema in self.schemas
         }
+        self.shortcode_schema = self.build_shortcode_schema()
+        self.shortcode_book = self.build_shortcode_book()
+
+    def build_shortcode_schema(self):
+        engine = settings.create_engine()
+        res = {}
+        with engine.connect() as conn:
+            for schema in self.schemas:
+                ent = self.schema_entities[schema]
+                module_info = ent["module_info"]
+                obj = conn.execute(sqlalchemy.select(module_info)).one()._asdict()
+                res[obj["shortcode"]] = schema
+        return res
+
+    def build_shortcode_book(self):
+        engine = settings.create_engine()
+        res = {}
+        with engine.connect() as conn:
+            for schema in self.schemas:
+                ent = self.schema_entities[schema]
+                module_info = ent["module_info"]
+                book = ent["book"]
+                obj = conn.execute(sqlalchemy.select(module_info)).one()._asdict()
+                shortcode = obj["shortcode"]
+                for row in conn.execute(
+                    sqlalchemy.select(book).order_by(book.columns["id"])
+                ):
+                    book_obj = row._asdict()
+                    res[(shortcode, book_obj["name"])] = ent, book_obj["id"]
+        return res
 
     def make_toc(self):
         "not async as only run once on application startup"
-
         engine = settings.create_engine()
-
         with engine.connect() as conn:
 
             def row_fields(row, fields):
@@ -116,6 +145,30 @@ class ScriptureCatalog:
                 return shortcode, obj
 
             return dict(schema_toc(schema) for schema in self.schemas)
+
+    async def get_scripture(
+        self, shortcode, book, chapter_start, verse_start, chapter_end, verse_end
+    ):
+        if (shortcode, book) not in self.shortcode_book:
+            raise KeyError(f"{shortcode} {book}")
+        ent, book_id = self.shortcode_book[(shortcode, book)]
+        object = ent["object"]
+        bk = object.columns["book_id"]
+        cs = object.columns["chapter_start"]
+        ce = object.columns["chapter_end"]
+        vs = object.columns["verse_start"]
+        ve = object.columns["verse_end"]
+        li = object.columns["linear_id"]
+
+        q = (
+            sqlalchemy.select(object)
+            .filter(bk == book_id)
+            .filter(sqlalchemy.and_(cs >= chapter_start, cs <= chapter_end))
+            .filter(sqlalchemy.and_(vs >= verse_start, vs <= verse_end))
+            .order_by(li)
+        )
+        res = await database.fetch_all(q)
+        return res
 
 
 catalog = ScriptureCatalog()

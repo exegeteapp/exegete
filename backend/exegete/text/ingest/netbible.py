@@ -102,7 +102,7 @@ You can download it at https://bible.org/downloads
 
             if typ is etree._ElementUnicodeResult or typ is str:
                 text = str(node)
-                text_attrs = {"language": "eng", "value": text}
+                text_attrs = {"value": text}
                 if punctuation_re.match(text):
                     text_attrs["punctuation"] = True
                 return [attrs | text_attrs]
@@ -172,7 +172,7 @@ You can download it at https://bible.org/downloads
                 return []
 
             if typ is etree._Element and node.tag == "br":
-                return [{"value": "", "language": "eng", "br": True}]
+                return [{"value": "", "br": True}]
 
             raise Exception((node, type(node)))
 

@@ -117,9 +117,7 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
             # if we have a current verse, insert a line-break whitespace word into th
             # word stream for the <p> that just started
             if verse_state_nonempty(verse_state):
-                verse_state["words"].append(
-                    {"value": "", "br": True, "language": "ecg"}
-                )
+                verse_state["words"].append({"value": "", "br": True})
 
             for node in p_node.xpath("./*"):
                 assert len(node.xpath("./*")) == 0
@@ -135,12 +133,11 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                     ) = parse_verse_id(node.get("id"))
                 elif node.tag == "w":
                     verse_state["words"].append(
-                        {"language": "ecg", "value": "".join(node.xpath("./text()"))}
+                        {"value": "".join(node.xpath("./text()"))}
                     )
                 elif node.tag == "prefix":
                     verse_state["words"].append(
                         {
-                            "language": "ecg",
                             "value": "".join(node.xpath("./text()")),
                             "punctuation": True,
                         }
@@ -148,7 +145,6 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                 elif node.tag == "suffix":
                     verse_state["words"].append(
                         {
-                            "language": "ecg",
                             "value": "".join(node.xpath("./text()")),
                             "punctuation": True,
                         }
@@ -165,9 +161,7 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                 verse_state = verse_state_blank()
                 yield {
                     "type": "title",
-                    "text": [
-                        {"language": "ecg", "value": "".join(node.xpath(".//text()"))}
-                    ],
+                    "text": [{"value": "".join(node.xpath(".//text()"))}],
                 }
             elif node.tag == "p":
                 verse_state = yield from handle_p(node, verse_state)
@@ -188,7 +182,7 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                 typ = type(t)
                 if typ is etree._ElementUnicodeResult or typ is str:
                     text = str(t)
-                    buf.append(attrs | {"language": "ecg", "value": text})
+                    buf.append(attrs | {"value": text})
                 elif typ is etree._Element and t.tag == "b":
                     buf += make_words(
                         t.xpath("./child::node()"), attrs | {"strong": True}
