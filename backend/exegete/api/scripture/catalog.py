@@ -22,6 +22,10 @@ class ScriptureCatalog:
 
         with engine.connect() as conn:
 
+            def row_fields(row, fields):
+                obj = row._asdict()
+                return {field: obj[field] for field in fields}
+
             def distinct_field(q):
                 return set(
                     t[0]
@@ -80,19 +84,31 @@ class ScriptureCatalog:
                 for row in conn.execute(
                     sqlalchemy.select(book).order_by(book.columns["id"])
                 ):
-                    obj = row._asdict()
+                    obj = row_fields(row, ["id", "division", "name"])
+                    id = obj.pop("id")
                     obj["division"] = obj["division"].value
-                    obj["chapters"] = chapter_toc(schema, obj["id"])
+                    obj["chapters"] = chapter_toc(schema, id)
                     books.append(obj)
                 return books
 
             def schema_toc(schema):
                 ent = self.schema_entities[schema]
                 module_info = ent["module_info"]
-                obj = conn.execute(sqlalchemy.select(module_info)).one()._asdict()
-                obj.pop("id")
+                obj = row_fields(
+                    conn.execute(sqlalchemy.select(module_info)).one(),
+                    (
+                        "shortcode",
+                        "type",
+                        "language",
+                        "date_created",
+                        "name",
+                        "license_text",
+                        "license_url",
+                        "url",
+                        "description",
+                    ),
+                )
                 shortcode = obj.pop("shortcode")
-                obj["schema"] = schema
                 obj["type"] = obj["type"].value
                 obj["language"] = obj["language"].value
                 obj["date_created"] = str(obj["date_created"])
