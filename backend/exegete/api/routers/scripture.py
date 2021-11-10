@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import Response
 from ..redis import redis
-from ..scripture.catalog import catalog
+from ..scripture.catalog import catalog, InvalidReference
 
 scripture_router = APIRouter(prefix="/scripture", tags=["scripture"])
 
@@ -26,8 +26,9 @@ async def get_verses(
     verse_end: int,
 ):
     try:
-        return await catalog.get_scripture(
+        scripture_json_text = await catalog.get_scripture(
             shortcode, book, chapter_start, verse_start, chapter_end, verse_end
         )
-    except KeyError:
+        return Response(content=scripture_json_text, media_type="application/json")
+    except InvalidReference:
         raise HTTPException(status_code=404, detail="Book not found")

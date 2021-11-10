@@ -5,6 +5,10 @@ from exegete.api.database import database
 import sqlalchemy
 
 
+class InvalidReference(Exception):
+    pass
+
+
 class ScriptureCatalog:
     """
     this is an app-wide singleton
@@ -149,8 +153,9 @@ class ScriptureCatalog:
     async def get_scripture(
         self, shortcode, book, chapter_start, verse_start, chapter_end, verse_end
     ):
+        "returns JSON encoded scripture"
         if (shortcode, book) not in self.shortcode_book:
-            raise KeyError(f"{shortcode} {book}")
+            raise InvalidReference(f"{shortcode} {book}")
         ent, book_id = self.shortcode_book[(shortcode, book)]
         object = ent["object"]
         bk = object.columns["book_id"]
@@ -160,15 +165,26 @@ class ScriptureCatalog:
         ve = object.columns["verse_end"]
         li = object.columns["linear_id"]
 
-        q = (
-            sqlalchemy.select(object)
+        subq = (
+            sqlalchemy.select(
+                object.columns["chapter_start"],
+                object.columns["verse_start"],
+                object.columns["chapter_end"],
+                object.columns["verse_end"],
+                object.columns["type"],
+                object.columns["content"],
+            )
             .filter(bk == book_id)
             .filter(sqlalchemy.and_(cs >= chapter_start, cs <= chapter_end))
             .filter(sqlalchemy.and_(vs >= verse_start, vs <= verse_end))
             .order_by(li)
-        )
-        res = await database.fetch_all(q)
-        return res
+        ).subquery()
+
+        q = sqlalchemy.select(
+            sqlalchemy.func.jsonb_agg(subq.table_valued())
+        ).select_from(subq)
+        res = await database.fetch_one(q)
+        return res[0]
 
 
 catalog = ScriptureCatalog()
