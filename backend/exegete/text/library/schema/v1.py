@@ -1,6 +1,7 @@
 from sqlalchemy import insert, Index, Enum, select, update
 from sqlalchemy.schema import Table, Column, MetaData, ForeignKey
 from sqlalchemy.sql.schema import UniqueConstraint
+from sqlalchemy.sql.sqltypes import Boolean
 from sqlalchemy.types import Text, JSON, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
 from jsonschema import validate
@@ -114,7 +115,9 @@ class Module:
             Column(
                 "linear_id", Integer, nullable=False
             ),  # this will monotonically increase in the book
-            Column("content", JSONB, nullable=False),
+            Column("text", JSONB, nullable=False),
+            Column("poetry", Boolean, nullable=False),
+            Column("quote", Boolean, nullable=False),
             UniqueConstraint("book_id", "linear_id"),
             Index(
                 "index_bi_cs_ce_vs_ve",
@@ -170,9 +173,11 @@ class Module:
                         verse_start=obj.get("verse_start"),
                         chapter_end=obj.get("chapter_end"),
                         verse_end=obj.get("verse_end"),
+                        poetry=obj.get("poetry", False),
+                        quote=obj.get("quote", False),
                         type=ObjectType.from_json(obj),
                         linear_id=linear_id,
-                        content=obj,
+                        text=obj.get("text"),
                     )
                 )
                 linear_id += 1

@@ -205,6 +205,8 @@ You can download it at https://bible.org/downloads
                 "chapter_end": int(hunk["chapter"]),
                 "verse_start": int(hunk["verse"]),
                 "verse_end": int(hunk["verse"]),
+                "poetry": object_attrs.get("poetry", False),
+                "quote": object_attrs.get("quote", False),
                 "text": words,
             }
 
