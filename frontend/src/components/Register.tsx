@@ -1,13 +1,13 @@
 import React from 'react';
 import { Alert, Input, Form, FormGroup, Label, Row, Button, Col, Container } from 'reactstrap';
-import { RouteComponentProps, useHistory } from 'react-router';
+import { useNavigate } from 'react-router';
 import { IConfigContext, ConfigContext } from '../config/Config';
 import useInput from '../util/useInput';
 import ReCAPTCHA from "react-google-recaptcha";
 import { IUserContext, UserContext, Register as RegisterD, Login as LoginD } from "../user/User";
 
-function Register(props: RouteComponentProps) {
-    const history = useHistory();
+function Register() {
+    const navigate = useNavigate();
     const { state: configState } = React.useContext<IConfigContext>(ConfigContext);
     const { state: userState, dispatch: userDispatch } = React.useContext<IUserContext>(UserContext);
     const [captcha, setCaptcha] = React.useState('');
@@ -16,7 +16,7 @@ function Register(props: RouteComponentProps) {
     // as a side-effect, this redirects away from the form on success
     if (userState.user) {
         console.log(userState.user);
-        history.push('/');
+        navigate('/');
     }
 
     const failureMessage = () => {

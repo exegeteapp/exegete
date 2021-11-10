@@ -1,17 +1,16 @@
 import React from 'react';
-import { RouteComponentProps } from 'react-router';
 import { IUserContext, UserContext } from "../user/User";
 import UserHome from './UserHome';
 import GuestHome from './GuestHome';
 
-function Home(props: RouteComponentProps) {
+function Home() {
     const { state } = React.useContext<IUserContext>(UserContext);
 
     if (state.valid === true && state.user) {
-        return <UserHome {...props}></UserHome>;
+        return <UserHome></UserHome>;
     }
 
-    return <GuestHome {...props}></GuestHome>;
+    return <GuestHome></GuestHome>;
 }
 
 export default Home;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { HashRouter as Router, Route } from 'react-router-dom';
+import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import { UserProvider } from './user/User';
 import { ScriptureProvider } from './scripture/Scripture';
 import { IConfigContext, ConfigContext, ConfigProvider } from './config/Config';
@@ -20,11 +20,13 @@ function RouterComponent() {
 
     return <Router>
         <Header />
-        <Route path="/" exact component={Home} />
-        <Route path="/register" exact component={Register} />
-        <Route path="/forgotpassword" exact component={ForgotPassword} />
-        <Route path="/verify/:token" component={Verify} />
-        <Route path="/resetpassword/:token" component={ResetPassword} />
+        <Routes>
+            <Route path="/" element={<Home/>} />
+            <Route path="/register" element={<Register/>} />
+            <Route path="/forgotpassword" element={<ForgotPassword/>} />
+            <Route path="/verify/:token" element={<Verify/>} />
+            <Route path="/resetpassword/:token" element={<ResetPassword/>} />
+        </Routes>
     </Router>
 };
 

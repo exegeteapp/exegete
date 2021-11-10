@@ -1,15 +1,12 @@
 import React from 'react';
 import axios from 'axios';
 import { Container, Row, Col, Input, Form, FormGroup, Label, Button, Alert } from 'reactstrap';
-import { RouteComponentProps } from 'react-router';
 import useInput from '../util/useInput';
+import { useParams } from 'react-router';
 
-interface ResetParams {
-    token: string
-};
-
-function ResetPassword(props: RouteComponentProps<ResetParams>) {
-    const token = props.match.params.token;
+function ResetPassword() {
+    const params = useParams();
+    const token = params.token;
     const password = useInput("");
     const password2 = useInput("");
     const [message, setMessage] = React.useState("");

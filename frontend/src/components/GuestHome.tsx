@@ -1,9 +1,8 @@
 import { Row, Button, Col, Container } from 'reactstrap';
-import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import Login from './Login';
 
-function GuestHome(props: RouteComponentProps) {
+function GuestHome() {
     return <>
         <Container id="main">
             <h1 className="display-3">Welcome!</h1>
