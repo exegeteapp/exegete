@@ -6,13 +6,18 @@ import 'core-js/es/symbol/iterator';
 import 'core-js/es/object/assign';
 import 'core-js/es/string/replace-all';
 import 'raf/polyfill'
+import { config } from '@fortawesome/fontawesome-svg-core';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import '@fortawesome/fontawesome-svg-core/styles.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+
+// address CSP issues with react-fontawesome
+config.autoAddCss = false;
 
 ReactDOM.render(
   <React.StrictMode>
