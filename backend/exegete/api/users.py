@@ -36,7 +36,9 @@ def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db)):
 
 
 jwt_authentication = JWTAuthentication(
-    secret=settings.token_secret, lifetime_seconds=3600, tokenUrl="auth/jwt/login"
+    secret=settings.token_secret,
+    lifetime_seconds=60 * 60 * 24 * 7,  # 1 week
+    tokenUrl="auth/jwt/login",
 )
 
 fastapi_users = FastAPIUsers(

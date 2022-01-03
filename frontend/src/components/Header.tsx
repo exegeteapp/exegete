@@ -30,7 +30,7 @@ function UserMenu() {
             caret
             nav
         >{state.user?.email}</DropdownToggle>
-        <DropdownMenu right>
+        <DropdownMenu end>
             <DropdownItem onClick={handleLogout}>
                 Logout
             </DropdownItem>

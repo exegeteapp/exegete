@@ -1,13 +1,27 @@
 import React from 'react';
 import { Container } from 'reactstrap';
+import { Workspace, getWorkspaces } from '../workspace/Workspace';
+import NewWorkspaceButton from './NewWorkspaceButton';
+import WorkspaceList from './WorkspaceList';
 
-function UserHome(){
+function UserHome() {
+    const [workspaces, setWorkspaces] = React.useState<Workspace[]>([]);
+
+    React.useEffect(() => {
+        async function get() {
+            const w = await getWorkspaces();
+            setWorkspaces(w);
+        }
+        get();
+    },
+        [] // only run once
+    );
+
     return <>
         <Container id="main">
             <h1 className="display-4">Welcome back.</h1>
-            <p>
-                List of documents to come here....
-            </p>
+            <NewWorkspaceButton local={false} color="success">Create new workspace</NewWorkspaceButton>
+            <WorkspaceList workspaces={workspaces} />
         </Container>
     </>;
 }

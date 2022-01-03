@@ -1,12 +1,12 @@
 import React from 'react';
-import { IUserContext, UserContext } from "../user/User";
+import { IUserContext, UserContext, UserLoggedIn } from "../user/User";
 import UserHome from './UserHome';
 import GuestHome from './GuestHome';
 
 function Home() {
     const { state } = React.useContext<IUserContext>(UserContext);
 
-    if (state.valid === true && state.user) {
+    if (UserLoggedIn(state)) {
         return <UserHome></UserHome>;
     }
 

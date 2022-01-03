@@ -7,6 +7,7 @@ import Home from './components/Home';
 import Register from './components/Register';
 import Header from './components/Header';
 import Verify from './components/Verify';
+import Workspace from './components/WorkspaceView';
 import './App.css';
 import ForgotPassword from './components/ForgotPassword';
 import ResetPassword from './components/ResetPassword';
@@ -22,6 +23,7 @@ function RouterComponent() {
         <Header />
         <Routes>
             <Route path="/" element={<Home/>} />
+            <Route path="/workspace/:id" element={<Workspace/>} />
             <Route path="/register" element={<Register/>} />
             <Route path="/forgotpassword" element={<ForgotPassword/>} />
             <Route path="/verify/:token" element={<Verify/>} />

@@ -1,6 +1,7 @@
 import { Row, Button, Col, Container } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import Login from './Login';
+import NewWorkspaceButton from './NewWorkspaceButton';
 
 function GuestHome() {
     return <>
@@ -12,7 +13,7 @@ function GuestHome() {
                         exegete.app is an online environment for biblical exegesis, currently under active development.
                     </p>
                     <div className="d-grid gap-2">
-                        <Button color="success btn-lg">Try exegete.app now!</Button>
+                        <NewWorkspaceButton local={true} color="success btn-lg">Try exegete.app now!</NewWorkspaceButton>
                         <p className="text-center">No signup needed.</p>
                     </div>
                 </Col>

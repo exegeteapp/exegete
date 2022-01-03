@@ -1,4 +1,8 @@
 from fastapi_users import models
+from typing import Optional
+from pydantic import BaseModel
+from uuid import UUID
+import datetime
 
 
 class User(models.BaseUser):
@@ -19,3 +23,22 @@ class UserUpdate(models.BaseUserUpdate):
 
 class UserDB(User, models.BaseUserDB):
     pass
+
+
+class WorkspaceOut(BaseModel):
+    id: UUID
+    title: str
+    workspace: dict
+    created: datetime.datetime
+    updated: Optional[datetime.datetime]
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
+class WorkspaceIn(BaseModel):
+    title: str
+    workspace: dict
+
+    class Config:
+        arbitrary_types_allowed = True

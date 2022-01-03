@@ -15,7 +15,6 @@ function Register() {
     // hack: this page isn't useful if we're already registered.
     // as a side-effect, this redirects away from the form on success
     if (userState.user) {
-        console.log(userState.user);
         navigate('/');
     }
 

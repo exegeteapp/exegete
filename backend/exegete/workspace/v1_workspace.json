@@ -1,0 +1,35 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://exegete.app/schema/v1_object.json",
+    "title": "exegete.app workspace definition",
+    "description": "a workspace defines an exegete environment",
+    "type": "object",
+    "properties": {
+        "workspace_format": {
+            "description": "version of workspace format",
+            "type": "integer"
+        },
+        "nodes": {
+            "description": "nodes in the workspace",
+            "type": "array",
+            "items": { "$ref": "#/$defs/node" }
+        }
+    },
+    "$defs": {
+        "node": {
+            "type": "object",
+            "properties": {
+                "node_type": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "object"
+                }
+            },
+            "required": ["node_type", "data"],
+            "additionalProperties": false
+        }
+    },
+    "additionalProperties": false,
+    "required": ["workspace_format", "nodes"]
+}
