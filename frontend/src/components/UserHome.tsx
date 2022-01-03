@@ -10,6 +10,7 @@ function UserHome() {
     React.useEffect(() => {
         async function get() {
             const w = await getWorkspaces();
+            w.sort((a, b) => (b.updated || b.created).getTime() - (a.updated || a.created).getTime());
             setWorkspaces(w);
         }
         get();
