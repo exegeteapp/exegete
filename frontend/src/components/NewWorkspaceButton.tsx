@@ -9,7 +9,7 @@ export const NewWorkspaceButton: React.FC<{local: boolean, color: string}> = ({ 
     const navigate = useNavigate();
 
     const createWorkspace = async () => {
-        var id;
+        let id;
         if (local) {
             id = createWorkspaceLocal();
         } else {

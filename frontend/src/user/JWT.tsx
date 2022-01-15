@@ -22,7 +22,7 @@ export const deleteJWT = () => {
 };
 
 export const ApiAxiosRequestConfig = (): AxiosRequestConfig => {
-    var headers: any = {'Content-Type': 'application/json'};
+    let headers: any = {'Content-Type': 'application/json'};
     const token = getJwt();
     if (token) {
         headers['Authorization'] = token.token_type + ' ' + token.access_token;

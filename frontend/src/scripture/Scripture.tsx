@@ -1,21 +1,23 @@
 
 import React from 'react';
 import axios from 'axios';
-
+import { ScriptureCatalog } from './ScriptureCatalog';
 
 interface ScriptureState {
     valid: boolean;
-    catalog: object | undefined;
+    catalog: ScriptureCatalog | undefined;
+    shortcodes: string[],
 }
 
 const initialScriptureState = {
     valid: false,
     catalog: undefined,
+    shortcodes: [],
 };
 
 type ScriptureAction =
     | { "type": "scripture_invalid" }
-    | { "type": "scripture_set_catalog", "catalog": object }
+    | { "type": "scripture_set_catalog", "catalog": ScriptureCatalog }
 
 const scripture_reducer = (state: ScriptureState, action: ScriptureAction): ScriptureState => {
     switch (action.type) {
@@ -28,7 +30,8 @@ const scripture_reducer = (state: ScriptureState, action: ScriptureAction): Scri
             return {
                 ...state,
                 valid: true,
-                catalog: action.catalog
+                catalog: action.catalog,
+                shortcodes: Object.keys(action.catalog),
             }
     }
 }
@@ -45,7 +48,7 @@ export const ScriptureContext = React.createContext<IScriptureContext>({
 
 export const getScriptureCatalog = async (dispatch: React.Dispatch<ScriptureAction>) => {
     try {
-        const resp = await axios.get<object>('/api/v1/scripture/catalog');
+        const resp = await axios.get<ScriptureCatalog>('/api/v1/scripture/catalog');
         dispatch({ type: 'scripture_set_catalog', catalog: resp.data });
     } catch (error: any) {
         dispatch({ type: 'scripture_invalid' });
