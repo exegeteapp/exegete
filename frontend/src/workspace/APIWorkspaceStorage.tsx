@@ -1,17 +1,17 @@
 
 import { ApiAxiosRequestConfig } from '../user/JWT';
 import axios from 'axios';
-import { Workspace } from './Workspace';
+import { WorkspaceMetadata } from './Workspace';
 import { v4 } from 'uuid';
 import defaultDocument from './New';
 
 export const loadWorkspaceAPI = async (id: string) => {
-    const resp = await axios.get<Workspace>(`/api/v1/workspace/${id}`, ApiAxiosRequestConfig());
+    const resp = await axios.get<WorkspaceMetadata>(`/api/v1/workspace/${id}`, ApiAxiosRequestConfig());
     return resp.data;
 }
 
-export const saveWorkspaceAPI = async (workspace: Workspace) => {
-    const resp = await axios.put<Workspace>(`/api/v1/workspace/${workspace.id}`, workspace, ApiAxiosRequestConfig());
+export const saveWorkspaceAPI = async (workspace: WorkspaceMetadata) => {
+    const resp = await axios.put<WorkspaceMetadata>(`/api/v1/workspace/${workspace.id}`, workspace, ApiAxiosRequestConfig());
     if (resp.status === 200) {
         return true;
     }
@@ -26,6 +26,6 @@ export const createWorkspaceAPI = async () : Promise<string> => {
         workspace: defaultDocument
     }
     // we're missing a couple of members, but they're set on the server-side.
-    await saveWorkspaceAPI(new_obj as Workspace);
+    await saveWorkspaceAPI(new_obj as WorkspaceMetadata);
     return id;
 }

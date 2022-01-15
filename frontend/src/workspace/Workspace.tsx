@@ -5,7 +5,17 @@ import React from 'react';
 import {loadWorkspaceLocal, saveWorkspaceLocal} from './LocalWorkspaceStorage';
 import {loadWorkspaceAPI, saveWorkspaceAPI} from './APIWorkspaceStorage';
 
-interface RawWorkspace {
+export interface WorkspaceNode<T> {
+    node_type: string,
+    data: T,
+}
+
+export interface Workspace {
+    workspace_format: number,
+    nodes: WorkspaceNode<any>[],
+}
+
+interface RawWorkspaceMetadata {
     id: string,
     title: string,
     workspace: object,
@@ -13,7 +23,7 @@ interface RawWorkspace {
     updated: string | null,
 }
 
-export interface Workspace {
+export interface WorkspaceMetadata {
     id: string,
     title: string,
     workspace: object,
@@ -21,14 +31,14 @@ export interface Workspace {
     updated: Date | null,
 }
 
-export const getWorkspaces = async (): Promise<Workspace[]> => {
+export const getWorkspaces = async (): Promise<WorkspaceMetadata[]> => {
     const date_n = (d: string|null) => {
         if (!d) {
             return null;
         }
         return new Date(d);
     };
-    const resp = await axios.get<RawWorkspace[]>('/api/v1/workspace/', ApiAxiosRequestConfig());
+    const resp = await axios.get<RawWorkspaceMetadata[]>('/api/v1/workspace/', ApiAxiosRequestConfig());
     return resp.data.map((w) => {
         return {
             ...w,
@@ -42,7 +52,7 @@ interface WorkspaceState {
     id: string;
     // have we gone through the bootstrap process?
     valid: boolean;
-    workspace: Workspace | undefined;
+    workspace: WorkspaceMetadata | undefined;
     // does this workspace have unsaved changes?
     dirty: boolean;
     // workspace is local-only
@@ -51,7 +61,7 @@ interface WorkspaceState {
 
 type WorkspaceAction =
     | { "type": "workspace_start" }
-    | { "type": "workspace_loaded", "workspace": Workspace }
+    | { "type": "workspace_loaded", "workspace": WorkspaceMetadata }
     | { "type": "workspace_saved" };
 
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {

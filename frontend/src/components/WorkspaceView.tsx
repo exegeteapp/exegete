@@ -17,6 +17,9 @@ const InnerWorkspaceView = () => {
         return <p>Loading workspace...</p>;
     }
 
+    // const workspace = workspaceState.workspace;
+    // const componets: React.Component[] = [];
+
     return <>
         <p>hello: workspace {workspaceState.id} is ready to rumble.</p>
         <Button onClick={save}>Save</Button>

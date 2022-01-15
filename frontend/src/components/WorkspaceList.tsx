@@ -1,9 +1,9 @@
 import { Table } from 'reactstrap';
-import { Workspace } from '../workspace/Workspace';
+import { WorkspaceMetadata } from '../workspace/Workspace';
 import { Link } from 'react-router-dom';
 
 
-const WorkspaceList = ({ workspaces }: { workspaces: Workspace[] }) => {
+const WorkspaceList = ({ workspaces }: { workspaces: WorkspaceMetadata[] }) => {
 
     const render_date = (d: Date|null) => {
         if (!d) {

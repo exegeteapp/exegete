@@ -1,11 +1,11 @@
 import React from 'react';
 import { Container } from 'reactstrap';
-import { Workspace, getWorkspaces } from '../workspace/Workspace';
+import { WorkspaceMetadata, getWorkspaces } from '../workspace/Workspace';
 import NewWorkspaceButton from './NewWorkspaceButton';
 import WorkspaceList from './WorkspaceList';
 
 function UserHome() {
-    const [workspaces, setWorkspaces] = React.useState<Workspace[]>([]);
+    const [workspaces, setWorkspaces] = React.useState<WorkspaceMetadata[]>([]);
 
     React.useEffect(() => {
         async function get() {

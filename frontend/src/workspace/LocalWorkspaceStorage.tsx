@@ -2,12 +2,12 @@
 import LZString from 'lz-string';
 import { validate as uuidValidate } from 'uuid';
 import defaultDocument from './New';
-import { Workspace } from './Workspace';
+import { WorkspaceMetadata } from './Workspace';
 import { v4 } from 'uuid';
 
 const idToKey = (id: string) => `workspace[${id}]`;
 
-export const loadWorkspaceLocal = (id: string): Workspace | null => {
+export const loadWorkspaceLocal = (id: string): WorkspaceMetadata | null => {
     if (!uuidValidate(id)) {
         return null;
     }
@@ -21,10 +21,10 @@ export const loadWorkspaceLocal = (id: string): Workspace | null => {
         return null;
     }
     const obj = JSON.parse(dval);
-    return obj as Workspace;
+    return obj as WorkspaceMetadata;
 }
 
-export const saveWorkspaceLocal = (workspace: Workspace): boolean => {
+export const saveWorkspaceLocal = (workspace: WorkspaceMetadata): boolean => {
     if (!uuidValidate(workspace.id)) {
         return false;
     }
@@ -37,7 +37,7 @@ export const saveWorkspaceLocal = (workspace: Workspace): boolean => {
 
 export const createWorkspaceLocal = (): string => {
     const id = v4();
-    const new_obj: Workspace = {
+    const new_obj: WorkspaceMetadata = {
         id: id,
         title: 'Untitled',
         workspace: defaultDocument,
