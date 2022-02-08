@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 const useInput = (initialValue: string) => {
     const [value, setValue] = React.useState(initialValue);
@@ -9,7 +9,7 @@ const useInput = (initialValue: string) => {
 
     return {
         value,
-        onChange: handleChange
+        onChange: handleChange,
     };
 };
 

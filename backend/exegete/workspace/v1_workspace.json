@@ -9,27 +9,27 @@
             "description": "version of workspace format",
             "type": "integer"
         },
-        "nodes": {
-            "description": "nodes in the workspace",
+        "cells": {
+            "description": "cells in the workspace",
             "type": "array",
-            "items": { "$ref": "#/$defs/node" }
+            "items": { "$ref": "#/$defs/cell" }
         }
     },
     "$defs": {
-        "node": {
+        "cell": {
             "type": "object",
             "properties": {
-                "node_type": {
+                "cell_type": {
                     "type": "string"
                 },
                 "data": {
                     "type": "object"
                 }
             },
-            "required": ["node_type", "data"],
+            "required": ["cell_type", "data"],
             "additionalProperties": false
         }
     },
     "additionalProperties": false,
-    "required": ["workspace_format", "nodes"]
+    "required": ["workspace_format", "cells"]
 }

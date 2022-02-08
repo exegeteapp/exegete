@@ -13,10 +13,10 @@ const generateAbbreviations = (module: ModuleInfo) => {
             for (let i = s.length - 1; i >= 0; i--) {
                 abbrevs.add(s.substr(0, i));
             }
-        }
+        };
         gen(s);
         // strip whitespace and generate new abbreviations if relevant
-        const ns = s.replace(/ /g,'')
+        const ns = s.replace(/ /g, "");
         if (s !== ns) {
             gen(ns);
         }
@@ -26,7 +26,7 @@ const generateAbbreviations = (module: ModuleInfo) => {
                 f(a);
             }
         });
-    }
+    };
 
     for (const book of module.books) {
         const abbrevs = new Set<string>();
@@ -34,7 +34,7 @@ const generateAbbreviations = (module: ModuleInfo) => {
         // books can always be directly referenced by their name
         abbrevs.add(book.name);
         // ... and by their name without whitespace
-        abbrevs.add(book.name.replace(/ /g, ''));
+        abbrevs.add(book.name.replace(/ /g, ""));
         abbrev_map(book.name, (abbrev) => {
             if (!abbrevcount.has(abbrev)) {
                 abbrevcount.set(abbrev, 0);
@@ -54,6 +54,6 @@ const generateAbbreviations = (module: ModuleInfo) => {
     }
 
     return book_abbrevations;
-}
+};
 
 export default generateAbbreviations;

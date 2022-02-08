@@ -1,9 +1,8 @@
-
-import LZString from 'lz-string';
-import { validate as uuidValidate } from 'uuid';
-import defaultDocument from './New';
-import { WorkspaceMetadata } from './Workspace';
-import { v4 } from 'uuid';
+import LZString from "lz-string";
+import { validate as uuidValidate } from "uuid";
+import defaultDocument from "./New";
+import { WorkspaceMetadata } from "./Workspace";
+import { v4 } from "uuid";
 
 const idToKey = (id: string) => `workspace[${id}]`;
 
@@ -22,7 +21,7 @@ export const loadWorkspaceLocal = (id: string): WorkspaceMetadata | null => {
     }
     const obj = JSON.parse(dval);
     return obj as WorkspaceMetadata;
-}
+};
 
 export const saveWorkspaceLocal = (workspace: WorkspaceMetadata): boolean => {
     if (!uuidValidate(workspace.id)) {
@@ -33,17 +32,17 @@ export const saveWorkspaceLocal = (workspace: WorkspaceMetadata): boolean => {
     const key = idToKey(workspace.id);
     localStorage.setItem(key, encoded);
     return true;
-}
+};
 
 export const createWorkspaceLocal = (): string => {
     const id = v4();
     const new_obj: WorkspaceMetadata = {
         id: id,
-        title: 'Untitled',
+        title: "Untitled",
         workspace: defaultDocument,
         created: new Date(),
         updated: null,
-    }
+    };
     saveWorkspaceLocal(new_obj);
     return id;
-}
+};

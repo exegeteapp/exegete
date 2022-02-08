@@ -1,50 +1,54 @@
+import { ApiAxiosRequestConfig } from "../user/JWT";
+import axios from "axios";
+import React from "react";
+import { loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
+import { loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
 
-import {ApiAxiosRequestConfig} from '../user/JWT';
-import axios from 'axios';
-import React from 'react';
-import {loadWorkspaceLocal, saveWorkspaceLocal} from './LocalWorkspaceStorage';
-import {loadWorkspaceAPI, saveWorkspaceAPI} from './APIWorkspaceStorage';
-
-export interface WorkspaceNode<T> {
-    node_type: string,
-    data: T,
+export interface WorkspaceCell<T> {
+    cell_type: string;
+    data: T;
 }
 
+export type CellFC<T> = React.FC<{
+    cell: WorkspaceCell<T>;
+    setCell: (data: T) => void;
+}>;
+
 export interface Workspace {
-    workspace_format: number,
-    nodes: WorkspaceNode<any>[],
+    workspace_format: number;
+    cells: WorkspaceCell<any>[];
 }
 
 interface RawWorkspaceMetadata {
-    id: string,
-    title: string,
-    workspace: object,
-    created: string,
-    updated: string | null,
+    id: string;
+    title: string;
+    workspace: Workspace;
+    created: string;
+    updated: string | null;
 }
 
 export interface WorkspaceMetadata {
-    id: string,
-    title: string,
-    workspace: object,
-    created: Date,
-    updated: Date | null,
+    id: string;
+    title: string;
+    workspace: Workspace;
+    created: Date;
+    updated: Date | null;
 }
 
 export const getWorkspaces = async (): Promise<WorkspaceMetadata[]> => {
-    const date_n = (d: string|null) => {
+    const date_n = (d: string | null) => {
         if (!d) {
             return null;
         }
         return new Date(d);
     };
-    const resp = await axios.get<RawWorkspaceMetadata[]>('/api/v1/workspace/', ApiAxiosRequestConfig());
+    const resp = await axios.get<RawWorkspaceMetadata[]>("/api/v1/workspace/", ApiAxiosRequestConfig());
     return resp.data.map((w) => {
         return {
             ...w,
             created: new Date(w.created),
-            updated: date_n(w.updated)
-        }
+            updated: date_n(w.updated),
+        };
     });
 };
 
@@ -60,43 +64,53 @@ interface WorkspaceState {
 }
 
 type WorkspaceAction =
-    | { "type": "workspace_start" }
-    | { "type": "workspace_loaded", "workspace": WorkspaceMetadata }
-    | { "type": "workspace_saved" };
+    | { type: "workspace_start" }
+    | { type: "workspace_loaded"; workspace: WorkspaceMetadata }
+    | { type: "workspace_cell_set"; cell: number; data: any }
+    | { type: "workspace_saved" };
 
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {
     switch (action.type) {
-        case 'workspace_start':
+        case "workspace_start":
             return {
                 ...state,
                 valid: false,
-            }
-        case 'workspace_loaded':
+            };
+        case "workspace_loaded":
             return {
                 ...state,
                 workspace: action.workspace,
                 valid: true,
                 dirty: false,
-            }
-        case 'workspace_saved':
+            };
+        case "workspace_cell_set":
+            const clone = { ...state.workspace } as WorkspaceMetadata;
+            clone.workspace!.cells[action.cell].data = action.data;
+            return {
+                ...state,
+                workspace: clone,
+                valid: true,
+                dirty: true,
+            };
+        case "workspace_saved":
             return {
                 ...state,
                 dirty: false,
-            }
+            };
     }
-}
+};
 
 export interface IWorkspaceContext {
-    state: WorkspaceState,
-    save: () => Promise<boolean>,
-    dispatch: React.Dispatch<WorkspaceAction>
-};
+    state: WorkspaceState;
+    save: () => Promise<boolean>;
+    dispatch: React.Dispatch<WorkspaceAction>;
+}
 
 // avoid default context value
 // https://stackoverflow.com/questions/61333188/react-typescript-avoid-context-default-value
 export const WorkspaceContext = React.createContext<IWorkspaceContext>({} as IWorkspaceContext);
 
-export const WorkspaceProvider: React.FC<{id: string, local: boolean}> = ({ children, id, local }) => {
+export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ children, id, local }) => {
     const initialState: WorkspaceState = {
         id: id,
         valid: false,
@@ -108,21 +122,20 @@ export const WorkspaceProvider: React.FC<{id: string, local: boolean}> = ({ chil
 
     React.useEffect(() => {
         async function getFromApi() {
-            dispatch({ type: 'workspace_start' });
+            dispatch({ type: "workspace_start" });
             const workspace = await loadWorkspaceAPI(id);
-            dispatch({ type: 'workspace_loaded', workspace: workspace });
+            dispatch({ type: "workspace_loaded", workspace: workspace });
         }
 
         function getFromLocal() {
             const workspace = loadWorkspaceLocal(id);
             if (workspace) {
-                dispatch({ type: 'workspace_loaded', workspace: workspace });
+                dispatch({ type: "workspace_loaded", workspace: workspace });
             }
         }
 
         if (local) {
             getFromLocal();
-
         } else {
             getFromApi();
         }
@@ -139,9 +152,5 @@ export const WorkspaceProvider: React.FC<{id: string, local: boolean}> = ({ chil
         }
     };
 
-    return (
-        <WorkspaceContext.Provider value={{ state, dispatch, save }}>
-            {children}
-        </WorkspaceContext.Provider>
-    );
-}
+    return <WorkspaceContext.Provider value={{ state, dispatch, save }}>{children}</WorkspaceContext.Provider>;
+};

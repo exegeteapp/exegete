@@ -1,10 +1,19 @@
-import React from 'react';
-import { Collapse, Navbar, NavbarBrand, NavbarToggler, NavItem, NavLink, Nav, UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import { faBook } from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React, { useState } from "react";
+import {
+    Collapse,
+    Navbar,
+    NavbarBrand,
+    NavbarToggler,
+    Nav,
+    UncontrolledDropdown,
+    DropdownToggle,
+    DropdownMenu,
+    DropdownItem,
+} from "reactstrap";
+import { Link } from "react-router-dom";
+import { faBook } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IUserContext, UserContext, Logout } from "../user/User";
-
 
 function UserMenu() {
     const { dispatch, state } = React.useContext<IUserContext>(UserContext);
@@ -13,7 +22,6 @@ function UserMenu() {
         return <div></div>;
     }
 
-
     const handleLogout = () => {
         const doLogout = async () => {
             await Logout(dispatch);
@@ -21,55 +29,38 @@ function UserMenu() {
         doLogout();
     };
 
-    return <UncontrolledDropdown
-        inNavbar
-        nav
-        className="me-auto"
-    >
-        <DropdownToggle
-            caret
-            nav
-        >{state.user?.email}</DropdownToggle>
-        <DropdownMenu end>
-            <DropdownItem onClick={handleLogout}>
-                Logout
-            </DropdownItem>
-        </DropdownMenu>
-    </UncontrolledDropdown>;
+    return (
+        <UncontrolledDropdown inNavbar nav className="me-auto">
+            <DropdownToggle caret nav>
+                {state.user?.email}
+            </DropdownToggle>
+            <DropdownMenu end>
+                <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
+            </DropdownMenu>
+        </UncontrolledDropdown>
+    );
 }
 
-
-function Header() {
-
+export const BaseHeader: React.FC = ({ children }) => {
+    const [toggled, setToggled] = useState(false);
     return (
-        <Navbar
-            color="dark"
-            expand="md"
-            fixed="top"
-            dark
-        >
+        <Navbar color="dark" expand="md" fixed="top" dark>
             <NavbarBrand tag={Link} to="/">
                 <FontAwesomeIcon color="purple" icon={faBook} /> exegete.app
             </NavbarBrand>
-            <NavbarToggler onClick={function noRefCheck() { }} />
-            <Collapse navbar>
-                <Nav
-                    navbar
-                >
-                    <NavItem>
-                        <NavLink tag={Link} to="/">
-                            Home
-                        </NavLink>
-                    </NavItem>
+            <NavbarToggler onClick={() => setToggled(!toggled)} />
+            <Collapse navbar isOpen={toggled}>
+                <Nav navbar>
+                    {children}
+                    <UserMenu />
                 </Nav>
             </Collapse>
-            <Nav
-                navbar
-            >
-                <UserMenu></UserMenu>
-            </Nav>
         </Navbar>
     );
+};
+
+function Header() {
+    return <BaseHeader />;
 }
 
 export default Header;
