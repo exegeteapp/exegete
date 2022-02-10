@@ -2,12 +2,6 @@ import axios from "axios";
 
 export interface ScriptureWord {
     value: string;
-    punctuation: boolean;
-    strong: boolean;
-    em: boolean;
-    br: boolean;
-    superscript: boolean;
-    "small-caps": boolean;
     "c-strongs": boolean;
     language: string;
 }

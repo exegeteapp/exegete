@@ -67,6 +67,7 @@ type WorkspaceAction =
     | { type: "workspace_start" }
     | { type: "workspace_loaded"; workspace: WorkspaceMetadata }
     | { type: "workspace_cell_set"; cell: number; data: any }
+    | { type: "workspace_set_title"; title: string }
     | { type: "workspace_saved" };
 
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {
@@ -83,7 +84,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                 valid: true,
                 dirty: false,
             };
-        case "workspace_cell_set":
+        case "workspace_cell_set": {
             const clone = { ...state.workspace } as WorkspaceMetadata;
             clone.workspace!.cells[action.cell].data = action.data;
             return {
@@ -92,6 +93,17 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                 valid: true,
                 dirty: true,
             };
+        }
+        case "workspace_set_title": {
+            const clone = { ...state.workspace } as WorkspaceMetadata;
+            clone.title = action.title;
+            return {
+                ...state,
+                workspace: clone,
+                valid: true,
+                dirty: true,
+            };
+        }
         case "workspace_saved":
             return {
                 ...state,
@@ -102,13 +114,34 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
 
 export interface IWorkspaceContext {
     state: WorkspaceState;
-    save: () => Promise<boolean>;
     dispatch: React.Dispatch<WorkspaceAction>;
 }
 
 // avoid default context value
 // https://stackoverflow.com/questions/61333188/react-typescript-avoid-context-default-value
 export const WorkspaceContext = React.createContext<IWorkspaceContext>({} as IWorkspaceContext);
+
+export const WorkspaceAutoSave: React.FC = ({ children }) => {
+    const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+
+    React.useEffect(() => {
+        if (!state.workspace || !state.valid) {
+            return;
+        }
+        if (!state.dirty) {
+            return;
+        }
+        if (state.local) {
+            saveWorkspaceLocal(state.workspace);
+            dispatch({ type: "workspace_saved" });
+        } else {
+            saveWorkspaceAPI(state.workspace).then(() => {
+                dispatch({ type: "workspace_saved" });
+            });
+        }
+    }, [dispatch, state.valid, state.workspace, state.local, state.dirty]);
+    return <>{children}</>;
+};
 
 export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ children, id, local }) => {
     const initialState: WorkspaceState = {
@@ -141,16 +174,9 @@ export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ ch
         }
     }, [local, id]);
 
-    const save = async (): Promise<boolean> => {
-        if (!state.workspace) {
-            return false;
-        }
-        if (local) {
-            return saveWorkspaceLocal(state.workspace);
-        } else {
-            return saveWorkspaceAPI(state.workspace);
-        }
-    };
-
-    return <WorkspaceContext.Provider value={{ state, dispatch, save }}>{children}</WorkspaceContext.Provider>;
+    return (
+        <WorkspaceContext.Provider value={{ state, dispatch }}>
+            <WorkspaceAutoSave>{children}</WorkspaceAutoSave>
+        </WorkspaceContext.Provider>
+    );
 };

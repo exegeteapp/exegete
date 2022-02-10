@@ -84,7 +84,6 @@ You can download it at https://bible.org/downloads
             text = json.load(fd)
 
         chapter = int(text[0]["chapter"])
-        punctuation_re = re.compile(r"^[{}]+$".format(re.escape(". -–—¡!")))
         strongs_re = re.compile(r"^\d+[b]?$")
         parser = etree.HTMLParser()
 
@@ -103,8 +102,6 @@ You can download it at https://bible.org/downloads
             if typ is etree._ElementUnicodeResult or typ is str:
                 text = str(node)
                 text_attrs = {"value": text}
-                if punctuation_re.match(text):
-                    text_attrs["punctuation"] = True
                 return [attrs | text_attrs]
 
             if typ is etree._Element and node.tag == "st":
@@ -142,7 +139,8 @@ You can download it at https://bible.org/downloads
                             object_attrs["quote"] = True
                         else:
                             raise Exception(cls)
-                return recurse_process({})
+                # insert some whitespace for the <p>
+                return [{"value": " "}] + recurse_process({})
 
             if typ is etree._Element and node.tag == "span":
                 span_attrs = {}
@@ -150,29 +148,29 @@ You can download it at https://bible.org/downloads
                 if class_text:
                     classes = class_text.strip().split(" ")
                     for cls in classes:
-                        if cls == "smcaps":
-                            span_attrs["small-caps"] = True
-                        elif cls == "hebrew":
+                        if cls == "hebrew":
                             span_attrs["language"] = "hbo"
+                        elif cls == "smcaps":
+                            pass
                         else:
                             raise Exception(cls)
                 return recurse_process(span_attrs)
 
             if typ is etree._Element and node.tag == "b":
-                return recurse_process({"strong": True})
+                return recurse_process({})
 
             if typ is etree._Element and node.tag == "i":
-                return recurse_process({"em": True})
+                return recurse_process({})
 
             if typ is etree._Element and node.tag == "sup":
-                return recurse_process({"superscript": True})
+                return recurse_process({})
 
             if typ is etree._Element and node.tag == "n":
                 # skip footnotes, they are not included in the free version of the NET Bible
                 return []
 
             if typ is etree._Element and node.tag == "br":
-                return [{"value": "", "br": True}]
+                return []
 
             raise Exception((node, type(node)))
 
@@ -199,6 +197,7 @@ You can download it at https://bible.org/downloads
                     print(node)
                     raise e
             assert all(type(t) is dict for t in words)
+
             yield {
                 "type": "verse",
                 "chapter_start": int(hunk["chapter"]),
@@ -213,6 +212,7 @@ You can download it at https://bible.org/downloads
     def load_books(dir_id):
         for division in ("ot", "nt"):
             for bookdir in sorted(glob(os.path.join(path, division, "*/"))):
+
                 book_id = dir_id[bookdir]
                 linear_id = 0
                 for fname in glob(os.path.join(bookdir, "*.json")):

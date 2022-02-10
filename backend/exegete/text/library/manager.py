@@ -18,7 +18,9 @@ class Manager:
         self, module_cls: Callable[[], ModuleInstance], **kwargs
     ) -> ModuleInstance:
         # the schema name is just a UUID with a prefix
-        module_schema = module_cls.SCHEMA_PREFIX + ":" + str(uuid4())
+        module_schema = (
+            module_cls.SCHEMA_PREFIX + ":" + kwargs["shortcode"] + ":" + str(uuid4())
+        )
         with self.engine.connect() as conn:
             conn.execute(CreateSchema(module_schema))
             conn.commit()

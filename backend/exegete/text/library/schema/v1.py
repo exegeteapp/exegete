@@ -4,6 +4,7 @@ from sqlalchemy.sql.schema import UniqueConstraint
 from sqlalchemy.sql.sqltypes import Boolean
 from sqlalchemy.types import Text, JSON, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import func
 from jsonschema import validate
 import jsonschema
 import hashlib
@@ -98,6 +99,7 @@ class Module:
             Column("sha256", String(64), nullable=False),
         )
 
+        plaintext = Column("plaintext", Text, nullable=False)
         mkt(
             "object",
             Column("id", Integer, nullable=False, primary_key=True, autoincrement=True),
@@ -116,6 +118,7 @@ class Module:
                 "linear_id", Integer, nullable=False
             ),  # this will monotonically increase in the book
             Column("text", JSONB, nullable=False),
+            plaintext,
             Column("poetry", Boolean, nullable=False),
             Column("quote", Boolean, nullable=False),
             UniqueConstraint("book_id", "linear_id"),
@@ -126,6 +129,11 @@ class Module:
                 "chapter_end",
                 "verse_start",
                 "verse_end",
+            ),
+            Index(
+                "index_plaintext_tsvector",
+                func.to_tsvector("english", plaintext),
+                postgresql_using="gin",
             ),
         )
 
@@ -158,6 +166,9 @@ class Module:
             conn.commit()
 
     def import_book_stream(self, linear_id, book_id, entities_iter):
+        def to_plaintext(text):
+            return "".join(t["value"] for t in text)
+
         object = self._entities["object"]
         with self._manager.engine.connect() as conn:
             for obj in entities_iter:
@@ -178,6 +189,7 @@ class Module:
                         type=ObjectType.from_json(obj),
                         linear_id=linear_id,
                         text=obj.get("text"),
+                        plaintext=to_plaintext(obj.get("text")),
                     )
                 )
                 linear_id += 1

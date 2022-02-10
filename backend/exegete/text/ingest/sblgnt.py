@@ -96,10 +96,8 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
             }
 
         def state_to_verse_and_footnotes(verse_state):
-            obj = {
-                "type": "verse",
-                "text": verse_state["words"],
-            }
+            obj = {"type": "verse", "text": verse_state["words"]}
+
             # the shorter ending of Mark hasn't got a chapter or verse address
             if verse_state["chapter"] is not None:
                 obj["chapter_start"] = obj["chapter_end"] = verse_state["chapter"]
@@ -114,10 +112,10 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                 yield from apparatus.pop(footnote_key)
 
         def handle_p(p_node, verse_state):
-            # if we have a current verse, insert a line-break whitespace word into th
+            # if we have a current verse, insert a whitespace word into the
             # word stream for the <p> that just started
             if verse_state_nonempty(verse_state):
-                verse_state["words"].append({"value": "", "br": True})
+                verse_state["words"].append({"value": " "})
 
             for node in p_node.xpath("./*"):
                 assert len(node.xpath("./*")) == 0
@@ -139,14 +137,12 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                     verse_state["words"].append(
                         {
                             "value": "".join(node.xpath("./text()")),
-                            "punctuation": True,
                         }
                     )
                 elif node.tag == "suffix":
                     verse_state["words"].append(
                         {
                             "value": "".join(node.xpath("./text()")),
-                            "punctuation": True,
                         }
                     )
                 else:
@@ -184,9 +180,7 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                     text = str(t)
                     buf.append(attrs | {"value": text})
                 elif typ is etree._Element and t.tag == "b":
-                    buf += make_words(
-                        t.xpath("./child::node()"), attrs | {"strong": True}
-                    )
+                    buf += make_words(t.xpath("./child::node()"), attrs)
                 else:
                     raise Exception([t, typ])
             return buf

@@ -1,11 +1,12 @@
 import { CellFC } from "../../workspace/Workspace";
 import React, { useEffect } from "react";
 import { Card, CardBody, CardText, CardHeader } from "reactstrap";
-import parseReference, { makeModuleParser } from "../../verseref/VerseRef";
+import parseReference from "../../verseref/VerseRef";
 import { IScriptureContext, ScriptureContext } from "../../scripture/Scripture";
 import { getScripture } from "../../scripture/ScriptureAPI";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { ScriptureText } from "../../scripture/ScriptureText";
+import { getModuleParser } from "../../scripture/ParserCache";
 
 export interface ScriptureCellData {
     shortcode: string;
@@ -18,6 +19,7 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, setCell }) =>
     const [scripture, setScripture] = React.useState<JSX.Element[]>([]);
 
     useEffect(() => {
+        let isSubscribed = true;
         if (!scriptureState.valid || !scriptureState.catalog) {
             return;
         }
@@ -26,17 +28,27 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, setCell }) =>
         // if the user wishes to change them, that percolates back up and
         // down into us via cell data
         const module = scriptureState.catalog[data.shortcode];
-        const parser = makeModuleParser(module);
+        const parser = getModuleParser(module, data.shortcode);
         const res = parseReference(module, parser, data.verseref);
 
         if (res.success) {
             const scripturePromises = res.sbcs.map((sbc) => getScripture({ ...sbc, shortcode: data.shortcode }));
             Promise.all(scripturePromises).then((scriptures) => {
-                setScripture(scriptures.map((s, i) => <ScriptureText key={i} data={s} />));
+                if (isSubscribed) {
+                    setScripture(
+                        scriptures.map((s, i) => (
+                            <ScriptureText module={module} book={res.sbcs[i].book} key={i} data={s} />
+                        ))
+                    );
+                }
             });
         } else {
             setScripture([]);
         }
+
+        return () => {
+            isSubscribed = false;
+        };
     }, [scriptureState.catalog, scriptureState.valid, data.shortcode, data.verseref]);
 
     if (!scriptureState.valid || !scriptureState.catalog) {
@@ -44,7 +56,6 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, setCell }) =>
     }
 
     const updateVR = (data: SCVerseRef) => {
-        console.log(data);
         setCell({
             ...cell.data,
             ...data,
@@ -57,7 +68,7 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, setCell }) =>
                 <VerseRefPicker data={{ shortcode: data.shortcode, verseref: data.verseref }} setData={updateVR} />
             </CardHeader>
             <CardBody>
-                <CardText>{scripture}</CardText>
+                <CardText tag="div">{scripture}</CardText>
             </CardBody>
         </Card>
     );

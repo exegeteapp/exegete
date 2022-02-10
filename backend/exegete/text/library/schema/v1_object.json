@@ -45,24 +45,6 @@
                 "value": {
                     "type": "string"
                 },
-                "punctuation": {
-                    "type": "boolean"
-                },
-                "strong": {
-                    "type": "boolean"
-                },
-                "em": {
-                    "type": "boolean"
-                },
-                "br": {
-                    "type": "boolean"
-                },
-                "superscript": {
-                    "type": "boolean"
-                },
-                "small-caps": {
-                    "type": "boolean"
-                },
                 "c-strongs": {
                     "type": "array",
                     "items": {

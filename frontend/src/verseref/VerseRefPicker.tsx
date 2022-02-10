@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Input, Alert, Form, Row, Col } from "reactstrap";
 import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
-import parseReference, { makeModuleParser } from "./VerseRef";
+import parseReference from "./VerseRef";
 import useInput from "../util/useInput";
+import { getModuleParser } from "../scripture/ParserCache";
 
 const ShortCodeInput: React.FC<{
     value: string;
@@ -59,7 +60,7 @@ export const VerseRefPicker: React.FC<{
         }
 
         const module = scriptureState.catalog[sc];
-        const parser = makeModuleParser(module);
+        const parser = getModuleParser(module, sc);
         const res = parseReference(module, parser, vr.value);
 
         if (res.success) {
@@ -77,7 +78,7 @@ export const VerseRefPicker: React.FC<{
                         <ShortCodeInput value={sc} setValue={setSC} />
                     </Col>
                     <Col sm={{ size: 9, offset: 0 }}>
-                        <Input id="verseref" name="verseref" placeholder="Verse reference" {...vr} />
+                        <Input autoComplete="off" id="verseref" name="verseref" placeholder="Verse reference" {...vr} />
                     </Col>
                 </Row>
                 {failureMessage()}
