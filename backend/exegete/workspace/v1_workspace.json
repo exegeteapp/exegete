@@ -19,6 +19,10 @@
         "cell": {
             "type": "object",
             "properties": {
+                "uuid": {
+                    "type": "string",
+                    "format": "uuid"
+                },
                 "cell_type": {
                     "type": "string"
                 },
@@ -26,7 +30,7 @@
                     "type": "object"
                 }
             },
-            "required": ["cell_type", "data"],
+            "required": ["cell_type", "data", "uuid"],
             "additionalProperties": false
         }
     },

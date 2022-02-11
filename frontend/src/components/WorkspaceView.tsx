@@ -13,13 +13,14 @@ import {
     ModalHeader,
     UncontrolledDropdown,
 } from "reactstrap";
+import { v4 as uuidv4 } from "uuid";
 import { IUserContext, UserContext, UserLoggedIn } from "../user/User";
 import { validate as uuidValidate } from "uuid";
 import { WorkspaceContext, IWorkspaceContext, WorkspaceProvider } from "../workspace/Workspace";
-import ScriptureViewer, { ScriptureCellData } from "./Cells/ScriptureViewer";
 import Error from "./Cells/Error";
 import { BaseHeader } from "./Header";
 import useInput from "../util/useInput";
+import Registry from "../workspace/CellRegistry";
 
 const InnerWorkspaceView = () => {
     const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
@@ -28,16 +29,33 @@ const InnerWorkspaceView = () => {
         return <p>Loading workspace...</p>;
     }
 
-    const cells = workspaceState.workspace.workspace.cells.map((cell, index) => {
-        if (cell.cell_type === "scripture-viewer") {
-            const setCell = (data: ScriptureCellData) => {
-                if (workspaceState.workspace) {
-                    dispatch({ type: "workspace_cell_set", cell: index, data: data });
-                }
-            };
-            return <ScriptureViewer key={index} cell={cell} setCell={setCell} />;
+    const cells = workspaceState.workspace.workspace.cells.map((cell) => {
+        const functions = {
+            set: (data: any) => {
+                dispatch({ type: "workspace_cell_set", uuid: cell.uuid, data: data });
+            },
+            delete: () => {
+                dispatch({ type: "workspace_cell_delete", uuid: cell.uuid });
+            },
+            moveUp: () => {
+                dispatch({ type: "workspace_cell_move_up", uuid: cell.uuid });
+            },
+            moveDown: () => {
+                dispatch({ type: "workspace_cell_move_down", uuid: cell.uuid });
+            },
+        };
+
+        for (var key in Registry) {
+            if (key === cell.cell_type) {
+                return React.createElement(Registry[key].component, {
+                    key: cell.uuid,
+                    cell: cell,
+                    functions: functions,
+                });
+            }
         }
-        return <Error key={index} cell={cell} setCell={(e) => {}} />;
+
+        return <Error key={cell.uuid} cell={cell} functions={functions} />;
     });
 
     return <>{cells}</>;
@@ -79,6 +97,38 @@ const RenameWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => v
     );
 };
 
+const AddComponentMenu: React.FC = () => {
+    const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+
+    const items = Object.keys(Registry).map((key) => {
+        const defn = Registry[key];
+        const newCell = () => {
+            dispatch({
+                type: "workspace_cell_add",
+                cell: {
+                    cell_type: key,
+                    uuid: uuidv4(),
+                    data: defn.newData(state.workspace!.workspace),
+                },
+            });
+        };
+        return (
+            <DropdownItem key={key} onClick={newCell}>
+                {defn.title}
+            </DropdownItem>
+        );
+    });
+
+    return (
+        <UncontrolledDropdown inNavbar nav>
+            <DropdownToggle caret nav>
+                Add
+            </DropdownToggle>
+            <DropdownMenu end>{items}</DropdownMenu>
+        </UncontrolledDropdown>
+    );
+};
+
 const WorkspaceHeader: React.FC = () => {
     const { state: workspaceState } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const [showRenameWorkspaceModal, setShowRenameWorkspaceModal] = React.useState(false);
@@ -101,12 +151,13 @@ const WorkspaceHeader: React.FC = () => {
             <BaseHeader>
                 <UncontrolledDropdown inNavbar nav>
                     <DropdownToggle caret nav>
-                        {title}
+                        Workspace: {title}
                     </DropdownToggle>
                     <DropdownMenu end>
-                        <DropdownItem onClick={() => setShowRenameWorkspaceModal(true)}>Rename...</DropdownItem>
+                        <DropdownItem onClick={() => setShowRenameWorkspaceModal(true)}>Rename</DropdownItem>
                     </DropdownMenu>
                 </UncontrolledDropdown>
+                <AddComponentMenu />
             </BaseHeader>
         </>
     );
@@ -132,7 +183,7 @@ const WorkspaceView = () => {
         <>
             <WorkspaceProvider id={id} local={local}>
                 <WorkspaceHeader />
-                <Container id="main">
+                <Container id="main" fluid="md">
                     <InnerWorkspaceView />
                 </Container>
             </WorkspaceProvider>

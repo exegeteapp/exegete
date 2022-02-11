@@ -1,19 +1,26 @@
-import { CellFC } from "../../workspace/Workspace";
+import { CellFC, NewCellDataFn, Workspace } from "../../workspace/Workspace";
 import React, { useEffect } from "react";
-import { Card, CardBody, CardText, CardHeader } from "reactstrap";
 import parseReference from "../../verseref/VerseRef";
 import { IScriptureContext, ScriptureContext } from "../../scripture/Scripture";
 import { getScripture } from "../../scripture/ScriptureAPI";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { ScriptureText } from "../../scripture/ScriptureText";
 import { getModuleParser } from "../../scripture/ParserCache";
+import { Cell, CellBody, CellHeader } from "../Cell";
 
 export interface ScriptureCellData {
     shortcode: string;
     verseref: string;
 }
 
-export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, setCell }) => {
+export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: Workspace) => {
+    return {
+        shortcode: "NET",
+        verseref: "Matthew 1",
+    };
+};
+
+export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const data = cell.data;
     const [scripture, setScripture] = React.useState<JSX.Element[]>([]);
@@ -56,21 +63,19 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, setCell }) =>
     }
 
     const updateVR = (data: SCVerseRef) => {
-        setCell({
+        functions.set({
             ...cell.data,
             ...data,
         });
     };
 
     return (
-        <Card>
-            <CardHeader>
+        <Cell>
+            <CellHeader functions={functions} uuid={cell.uuid}>
                 <VerseRefPicker data={{ shortcode: data.shortcode, verseref: data.verseref }} setData={updateVR} />
-            </CardHeader>
-            <CardBody>
-                <CardText tag="div">{scripture}</CardText>
-            </CardBody>
-        </Card>
+            </CellHeader>
+            <CellBody>{scripture}</CellBody>
+        </Cell>
     );
 };
 

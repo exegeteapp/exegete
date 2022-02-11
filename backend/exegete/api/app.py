@@ -5,6 +5,7 @@ app = FastAPI()
 
 
 from fastapi import FastAPI
+from fastapi.middleware.gzip import GZipMiddleware
 
 from .database import database
 from .routers.api import api_router
@@ -12,6 +13,7 @@ from .scripture.catalog import ScriptureCatalog
 from .redis import redis
 
 app = FastAPI()
+app.add_middleware(GZipMiddleware, minimum_size=1024)
 app.include_router(api_router)
 
 
