@@ -1,4 +1,9 @@
-import { newScriptureCell, ScriptureCellData, ScriptureViewer } from "../components/Cells/ScriptureViewer";
+import {
+    newScriptureCell,
+    ScriptureCellData,
+    ScriptureViewer,
+    ScriptureViewerSlug,
+} from "../components/Cells/ScriptureViewer";
 import { CellFC, NewCellDataFn } from "./Workspace";
 
 type RegistryEntry = {
@@ -12,7 +17,7 @@ interface CellRegistry {
 }
 
 const Registry: CellRegistry = {
-    "scripture-viewer": {
+    [ScriptureViewerSlug]: {
         title: "Scripture viewer",
         component: ScriptureViewer,
         newData: newScriptureCell,

@@ -20,14 +20,14 @@ export const CellHeader: React.FC<{ functions: CellFunctions; uuid: string }> = 
     return (
         <CardHeader>
             <ButtonGroup className="float-end mb-1">
-                <Button color="secondary" className="float-end">
-                    <FontAwesomeIcon icon={faArrowUp} onClick={() => functions.moveUp()} />
+                <Button color="secondary" className="float-end" onClick={() => functions.moveUp()}>
+                    <FontAwesomeIcon icon={faArrowUp} />
                 </Button>
-                <Button color="secondary" className="float-end">
-                    <FontAwesomeIcon icon={faArrowDown} onClick={() => functions.moveDown()} />
+                <Button color="secondary" className="float-end" onClick={() => functions.moveDown()}>
+                    <FontAwesomeIcon icon={faArrowDown} />
                 </Button>
-                <Button color="danger" className="float-end">
-                    <FontAwesomeIcon icon={faWindowClose} onClick={() => functions.delete()} />
+                <Button color="secondary" className="float-end" onClick={() => functions.delete()}>
+                    <FontAwesomeIcon icon={faWindowClose} />
                 </Button>
             </ButtonGroup>
             <Row>

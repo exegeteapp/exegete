@@ -13,7 +13,16 @@ export interface ScriptureCellData {
     verseref: string;
 }
 
+export const ScriptureViewerSlug = "scripture-viewer";
+
 export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: Workspace) => {
+    // if possible, we just clone the last cell
+    for (let i = workspace.cells.length - 1; i >= 0; i--) {
+        const cell = workspace.cells[i];
+        if (cell.cell_type === ScriptureViewerSlug) {
+            return { ...cell.data };
+        }
+    }
     return {
         shortcode: "NET",
         verseref: "Matthew 1",
