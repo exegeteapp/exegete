@@ -1,10 +1,8 @@
-import { ApiAxiosRequestConfig } from "../user/JWT";
-import axios from "axios";
 import React from "react";
 import { loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
 import { loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
 
-export type NewCellDataFn<T> = (workspace: Workspace) => T;
+export type NewCellDataFn<T> = (workspace: WorkspaceData) => T;
 
 export interface WorkspaceCell<T> {
     cell_type: string;
@@ -24,43 +22,18 @@ export type CellFC<T> = React.FC<{
     functions: CellFunctions;
 }>;
 
-export interface Workspace {
+export interface WorkspaceData {
     workspace_format: number;
     cells: WorkspaceCell<any>[];
-}
-
-interface RawWorkspaceMetadata {
-    id: string;
-    title: string;
-    workspace: Workspace;
-    created: string;
-    updated: string | null;
 }
 
 export interface WorkspaceMetadata {
     id: string;
     title: string;
-    workspace: Workspace;
+    data: WorkspaceData;
     created: Date;
     updated: Date | null;
 }
-
-export const getWorkspaces = async (): Promise<WorkspaceMetadata[]> => {
-    const date_n = (d: string | null) => {
-        if (!d) {
-            return null;
-        }
-        return new Date(d);
-    };
-    const resp = await axios.get<RawWorkspaceMetadata[]>("/api/v1/workspace/", ApiAxiosRequestConfig());
-    return resp.data.map((w) => {
-        return {
-            ...w,
-            created: new Date(w.created),
-            updated: date_n(w.updated),
-        };
-    });
-};
 
 interface WorkspaceState {
     id: string;
@@ -86,7 +59,7 @@ type WorkspaceAction =
 
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {
     const cellIndex = (ws: WorkspaceMetadata, uuid: string) => {
-        return ws.workspace.cells.findIndex((c) => c.uuid === uuid);
+        return ws.data.cells.findIndex((c) => c.uuid === uuid);
     };
 
     switch (action.type) {
@@ -106,7 +79,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             const clone = { ...state.workspace } as WorkspaceMetadata;
             const idx = cellIndex(clone, action.uuid);
             if (idx !== -1) {
-                clone.workspace!.cells[idx].data = action.data;
+                clone.data!.cells[idx].data = action.data;
             }
             return {
                 ...state,
@@ -119,7 +92,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             const clone = { ...state.workspace } as WorkspaceMetadata;
             const idx = cellIndex(clone, action.uuid);
             if (idx !== -1) {
-                clone.workspace!.cells.splice(idx, 1);
+                clone.data!.cells.splice(idx, 1);
             }
             return {
                 ...state,
@@ -132,11 +105,11 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             const clone = { ...state.workspace } as WorkspaceMetadata;
             const idx = cellIndex(clone, action.uuid);
             if (idx !== -1 && idx !== 0) {
-                let cell = clone.workspace!.cells[idx];
-                clone.workspace!.cells.splice(idx, 1);
-                clone.workspace!.cells.splice(idx - 1, 0, cell);
+                let cell = clone.data!.cells[idx];
+                clone.data!.cells.splice(idx, 1);
+                clone.data!.cells.splice(idx - 1, 0, cell);
             }
-            clone.workspace!.cells.splice(idx, 1);
+            clone.data!.cells.splice(idx, 1);
             return {
                 ...state,
                 workspace: clone,
@@ -147,12 +120,12 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
         case "workspace_cell_move_down": {
             const clone = { ...state.workspace } as WorkspaceMetadata;
             const idx = cellIndex(clone, action.uuid);
-            if (idx !== -1 && idx !== clone.workspace!.cells.length - 1) {
-                let cell = clone.workspace!.cells[idx];
-                clone.workspace!.cells.splice(idx, 1);
-                clone.workspace!.cells.splice(idx + 1, 0, cell);
+            if (idx !== -1 && idx !== clone.data!.cells.length - 1) {
+                let cell = clone.data!.cells[idx];
+                clone.data!.cells.splice(idx, 1);
+                clone.data!.cells.splice(idx + 1, 0, cell);
             }
-            clone.workspace!.cells.splice(idx, 1);
+            clone.data!.cells.splice(idx, 1);
             return {
                 ...state,
                 workspace: clone,
@@ -162,7 +135,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
         }
         case "workspace_cell_add": {
             const clone = { ...state.workspace } as WorkspaceMetadata;
-            clone.workspace!.cells = [...clone.workspace!.cells, action.cell];
+            clone.data!.cells = [...clone.data!.cells, action.cell];
             return {
                 ...state,
                 workspace: clone,

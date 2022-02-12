@@ -26,7 +26,7 @@ export const createWorkspaceAPI = async (): Promise<string> => {
     const new_obj = {
         id: id,
         title: "Untitled",
-        workspace: defaultDocument,
+        data: defaultDocument,
     };
     // we're missing a couple of members, but they're set on the server-side.
     await saveWorkspaceAPI(new_obj as WorkspaceMetadata);

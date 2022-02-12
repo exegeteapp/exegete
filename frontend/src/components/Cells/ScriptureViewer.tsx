@@ -1,4 +1,4 @@
-import { CellFC, NewCellDataFn, Workspace } from "../../workspace/Workspace";
+import { CellFC, NewCellDataFn, WorkspaceData } from "../../workspace/Workspace";
 import React, { useEffect } from "react";
 import parseReference from "../../verseref/VerseRef";
 import { IScriptureContext, ScriptureContext } from "../../scripture/Scripture";
@@ -15,7 +15,7 @@ export interface ScriptureCellData {
 
 export const ScriptureViewerSlug = "scripture-viewer";
 
-export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: Workspace) => {
+export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: WorkspaceData) => {
     // if possible, we just clone the last cell
     for (let i = workspace.cells.length - 1; i >= 0; i--) {
         const cell = workspace.cells[i];

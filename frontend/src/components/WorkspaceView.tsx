@@ -29,7 +29,7 @@ const InnerWorkspaceView = () => {
         return <p>Loading workspace...</p>;
     }
 
-    const cells = workspaceState.workspace.workspace.cells.map((cell) => {
+    const cells = workspaceState.workspace.data.cells.map((cell) => {
         const functions = {
             set: (data: any) => {
                 dispatch({ type: "workspace_cell_set", uuid: cell.uuid, data: data });
@@ -108,7 +108,7 @@ const AddComponentMenu: React.FC = () => {
                 cell: {
                     cell_type: key,
                     uuid: uuidv4(),
-                    data: defn.newData(state.workspace!.workspace),
+                    data: defn.newData(state.workspace!.data),
                 },
             });
         };

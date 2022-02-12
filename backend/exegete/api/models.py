@@ -28,7 +28,7 @@ class UserDB(User, models.BaseUserDB):
 class WorkspaceOut(BaseModel):
     id: UUID
     title: str
-    workspace: dict
+    data: dict
     created: datetime.datetime
     updated: Optional[datetime.datetime]
 
@@ -38,7 +38,7 @@ class WorkspaceOut(BaseModel):
 
 class WorkspaceIn(BaseModel):
     title: str
-    workspace: dict
+    data: dict
 
     class Config:
         arbitrary_types_allowed = True

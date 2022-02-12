@@ -27,9 +27,9 @@ class Workspace(Base):
         nullable=False,
     )
     title = Column(Text, default=False, nullable=False)
-    workspace = Column(JSONB, default=False, nullable=False)
     created = Column(DateTime(timezone=True), server_default=func.now())
     updated = Column(DateTime(timezone=True), onupdate=func.now())
+    data = Column(JSONB, default=False, nullable=False)
 
 
 def get_user_db():

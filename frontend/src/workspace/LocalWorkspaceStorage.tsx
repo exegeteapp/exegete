@@ -39,7 +39,7 @@ export const createWorkspaceLocal = (): string => {
     const new_obj: WorkspaceMetadata = {
         id: id,
         title: "Untitled",
-        workspace: defaultDocument,
+        data: defaultDocument,
         created: new Date(),
         updated: null,
     };

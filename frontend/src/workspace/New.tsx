@@ -1,6 +1,6 @@
-import { Workspace } from "./Workspace";
+import { WorkspaceData } from "./Workspace";
 
-const defaultDocument: Workspace = {
+const defaultDocument: WorkspaceData = {
     workspace_format: 1,
     cells: [],
 };
