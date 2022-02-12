@@ -1,6 +1,6 @@
 import React from "react";
-import { loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
-import { loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
+import { deleteWorkspaceLocal, loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
+import { deleteWorkspaceAPI, loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
 import { arrayMoveMutable } from "array-move";
 
 export type NewCellDataFn<T> = (workspace: WorkspaceData) => T;
@@ -55,6 +55,7 @@ type WorkspaceAction =
     | { type: "workspace_cell_move"; uuid: string; offset: number }
     | { type: "workspace_cell_add"; cell: WorkspaceCell<any> }
     | { type: "workspace_set_title"; title: string }
+    | { type: "workspace_deleted" }
     | { type: "workspace_saved" };
 
 const cloneWorkspace = (ws: WorkspaceMetadata): WorkspaceMetadata => {
@@ -87,6 +88,13 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
         case "workspace_saved":
             return {
                 ...state,
+                dirty: false,
+            };
+        case "workspace_deleted":
+            return {
+                ...state,
+                workspace: undefined,
+                valid: false,
                 dirty: false,
             };
         case "workspace_cell_set": {
@@ -233,4 +241,12 @@ export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ ch
             <WorkspaceAutoSave>{children}</WorkspaceAutoSave>
         </WorkspaceContext.Provider>
     );
+};
+
+export const deleteWorkspace = (id: string, local: boolean) => {
+    if (local) {
+        deleteWorkspaceLocal(id);
+    } else {
+        deleteWorkspaceAPI(id);
+    }
 };

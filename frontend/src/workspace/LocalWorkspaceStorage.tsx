@@ -46,3 +46,12 @@ export const createWorkspaceLocal = (): string => {
     saveWorkspaceLocal(new_obj);
     return id;
 };
+
+export const deleteWorkspaceLocal = (id: string): boolean => {
+    if (!uuidValidate(id)) {
+        return false;
+    }
+    const key = idToKey(id);
+    localStorage.removeItem(key);
+    return true;
+};

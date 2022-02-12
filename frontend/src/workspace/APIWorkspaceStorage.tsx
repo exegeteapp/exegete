@@ -32,3 +32,11 @@ export const createWorkspaceAPI = async (): Promise<string> => {
     await saveWorkspaceAPI(new_obj as WorkspaceMetadata);
     return id;
 };
+
+export const deleteWorkspaceAPI = async (id: string) => {
+    const resp = await axios.delete<WorkspaceMetadata>(`/api/v1/workspace/${id}`, ApiAxiosRequestConfig());
+    if (resp.status === 200) {
+        return true;
+    }
+    return false;
+};

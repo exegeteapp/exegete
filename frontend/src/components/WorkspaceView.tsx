@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import {
     Button,
     Container,
@@ -16,7 +16,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { IUserContext, UserContext, UserLoggedIn } from "../user/User";
 import { validate as uuidValidate } from "uuid";
-import { WorkspaceContext, IWorkspaceContext, WorkspaceProvider } from "../workspace/Workspace";
+import { WorkspaceContext, IWorkspaceContext, WorkspaceProvider, deleteWorkspace } from "../workspace/Workspace";
 import Error from "./Cells/Error";
 import { BaseHeader } from "./Header";
 import useInput from "../util/useInput";
@@ -97,6 +97,37 @@ const RenameWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => v
     );
 };
 
+const DeleteWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => void }> = ({ show, setShow }) => {
+    const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const navigate = useNavigate();
+
+    const cancel = () => {
+        setShow(false);
+    };
+
+    const apply = () => {
+        deleteWorkspace(workspaceState.id, workspaceState.local);
+        dispatch({ type: "workspace_deleted" });
+        setShow(false);
+        navigate(`/`);
+    };
+
+    return (
+        <>
+            <Modal toggle={() => setShow(!show)} isOpen={true}>
+                <ModalHeader toggle={() => setShow(!show)}>Delete Workspace?</ModalHeader>
+                <ModalBody>Do you really want to delete this workspace?</ModalBody>
+                <ModalFooter>
+                    <Button color="danger" onClick={apply}>
+                        Delete
+                    </Button>
+                    <Button onClick={cancel}>Cancel</Button>
+                </ModalFooter>
+            </Modal>
+        </>
+    );
+};
+
 const AddComponentMenu: React.FC = () => {
     const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
@@ -132,6 +163,7 @@ const AddComponentMenu: React.FC = () => {
 const WorkspaceHeader: React.FC = () => {
     const { state: workspaceState } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const [showRenameWorkspaceModal, setShowRenameWorkspaceModal] = React.useState(false);
+    const [showDeleteWorkspaceModal, setShowDeleteWorkspaceModal] = React.useState(false);
     var title: string = "";
 
     if (workspaceState.valid && workspaceState.workspace) {
@@ -144,6 +176,9 @@ const WorkspaceHeader: React.FC = () => {
     if (showRenameWorkspaceModal) {
         modals.push(<RenameWorkspaceModal show={showRenameWorkspaceModal} setShow={setShowRenameWorkspaceModal} />);
     }
+    if (showDeleteWorkspaceModal) {
+        modals.push(<DeleteWorkspaceModal show={showDeleteWorkspaceModal} setShow={setShowDeleteWorkspaceModal} />);
+    }
 
     return (
         <>
@@ -155,6 +190,7 @@ const WorkspaceHeader: React.FC = () => {
                     </DropdownToggle>
                     <DropdownMenu>
                         <DropdownItem onClick={() => setShowRenameWorkspaceModal(true)}>Rename</DropdownItem>
+                        <DropdownItem onClick={() => setShowDeleteWorkspaceModal(true)}>Delete</DropdownItem>
                     </DropdownMenu>
                 </UncontrolledDropdown>
                 <AddComponentMenu />

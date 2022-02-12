@@ -64,3 +64,14 @@ async def put_workspace(id, doc: WorkspaceIn, user: UserDB = Depends(current_use
         raise HTTPException(403, "You do not have permission to PUT workspace")
     except asyncpg.exceptions.UniqueViolationError:
         raise HTTPException(403, "You do not have permission to PUT workspace")
+
+
+@workspace_router.delete("/{id:uuid}")
+async def delete_workspace(id, user: UserDB = Depends(current_user)):
+    q = Workspace.__table__.delete().where(
+        Workspace.owner_id == user.id, Workspace.id == id
+    )
+    # BUG: it's not clear how to determine whether any rows were
+    # actually deleted, to distinguish a 404/403/... situation.
+    # for now, this always returns 200
+    await database.fetch_all(q)
