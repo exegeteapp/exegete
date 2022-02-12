@@ -58,8 +58,13 @@ export const ScriptureText: React.FC<{
             const verse_elems: JSX.Element[] = [];
 
             if (state.book !== book || state.chapter !== d.chapter_start) {
+                const br: JSX.Element[] = [];
+                if (state.book !== null) {
+                    br.push(<p />);
+                }
                 verse_elems.push(
                     <strong key={verse_elems.length + 1}>
+                        {br}
                         {book} {d.chapter_start}:{d.verse_start}
                     </strong>
                 );
