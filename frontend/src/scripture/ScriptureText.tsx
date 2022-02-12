@@ -60,7 +60,7 @@ export const ScriptureText: React.FC<{
             if (state.book !== book || state.chapter !== d.chapter_start) {
                 const br: JSX.Element[] = [];
                 if (state.book !== null) {
-                    br.push(<p />);
+                    br.push(<p key={br.length + 1} />);
                 }
                 verse_elems.push(
                     <strong key={verse_elems.length + 1}>

@@ -170,10 +170,22 @@ const WorkspaceHeader: React.FC = () => {
     // we pop them into existence when needed.
     const modals: JSX.Element[] = [];
     if (showRenameWorkspaceModal) {
-        modals.push(<RenameWorkspaceModal show={showRenameWorkspaceModal} setShow={setShowRenameWorkspaceModal} />);
+        modals.push(
+            <RenameWorkspaceModal
+                key={modals.length + 1}
+                show={showRenameWorkspaceModal}
+                setShow={setShowRenameWorkspaceModal}
+            />
+        );
     }
     if (showDeleteWorkspaceModal) {
-        modals.push(<DeleteWorkspaceModal show={showDeleteWorkspaceModal} setShow={setShowDeleteWorkspaceModal} />);
+        modals.push(
+            <DeleteWorkspaceModal
+                key={modals.length + 1}
+                show={showDeleteWorkspaceModal}
+                setShow={setShowDeleteWorkspaceModal}
+            />
+        );
     }
 
     return (
