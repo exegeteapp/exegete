@@ -120,11 +120,11 @@ const AddComponentMenu: React.FC = () => {
     });
 
     return (
-        <UncontrolledDropdown inNavbar nav>
+        <UncontrolledDropdown nav>
             <DropdownToggle caret nav>
                 Add
             </DropdownToggle>
-            <DropdownMenu end>{items}</DropdownMenu>
+            <DropdownMenu>{items}</DropdownMenu>
         </UncontrolledDropdown>
     );
 };
@@ -149,11 +149,11 @@ const WorkspaceHeader: React.FC = () => {
         <>
             {modals}
             <BaseHeader>
-                <UncontrolledDropdown inNavbar nav>
+                <UncontrolledDropdown nav>
                     <DropdownToggle caret nav>
                         Workspace: {title}
                     </DropdownToggle>
-                    <DropdownMenu end>
+                    <DropdownMenu>
                         <DropdownItem onClick={() => setShowRenameWorkspaceModal(true)}>Rename</DropdownItem>
                     </DropdownMenu>
                 </UncontrolledDropdown>

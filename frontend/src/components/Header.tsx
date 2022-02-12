@@ -11,7 +11,7 @@ import {
     DropdownItem,
 } from "reactstrap";
 import { Link } from "react-router-dom";
-import { faBook } from "@fortawesome/free-solid-svg-icons";
+import { faBook, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IUserContext, UserContext, Logout } from "../user/User";
 
@@ -30,9 +30,9 @@ function UserMenu() {
     };
 
     return (
-        <UncontrolledDropdown inNavbar nav className="me-auto">
+        <UncontrolledDropdown nav>
             <DropdownToggle caret nav>
-                {state.user?.email}
+                <FontAwesomeIcon icon={faUser} />
             </DropdownToggle>
             <DropdownMenu end>
                 <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
@@ -50,8 +50,10 @@ export const BaseHeader: React.FC = ({ children }) => {
             </NavbarBrand>
             <NavbarToggler onClick={() => setToggled(!toggled)} />
             <Collapse navbar isOpen={toggled}>
-                <Nav navbar>
+                <Nav navbar className="me-auto">
                     {children}
+                </Nav>
+                <Nav navbar>
                     <UserMenu />
                 </Nav>
             </Collapse>
