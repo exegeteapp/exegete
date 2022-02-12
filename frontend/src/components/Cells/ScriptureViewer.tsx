@@ -2,7 +2,7 @@ import { CellFC, NewCellDataFn, WorkspaceData } from "../../workspace/Workspace"
 import React, { useEffect } from "react";
 import parseReference from "../../verseref/VerseRef";
 import { IScriptureContext, ScriptureContext } from "../../scripture/Scripture";
-import { getScripture } from "../../scripture/ScriptureAPI";
+import { getScripture, ScriptureObject } from "../../scripture/ScriptureAPI";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { ScriptureText } from "../../scripture/ScriptureText";
 import { getModuleParser } from "../../scripture/ParserCache";
@@ -51,11 +51,31 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, functions }) 
             const scripturePromises = res.sbcs.map((sbc) => getScripture({ ...sbc, shortcode: data.shortcode }));
             Promise.all(scripturePromises).then((scriptures) => {
                 if (isSubscribed) {
-                    setScripture(
-                        scriptures.map((s, i) => (
-                            <ScriptureText module={module} book={res.sbcs[i].book} key={i} data={s} />
-                        ))
-                    );
+                    const elems: JSX.Element[] = [];
+                    for (let i = 0; i < scriptures.length; i++) {
+                        // backtrack looking for the previous scripture object displayed
+                        let last_scripture_object: ScriptureObject | null = null;
+                        for (let j = i - 1; j >= 0; j--) {
+                            const s = scriptures[j];
+                            if (s && s.length > 0) {
+                                last_scripture_object = s[s.length - 1];
+                                break;
+                            }
+                        }
+                        const last_book = i > 0 ? res.sbcs[i - 1].book : null;
+
+                        elems.push(
+                            <ScriptureText
+                                last_book={last_book}
+                                book={res.sbcs[i].book}
+                                key={i}
+                                module={module}
+                                last_scripture_object={last_scripture_object}
+                                data={scriptures[i]}
+                            />
+                        );
+                    }
+                    setScripture(elems);
                 }
             });
         } else {

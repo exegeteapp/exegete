@@ -2,13 +2,27 @@ import React from "react";
 import { ScriptureObject, ScriptureWord } from "./ScriptureAPI";
 import { ModuleInfo } from "./ScriptureCatalog";
 
-export const ScriptureText: React.FC<{ module: ModuleInfo; book: string; data: ScriptureObject[] | null }> = ({
-    module,
-    data,
-}) => {
+interface RenderState {
+    book: string | null;
+    chapter: number | null;
+    verse: number | null;
+}
+
+export const ScriptureText: React.FC<{
+    module: ModuleInfo;
+    book: string;
+    data: ScriptureObject[] | null;
+    last_scripture_object: ScriptureObject | null;
+    last_book: string | null;
+}> = ({ module, data, last_book, book, last_scripture_object }) => {
     if (!data) {
         return <></>;
     }
+    var state: RenderState = {
+        book: last_book,
+        chapter: last_scripture_object ? last_scripture_object.chapter_end : null,
+        verse: last_scripture_object ? last_scripture_object.verse_end : null,
+    };
 
     const languageClass = (language: string) => {
         if (language === "ecg") {
@@ -34,26 +48,41 @@ export const ScriptureText: React.FC<{ module: ModuleInfo; book: string; data: S
         });
     };
 
-    const elems = data.map((d, i) => {
+    const elems: JSX.Element[] = [];
+    for (let i = 0; i < data.length; ++i) {
+        const d = data[i];
+
         if (d.type === "title") {
-            return <h2 key={i}>{renderText(d.text)}</h2>;
+            elems.push(<h2 key={i}>{renderText(d.text)}</h2>);
         } else if (d.type === "verse") {
-            return (
+            const verse_elems: JSX.Element[] = [];
+
+            if (state.book !== book || state.chapter !== d.chapter_start) {
+                verse_elems.push(
+                    <strong key={verse_elems.length + 1}>
+                        {book} {d.chapter_start}:{d.verse_start}
+                    </strong>
+                );
+            } else {
+                verse_elems.push(
+                    <sup key={verse_elems.length + 1}>
+                        <strong>{d.verse_start} </strong>
+                    </sup>
+                );
+            }
+
+            elems.push(
                 <span key={i}>
-                    <b>
-                        <sup>{d.verse_start}</sup>
-                    </b>{" "}
+                    {verse_elems}
                     {renderText(d.text)}
                 </span>
             );
-        } else if (d.type === "footnote") {
-            // ignored for now
-            return <span key={i} />;
-        } else {
-            // ignored for now
-            return <span key={i} />;
         }
-    });
+
+        state.book = book;
+        state.chapter = d.chapter_end;
+        state.verse = d.verse_end;
+    }
 
     return <div className={languageClass(module.language)}>{elems}</div>;
 };
