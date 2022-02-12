@@ -40,7 +40,6 @@ export const VerseRefPicker: React.FC<{
     const [sc, setSC] = useState(data["shortcode"]);
     const [parserError, setParserError] = React.useState("");
 
-    // we only push the internal state of the component out when the form is submitted
     const submit = (event: any) => {
         event.preventDefault();
         setData({
@@ -54,6 +53,7 @@ export const VerseRefPicker: React.FC<{
             return <Alert>{parserError}</Alert>;
         }
     };
+
     useEffect(() => {
         if (!scriptureState.valid || !scriptureState.catalog) {
             return;
@@ -75,7 +75,18 @@ export const VerseRefPicker: React.FC<{
             <Form onSubmit={submit}>
                 <Row>
                     <Col sm={{ size: 3, offset: 0 }}>
-                        <ShortCodeInput value={sc} setValue={setSC} />
+                        <ShortCodeInput
+                            value={sc}
+                            setValue={(s: string) => {
+                                // we immediately push this state up
+                                setData({
+                                    shortcode: s,
+                                    verseref: vr.value,
+                                });
+                                // update our local state as well
+                                setSC(s);
+                            }}
+                        />
                     </Col>
                     <Col sm={{ size: 9, offset: 0 }}>
                         <Input autoComplete="off" id="verseref" name="verseref" placeholder="Verse reference" {...vr} />
