@@ -119,8 +119,6 @@ class Module:
             ),  # this will monotonically increase in the book
             Column("text", JSONB, nullable=False),
             plaintext,
-            Column("poetry", Boolean, nullable=False),
-            Column("quote", Boolean, nullable=False),
             UniqueConstraint("book_id", "linear_id"),
             Index(
                 "index_bi_cs_ce_vs_ve",
@@ -184,8 +182,6 @@ class Module:
                         verse_start=obj.get("verse_start"),
                         chapter_end=obj.get("chapter_end"),
                         verse_end=obj.get("verse_end"),
-                        poetry=obj.get("poetry", False),
-                        quote=obj.get("quote", False),
                         type=ObjectType.from_json(obj),
                         linear_id=linear_id,
                         text=obj.get("text"),

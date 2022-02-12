@@ -30,12 +30,6 @@
             "description": "array of word objects",
             "type": "array",
             "items": { "$ref": "#/$defs/word" }
-        },
-        "poetry": {
-            "type": "boolean"
-        },
-        "quote": {
-            "type": "boolean"
         }
     },
     "$defs": {

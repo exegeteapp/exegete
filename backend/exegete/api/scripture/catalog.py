@@ -173,8 +173,6 @@ class ScriptureCatalog:
                 object.columns["verse_end"],
                 object.columns["type"],
                 object.columns["text"],
-                object.columns["poetry"],
-                object.columns["quote"],
             )
             .filter(bk == book_id)
             .filter(sqlalchemy.and_(cs >= chapter_start, cs <= chapter_end))

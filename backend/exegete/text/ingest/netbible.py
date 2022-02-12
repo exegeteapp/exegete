@@ -129,14 +129,12 @@ You can download it at https://bible.org/downloads
                             == "lamhebrew"  # ignore as there'll be a <span class="hebrew">..</span>
                             or cls
                             == "sosspeaker"  # ignore as <strong>...</strong> also present
+                            or cls == "poetry"
+                            or cls == "poetrybreak"
+                            or cls == "otpoetry"
+                            or cls == "quote"
                         ):
                             pass
-                        elif (
-                            cls == "poetry" or cls == "poetrybreak" or cls == "otpoetry"
-                        ):
-                            object_attrs["poetry"] = True
-                        elif cls == "quote":
-                            object_attrs["quote"] = True
                         else:
                             raise Exception(cls)
                 # insert some whitespace for the <p>
@@ -204,8 +202,6 @@ You can download it at https://bible.org/downloads
                 "chapter_end": int(hunk["chapter"]),
                 "verse_start": int(hunk["verse"]),
                 "verse_end": int(hunk["verse"]),
-                "poetry": object_attrs.get("poetry", False),
-                "quote": object_attrs.get("quote", False),
                 "text": words,
             }
 

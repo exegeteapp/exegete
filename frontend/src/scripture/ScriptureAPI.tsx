@@ -14,8 +14,6 @@ export interface ScriptureObject {
     chapter_end: number;
     verse_end: number;
     text: ScriptureWord[];
-    poetry: boolean;
-    quote: boolean;
 }
 
 export interface ScriptureBookChapter {
