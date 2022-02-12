@@ -40,3 +40,13 @@ html {
     font-weight: normal;
     font-style: normal;
 }
+
+.module-link {
+    color: rgb(33, 37, 41);
+    text-decoration: none;
+}
+
+.module-license {
+    white-space: pre-wrap;
+    word-wrap: break-word;  
+}

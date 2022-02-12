@@ -1,4 +1,4 @@
-import { CardHeader, CardBody, ButtonGroup, Button, Row, Col, Card } from "reactstrap";
+import { CardHeader, CardBody, ButtonGroup, Button, Row, Col, Card, CardFooter } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp, faWindowClose } from "@fortawesome/free-solid-svg-icons";
 import { CellFunctions } from "../workspace/Workspace";
@@ -9,6 +9,10 @@ export const Cell: React.FC = ({ children }) => {
 
 export const CellBody: React.FC = ({ children }) => {
     return <CardBody>{children}</CardBody>;
+};
+
+export const CellFooter: React.FC = ({ children }) => {
+    return <CardFooter>{children}</CardFooter>;
 };
 
 export const CellHeader: React.FC<{ functions: CellFunctions; uuid: string }> = ({ children, functions }) => {

@@ -10,6 +10,7 @@ import Workspace from "./components/WorkspaceView";
 import "./App.css";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
+import ModuleInfo from "./components/ModuleInfo";
 
 function RouterComponent() {
     const { state } = React.useContext<IConfigContext>(ConfigContext);
@@ -23,6 +24,7 @@ function RouterComponent() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/workspace/:id" element={<Workspace />} />
+                <Route path="/module/:shortcode" element={<ModuleInfo />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgotpassword" element={<ForgotPassword />} />
                 <Route path="/verify/:token" element={<Verify />} />

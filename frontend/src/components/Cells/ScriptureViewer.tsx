@@ -6,7 +6,8 @@ import { getScripture, ScriptureObject } from "../../scripture/ScriptureAPI";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { ScriptureText } from "../../scripture/ScriptureText";
 import { getModuleParser } from "../../scripture/ParserCache";
-import { Cell, CellBody, CellHeader } from "../Cell";
+import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
+import { Link } from "react-router-dom";
 
 export interface ScriptureCellData {
     shortcode: string;
@@ -104,6 +105,13 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, functions }) 
                 <VerseRefPicker data={{ shortcode: data.shortcode, verseref: data.verseref }} setData={updateVR} />
             </CellHeader>
             <CellBody>{scripture}</CellBody>
+            <CellFooter>
+                <div className="text-end">
+                    <Link className="module-link" to={`/module/${data.shortcode}`}>
+                        ({data.shortcode})
+                    </Link>
+                </div>
+            </CellFooter>
         </Cell>
     );
 };
