@@ -1,6 +1,5 @@
 import LZString from "lz-string";
 import { validate as uuidValidate } from "uuid";
-import defaultDocument from "./New";
 import { NewWorkspaceData, WorkspaceMetadata } from "./Workspace";
 import { v4 } from "uuid";
 
