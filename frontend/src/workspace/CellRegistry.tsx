@@ -6,7 +6,7 @@ import {
 } from "../components/Cells/ScriptureViewer";
 import { CellFC, NewCellDataFn } from "./Workspace";
 
-type RegistryEntry = {
+export type RegistryEntry = {
     title: string;
     component: CellFC<ScriptureCellData>;
     newData: NewCellDataFn<ScriptureCellData>;

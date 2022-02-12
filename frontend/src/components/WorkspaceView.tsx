@@ -13,7 +13,6 @@ import {
     ModalHeader,
     UncontrolledDropdown,
 } from "reactstrap";
-import { v4 as uuidv4 } from "uuid";
 import { IUserContext, UserContext, UserLoggedIn } from "../user/User";
 import { validate as uuidValidate } from "uuid";
 import { WorkspaceContext, IWorkspaceContext, WorkspaceProvider, deleteWorkspace } from "../workspace/Workspace";
@@ -21,6 +20,7 @@ import Error from "./Cells/Error";
 import { BaseHeader } from "./Header";
 import useInput from "../util/useInput";
 import Registry from "../workspace/CellRegistry";
+import { makeNewCell } from "../workspace/Cell";
 
 const InnerWorkspaceView = () => {
     const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
@@ -136,11 +136,7 @@ const AddComponentMenu: React.FC = () => {
         const newCell = () => {
             dispatch({
                 type: "workspace_cell_add",
-                cell: {
-                    cell_type: key,
-                    uuid: uuidv4(),
-                    data: defn.newData(state.workspace!.data),
-                },
+                cell: makeNewCell(state.workspace!.data, key, defn),
             });
         };
         return (

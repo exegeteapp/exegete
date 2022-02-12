@@ -1,8 +1,7 @@
 import React from "react";
 import { Button } from "reactstrap";
-import { createWorkspaceAPI } from "../workspace/APIWorkspaceStorage";
 import { useNavigate } from "react-router";
-import { createWorkspaceLocal } from "../workspace/LocalWorkspaceStorage";
+import { createWorkspace } from "../workspace/Workspace";
 
 export const NewWorkspaceButton: React.FC<{
     local: boolean;
@@ -10,18 +9,13 @@ export const NewWorkspaceButton: React.FC<{
 }> = ({ local, children, color }) => {
     const navigate = useNavigate();
 
-    const createWorkspace = async () => {
-        let id;
-        if (local) {
-            id = createWorkspaceLocal();
-        } else {
-            id = await createWorkspaceAPI();
-        }
+    const makeNew = async () => {
+        const id = await createWorkspace(local);
         navigate(`/workspace/${id}`);
     };
 
     return (
-        <Button color={color} onClick={createWorkspace}>
+        <Button color={color} onClick={makeNew}>
             {children}
         </Button>
     );

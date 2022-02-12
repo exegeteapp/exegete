@@ -1,7 +1,7 @@
 import LZString from "lz-string";
 import { validate as uuidValidate } from "uuid";
 import defaultDocument from "./New";
-import { WorkspaceMetadata } from "./Workspace";
+import { NewWorkspaceData, WorkspaceMetadata } from "./Workspace";
 import { v4 } from "uuid";
 
 const idToKey = (id: string) => `workspace[${id}]`;
@@ -34,12 +34,10 @@ export const saveWorkspaceLocal = (workspace: WorkspaceMetadata): boolean => {
     return true;
 };
 
-export const createWorkspaceLocal = (): string => {
+export const createWorkspaceLocal = (newData: NewWorkspaceData): string => {
     const id = v4();
     const new_obj: WorkspaceMetadata = {
-        id: id,
-        title: "Untitled",
-        data: defaultDocument,
+        ...newData,
         created: new Date(),
         updated: null,
     };

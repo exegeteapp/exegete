@@ -3,11 +3,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp, faWindowClose } from "@fortawesome/free-solid-svg-icons";
 import { CellFunctions } from "../workspace/Workspace";
 
-export interface ScriptureCellData {
-    shortcode: string;
-    verseref: string;
-}
-
 export const Cell: React.FC = ({ children }) => {
     return <Card className="mb-4">{children}</Card>;
 };

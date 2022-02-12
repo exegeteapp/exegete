@@ -2,6 +2,12 @@ import React from "react";
 import { deleteWorkspaceLocal, loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
 import { deleteWorkspaceAPI, loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
 import { arrayMoveMutable } from "array-move";
+import { createWorkspaceAPI } from "../workspace/APIWorkspaceStorage";
+import { createWorkspaceLocal } from "../workspace/LocalWorkspaceStorage";
+import { v4 } from "uuid";
+import defaultDocument from "../workspace/New";
+import { makeNewCell } from "./Cell";
+import Registry from "./CellRegistry";
 
 export type NewCellDataFn<T> = (workspace: WorkspaceData) => T;
 
@@ -36,6 +42,14 @@ export interface WorkspaceMetadata {
     updated: Date | null;
 }
 
+// minimal set of metadata set on the frontend
+// before the backend or local storage set the rest
+export interface NewWorkspaceData {
+    id: string;
+    title: string;
+    data: WorkspaceData;
+}
+
 interface WorkspaceState {
     id: string;
     // have we gone through the bootstrap process?
@@ -58,12 +72,16 @@ type WorkspaceAction =
     | { type: "workspace_deleted" }
     | { type: "workspace_saved" };
 
-const cloneWorkspace = (ws: WorkspaceMetadata): WorkspaceMetadata => {
-    // the `data` must be JSON serialisable anyway, so this is seems
+const cloneWorkspaceData = (data: WorkspaceData): WorkspaceData => {
+    // `data` must be JSON serialisable anyway, so this is seems
     // a reasonable way to achieve a deep clone
+    return JSON.parse(JSON.stringify(data));
+};
+
+const cloneWorkspace = (ws: WorkspaceMetadata): WorkspaceMetadata => {
     return {
         ...ws,
-        data: JSON.parse(JSON.stringify(ws.data)),
+        data: cloneWorkspaceData(ws.data),
     };
 };
 
@@ -241,6 +259,25 @@ export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ ch
             <WorkspaceAutoSave>{children}</WorkspaceAutoSave>
         </WorkspaceContext.Provider>
     );
+};
+
+export const createWorkspace = async (local: boolean) => {
+    const data = cloneWorkspaceData(defaultDocument);
+
+    const newData: NewWorkspaceData = {
+        id: v4(),
+        title: "Untitled",
+        data: data,
+    };
+    const newSlug = "scripture-viewer";
+    newData.data.cells.push(makeNewCell(data, newSlug, Registry[newSlug]));
+
+    if (local) {
+        createWorkspaceLocal(newData);
+    } else {
+        await createWorkspaceAPI(newData);
+    }
+    return newData.id;
 };
 
 export const deleteWorkspace = (id: string, local: boolean) => {
