@@ -136,7 +136,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             const clone = cloneWorkspace(state.workspace);
             const idx = cellIndex(clone, action.uuid);
             if (idx !== -1) {
-                arrayMoveMutable(clone.data.cells, idx, idx + action.offset);
+                arrayMoveMutable(clone.data.cells, idx, (idx + action.offset) % clone.data.cells.length);
             }
             return {
                 ...state,
