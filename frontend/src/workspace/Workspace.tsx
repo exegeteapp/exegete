@@ -1,6 +1,7 @@
 import React from "react";
 import { loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
 import { loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
+import { arrayMoveMutable } from "array-move";
 
 export type NewCellDataFn<T> = (workspace: WorkspaceData) => T;
 
@@ -51,11 +52,19 @@ type WorkspaceAction =
     | { type: "workspace_loaded"; workspace: WorkspaceMetadata }
     | { type: "workspace_cell_set"; uuid: string; data: any }
     | { type: "workspace_cell_delete"; uuid: string }
-    | { type: "workspace_cell_move_up"; uuid: string }
-    | { type: "workspace_cell_move_down"; uuid: string }
+    | { type: "workspace_cell_move"; uuid: string; offset: number }
     | { type: "workspace_cell_add"; cell: WorkspaceCell<any> }
     | { type: "workspace_set_title"; title: string }
     | { type: "workspace_saved" };
+
+const cloneWorkspace = (ws: WorkspaceMetadata): WorkspaceMetadata => {
+    // the `data` must be JSON serialisable anyway, so this is seems
+    // a reasonable way to achieve a deep clone
+    return {
+        ...ws,
+        data: JSON.parse(JSON.stringify(ws.data)),
+    };
+};
 
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {
     const cellIndex = (ws: WorkspaceMetadata, uuid: string) => {
@@ -75,11 +84,19 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                 valid: true,
                 dirty: false,
             };
+        case "workspace_saved":
+            return {
+                ...state,
+                dirty: false,
+            };
         case "workspace_cell_set": {
-            const clone = { ...state.workspace } as WorkspaceMetadata;
+            if (!state.workspace) {
+                return state;
+            }
+            const clone = cloneWorkspace(state.workspace);
             const idx = cellIndex(clone, action.uuid);
             if (idx !== -1) {
-                clone.data!.cells[idx].data = action.data;
+                clone.data.cells[idx].data = action.data;
             }
             return {
                 ...state,
@@ -89,10 +106,13 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             };
         }
         case "workspace_cell_delete": {
-            const clone = { ...state.workspace } as WorkspaceMetadata;
+            if (!state.workspace) {
+                return state;
+            }
+            const clone = cloneWorkspace(state.workspace);
             const idx = cellIndex(clone, action.uuid);
             if (idx !== -1) {
-                clone.data!.cells.splice(idx, 1);
+                clone.data.cells.splice(idx, 1);
             }
             return {
                 ...state,
@@ -101,31 +121,15 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                 dirty: true,
             };
         }
-        case "workspace_cell_move_up": {
-            const clone = { ...state.workspace } as WorkspaceMetadata;
-            const idx = cellIndex(clone, action.uuid);
-            if (idx !== -1 && idx !== 0) {
-                let cell = clone.data!.cells[idx];
-                clone.data!.cells.splice(idx, 1);
-                clone.data!.cells.splice(idx - 1, 0, cell);
+        case "workspace_cell_move": {
+            if (!state.workspace) {
+                return state;
             }
-            clone.data!.cells.splice(idx, 1);
-            return {
-                ...state,
-                workspace: clone,
-                valid: true,
-                dirty: true,
-            };
-        }
-        case "workspace_cell_move_down": {
-            const clone = { ...state.workspace } as WorkspaceMetadata;
+            const clone = cloneWorkspace(state.workspace);
             const idx = cellIndex(clone, action.uuid);
-            if (idx !== -1 && idx !== clone.data!.cells.length - 1) {
-                let cell = clone.data!.cells[idx];
-                clone.data!.cells.splice(idx, 1);
-                clone.data!.cells.splice(idx + 1, 0, cell);
+            if (idx !== -1) {
+                arrayMoveMutable(clone.data.cells, idx, idx + action.offset);
             }
-            clone.data!.cells.splice(idx, 1);
             return {
                 ...state,
                 workspace: clone,
@@ -134,8 +138,11 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             };
         }
         case "workspace_cell_add": {
-            const clone = { ...state.workspace } as WorkspaceMetadata;
-            clone.data!.cells = [...clone.data!.cells, action.cell];
+            if (!state.workspace) {
+                return state;
+            }
+            const clone = cloneWorkspace(state.workspace);
+            clone.data!.cells = [...clone.data.cells, action.cell];
             return {
                 ...state,
                 workspace: clone,
@@ -144,7 +151,10 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             };
         }
         case "workspace_set_title": {
-            const clone = { ...state.workspace } as WorkspaceMetadata;
+            if (!state.workspace) {
+                return state;
+            }
+            const clone = cloneWorkspace(state.workspace);
             clone.title = action.title;
             return {
                 ...state,
@@ -153,11 +163,6 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                 dirty: true,
             };
         }
-        case "workspace_saved":
-            return {
-                ...state,
-                dirty: false,
-            };
     }
 };
 

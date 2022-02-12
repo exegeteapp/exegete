@@ -35,14 +35,14 @@ async def list_workspaces(user: UserDB = Depends(current_user)):
 async def put_workspace(id, doc: WorkspaceIn, user: UserDB = Depends(current_user)):
     # validate the incoming workspace
     try:
-        workspace_manager.validate(doc.workspace)
+        workspace_manager.validate(doc.data)
     except jsonschema.exceptions.ValidationError as exc:
         raise HTTPException(422, str(exc))
     # fast-path: update existing document owned by the current user
     q = (
         Workspace.__table__.update()
         .where(Workspace.owner_id == user.id, Workspace.id == id)
-        .values(title=doc.title, workspace=doc.workspace)
+        .values(title=doc.title, data=doc.data)
         .returning(Workspace.id)
     )
     success = await database.fetch_all(q)
@@ -55,7 +55,7 @@ async def put_workspace(id, doc: WorkspaceIn, user: UserDB = Depends(current_use
     try:
         q = (
             Workspace.__table__.insert()
-            .values(id=id, title=doc.title, workspace=doc.workspace, owner_id=user.id)
+            .values(id=id, title=doc.title, data=doc.data, owner_id=user.id)
             .returning(Workspace.id)
         )
         success = await database.fetch_all(q)

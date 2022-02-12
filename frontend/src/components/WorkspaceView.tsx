@@ -38,10 +38,10 @@ const InnerWorkspaceView = () => {
                 dispatch({ type: "workspace_cell_delete", uuid: cell.uuid });
             },
             moveUp: () => {
-                dispatch({ type: "workspace_cell_move_up", uuid: cell.uuid });
+                dispatch({ type: "workspace_cell_move", uuid: cell.uuid, offset: -1 });
             },
             moveDown: () => {
-                dispatch({ type: "workspace_cell_move_down", uuid: cell.uuid });
+                dispatch({ type: "workspace_cell_move", uuid: cell.uuid, offset: 1 });
             },
         };
 
