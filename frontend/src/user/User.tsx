@@ -144,7 +144,7 @@ const getUser = async (dispatch: React.Dispatch<UserAction>) => {
         dispatch({ type: "user_login", user: resp.data });
     } catch (error: any) {
         if (axios.isAxiosError(error)) {
-            if (error.response && error.response.status === 403) {
+            if (error.response && error.response.status === 401) {
                 // we're not logged in
                 dispatch({ type: "user_login", user: undefined });
                 return;
