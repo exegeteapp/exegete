@@ -28,7 +28,6 @@ export const WorkspaceAutoSave: React.FC = ({ children }) => {
         }, 1000);
 
         return () => {
-            console.log("clear timeout");
             window.clearTimeout(timeoutID);
         };
     }, [state.dirty, dispatch, state.local, state.valid, state.workspace]);
