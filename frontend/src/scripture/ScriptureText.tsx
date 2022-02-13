@@ -65,7 +65,7 @@ export const ScriptureText: React.FC<{
                 verse_elems.push(
                     <strong key={verse_elems.length + 1}>
                         {br}
-                        {book} {d.chapter_start}:{d.verse_start}
+                        {book} {d.chapter_start}:{d.verse_start}{" "}
                     </strong>
                 );
             } else {
