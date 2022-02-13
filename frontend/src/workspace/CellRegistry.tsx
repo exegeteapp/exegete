@@ -1,15 +1,11 @@
-import {
-    newScriptureCell,
-    ScriptureCellData,
-    ScriptureViewer,
-    ScriptureViewerSlug,
-} from "../components/Cells/ScriptureViewer";
+import MarkdownNote, { MarkdownNoteSlug, newMarkdownNoteCell } from "../components/Cells/MarkdownNote";
+import { newScriptureCell, ScriptureViewer, ScriptureViewerSlug } from "../components/Cells/ScriptureViewer";
 import { CellFC, NewCellDataFn } from "./Workspace";
 
 export type RegistryEntry = {
     title: string;
-    component: CellFC<ScriptureCellData>;
-    newData: NewCellDataFn<ScriptureCellData>;
+    component: CellFC<any>;
+    newData: NewCellDataFn<any>;
 };
 
 interface CellRegistry {
@@ -21,6 +17,11 @@ const Registry: CellRegistry = {
         title: "Scripture viewer",
         component: ScriptureViewer,
         newData: newScriptureCell,
+    },
+    [MarkdownNoteSlug]: {
+        title: "Note",
+        component: MarkdownNote,
+        newData: newMarkdownNoteCell,
     },
 };
 

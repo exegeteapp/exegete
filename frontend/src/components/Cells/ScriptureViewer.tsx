@@ -107,7 +107,7 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, functions }) 
             <CellBody>{scripture}</CellBody>
             <CellFooter>
                 <div className="text-end">
-                    <Link className="module-link" to={`/module/${data.shortcode}`}>
+                    <Link className="body-link" to={`/module/${data.shortcode}`}>
                         ({data.shortcode})
                     </Link>
                 </div>
