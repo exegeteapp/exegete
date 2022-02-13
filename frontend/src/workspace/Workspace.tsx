@@ -1,6 +1,6 @@
 import React from "react";
-import { deleteWorkspaceLocal, loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
-import { deleteWorkspaceAPI, loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
+import { deleteWorkspaceLocal, loadWorkspaceLocal } from "./LocalWorkspaceStorage";
+import { deleteWorkspaceAPI, loadWorkspaceAPI } from "./APIWorkspaceStorage";
 import { arrayMoveMutable } from "array-move";
 import { createWorkspaceAPI } from "../workspace/APIWorkspaceStorage";
 import { createWorkspaceLocal } from "../workspace/LocalWorkspaceStorage";
@@ -8,6 +8,7 @@ import { v4 } from "uuid";
 import defaultDocument from "../workspace/New";
 import { makeNewCell } from "./Cell";
 import Registry from "./CellRegistry";
+import { WorkspaceAutoSave } from "./Autosave";
 
 export type NewCellDataFn<T> = (workspace: WorkspaceData) => T;
 
@@ -200,28 +201,6 @@ export interface IWorkspaceContext {
 // avoid default context value
 // https://stackoverflow.com/questions/61333188/react-typescript-avoid-context-default-value
 export const WorkspaceContext = React.createContext<IWorkspaceContext>({} as IWorkspaceContext);
-
-export const WorkspaceAutoSave: React.FC = ({ children }) => {
-    const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
-
-    React.useEffect(() => {
-        if (!state.workspace || !state.valid) {
-            return;
-        }
-        if (!state.dirty) {
-            return;
-        }
-        if (state.local) {
-            saveWorkspaceLocal(state.workspace);
-            dispatch({ type: "workspace_saved" });
-        } else {
-            saveWorkspaceAPI(state.workspace).then(() => {
-                dispatch({ type: "workspace_saved" });
-            });
-        }
-    }, [dispatch, state.valid, state.workspace, state.local, state.dirty]);
-    return <>{children}</>;
-};
 
 export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ children, id, local }) => {
     const initialState: WorkspaceState = {

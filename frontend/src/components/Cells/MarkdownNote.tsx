@@ -21,11 +21,7 @@ const Editor: React.FC<{ value: string; setValue: (s: string) => void }> = ({ va
         setValue(event.currentTarget.value);
     };
 
-    return (
-        <textarea className="form-control" onChange={handleChange} rows={10}>
-            {value}
-        </textarea>
-    );
+    return <textarea className="form-control" onChange={handleChange} rows={10} value={value} />;
 };
 
 const Viewer: React.FC<{ text: string }> = ({ text }) => {
