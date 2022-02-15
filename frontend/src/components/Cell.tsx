@@ -15,10 +15,15 @@ export const CellFooter: React.FC = ({ children }) => {
     return <CardFooter>{children}</CardFooter>;
 };
 
-export const CellHeader: React.FC<{ functions: CellFunctions; uuid: string }> = ({ children, functions }) => {
+export const CellHeader: React.FC<{ functions: CellFunctions; uuid: string; buttons?: JSX.Element[] }> = ({
+    children,
+    functions,
+    buttons,
+}) => {
     return (
         <CardHeader>
             <ButtonGroup className="float-end mb-1">
+                {buttons}
                 <Button color="secondary" className="float-end" onClick={() => functions.moveUp()}>
                     <FontAwesomeIcon icon={faArrowUp} />
                 </Button>

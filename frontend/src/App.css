@@ -50,3 +50,7 @@ html {
     white-space: pre-wrap;
     word-wrap: break-word;  
 }
+
+.scripture-text {
+    padding-bottom: 1.0rem;
+}

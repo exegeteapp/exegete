@@ -14,7 +14,8 @@ export const ScriptureText: React.FC<{
     data: ScriptureObject[] | null;
     last_scripture_object: ScriptureObject | null;
     last_book: string | null;
-}> = ({ module, data, last_book, book, last_scripture_object }) => {
+    markup: boolean;
+}> = ({ module, data, last_book, book, last_scripture_object, markup }) => {
     if (!data) {
         return <></>;
     }
@@ -53,27 +54,31 @@ export const ScriptureText: React.FC<{
         const d = data[i];
 
         if (d.type === "title") {
-            elems.push(<h2 key={i}>{renderText(d.text)}</h2>);
+            if (markup) {
+                elems.push(<h2 key={i}>{renderText(d.text)}</h2>);
+            }
         } else if (d.type === "verse") {
             const verse_elems: JSX.Element[] = [];
 
-            if (state.book !== book || state.chapter !== d.chapter_start) {
-                const br: JSX.Element[] = [];
-                if (state.book !== null) {
-                    br.push(<p key={br.length + 1} />);
+            if (markup) {
+                if (state.book !== book || state.chapter !== d.chapter_start) {
+                    const br: JSX.Element[] = [];
+                    if (state.book !== null) {
+                        br.push(<p key={br.length + 1} />);
+                    }
+                    verse_elems.push(
+                        <strong key={verse_elems.length + 1}>
+                            {br}
+                            {book} {d.chapter_start}:{d.verse_start}{" "}
+                        </strong>
+                    );
+                } else {
+                    verse_elems.push(
+                        <sup key={verse_elems.length + 1}>
+                            <strong>{d.verse_start} </strong>
+                        </sup>
+                    );
                 }
-                verse_elems.push(
-                    <strong key={verse_elems.length + 1}>
-                        {br}
-                        {book} {d.chapter_start}:{d.verse_start}{" "}
-                    </strong>
-                );
-            } else {
-                verse_elems.push(
-                    <sup key={verse_elems.length + 1}>
-                        <strong>{d.verse_start} </strong>
-                    </sup>
-                );
             }
 
             elems.push(
@@ -89,5 +94,5 @@ export const ScriptureText: React.FC<{
         state.verse = d.verse_end;
     }
 
-    return <div className={languageClass(module.language)}>{elems}</div>;
+    return <div className={"scripture-text " + languageClass(module.language)}>{elems}</div>;
 };

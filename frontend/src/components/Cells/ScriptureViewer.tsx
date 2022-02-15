@@ -8,10 +8,14 @@ import { ScriptureText } from "../../scripture/ScriptureText";
 import { getModuleParser } from "../../scripture/ParserCache";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import { Link } from "react-router-dom";
+import { Button } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTags } from "@fortawesome/free-solid-svg-icons";
 
 export interface ScriptureCellData {
     shortcode: string;
     verseref: string;
+    hidemarkup: boolean;
 }
 
 export const ScriptureViewerSlug = "scripture-viewer";
@@ -27,6 +31,7 @@ export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: Wo
     return {
         shortcode: "NET",
         verseref: "Matthew 1",
+        hidemarkup: false,
     };
 };
 
@@ -73,6 +78,7 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, functions }) 
                                 module={module}
                                 last_scripture_object={last_scripture_object}
                                 data={scriptures[i]}
+                                markup={!data.hidemarkup}
                             />
                         );
                     }
@@ -86,22 +92,37 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, functions }) 
         return () => {
             isSubscribed = false;
         };
-    }, [scriptureState.catalog, scriptureState.valid, data.shortcode, data.verseref]);
+    }, [scriptureState.catalog, scriptureState.valid, data.shortcode, data.verseref, data.hidemarkup]);
 
     if (!scriptureState.valid || !scriptureState.catalog) {
         return <div>Loading...</div>;
     }
 
-    const updateVR = (data: SCVerseRef) => {
+    const updateVR = (vr: SCVerseRef) => {
         functions.set({
             ...cell.data,
-            ...data,
+            ...vr,
         });
+    };
+
+    const setHideMarkup = (hidemarkup: boolean) => {
+        functions.set({
+            ...cell.data,
+            hidemarkup,
+        });
+    };
+
+    const HideButton: React.FC = () => {
+        return (
+            <Button onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
+                <FontAwesomeIcon icon={faTags} />
+            </Button>
+        );
     };
 
     return (
         <Cell>
-            <CellHeader functions={functions} uuid={cell.uuid}>
+            <CellHeader functions={functions} uuid={cell.uuid} buttons={[<HideButton />]}>
                 <VerseRefPicker data={{ shortcode: data.shortcode, verseref: data.verseref }} setData={updateVR} />
             </CellHeader>
             <CellBody>{scripture}</CellBody>
