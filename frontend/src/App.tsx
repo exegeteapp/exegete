@@ -11,6 +11,7 @@ import "./App.css";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import ModuleInfo from "./components/ModuleInfo";
+import NotFound from "./components/NotFound";
 
 function RouterComponent() {
     const { state } = React.useContext<IConfigContext>(ConfigContext);
@@ -29,6 +30,7 @@ function RouterComponent() {
                 <Route path="/forgotpassword" element={<ForgotPassword />} />
                 <Route path="/verify/:token" element={<Verify />} />
                 <Route path="/resetpassword/:token" element={<ResetPassword />} />
+                <Route path="*" element={<NotFound />} />
             </Routes>
         </Router>
     );
