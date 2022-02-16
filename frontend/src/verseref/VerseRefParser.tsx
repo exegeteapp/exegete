@@ -99,7 +99,7 @@ export const makeLanguage = (module: ModuleInfo) => {
             P.seqMap(
                 r.book.skip(P.whitespace),
                 r.ref_number.skip(P.optWhitespace),
-                P.string(":").skip(P.optWhitespace),
+                P.alt(P.string(":"), P.string(".")).skip(P.optWhitespace),
                 r.ref_number,
                 (b, c, _, v) => ({
                     type: "ref",
@@ -121,7 +121,7 @@ export const makeLanguage = (module: ModuleInfo) => {
         c_v: (r) =>
             P.seqMap(
                 r.ref_number.skip(P.optWhitespace),
-                P.string(":").skip(P.optWhitespace),
+                P.alt(P.string(":"), P.string(".")).skip(P.optWhitespace),
                 r.ref_number,
                 (c, _, v) => ({
                     type: "ref",

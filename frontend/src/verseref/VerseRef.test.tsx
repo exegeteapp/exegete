@@ -372,6 +372,18 @@ test("book and chapter and verse", () => {
     });
 });
 
+test("book and chapter and verse dots", () => {
+    const res = makeAndParseExpectingSuccess("Matthew 1.4");
+    expect(res.sbcs.length).toBe(1);
+    expect(res.sbcs[0]).toMatchObject({
+        book: "Matthew",
+        chapter_start: 1,
+        verse_start: 4,
+        chapter_end: 1,
+        verse_end: 4,
+    });
+});
+
 test("book and chapter and verse (opt: f)", () => {
     const res = makeAndParseExpectingSuccess("Matthew 1:4f");
     expect(res.sbcs.length).toBe(1);
@@ -410,6 +422,18 @@ test("book and chapter to book and chapter and verse (opt: ff)", () => {
 
 test("book and chapter to book and chapter and verse (opt: ff at start)", () => {
     const res = makeAndParseExpectingSuccess("Matthew 2:4ff-3:9");
+    expect(res.sbcs.length).toBe(1);
+    expect(res.sbcs[0]).toMatchObject({
+        book: "Matthew",
+        chapter_start: 2,
+        verse_start: 4,
+        chapter_end: 3,
+        verse_end: 9,
+    });
+});
+
+test("book and chapter to book and chapter and verse (opt: ff at start) dots", () => {
+    const res = makeAndParseExpectingSuccess("Matthew 2.4ff-3.9");
     expect(res.sbcs.length).toBe(1);
     expect(res.sbcs[0]).toMatchObject({
         book: "Matthew",
