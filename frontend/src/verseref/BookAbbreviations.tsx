@@ -1,5 +1,25 @@
 import { ModuleInfo } from "../scripture/ScriptureCatalog";
 
+const extra_abbrevations: { [index: string]: string[] } = {
+    Ecclesiastes: ["Qoheleth", "Qoh"],
+    Habakkuk: ["Hah"],
+    Judith: ["Jdt"],
+    "Esther (Greek)": ["Add Esth"],
+    "The Wisdom of Solomon": ["Wis"],
+    "The Letter of Jeremiah": ["Let Jer"],
+    "Azariah and the Three Jews": ["Song of Thr"],
+    "The Prayer of Manasseh": ["Pr Man"],
+    "Psalm 151": ["Ps 151"],
+    Matthew: ["Mt"],
+    Mark: ["Mk"],
+    Luke: ["Lk"],
+    John: ["Jn"],
+    James: ["Jas"],
+    "1 John": ["1 Jn"],
+    "2 John": ["2 Jn"],
+    "3 John": ["3 Jn"],
+};
+
 const generateAbbreviations = (module: ModuleInfo) => {
     // books can be identified by the shortest non-ambiguous abbreviation
     const book_abbrevations = new Map<string, Set<string>>();
@@ -51,6 +71,17 @@ const generateAbbreviations = (module: ModuleInfo) => {
                 abbrevs.add(abbrev);
             }
         });
+    }
+
+    for (const book in extra_abbrevations) {
+        if (!book_abbrevations.has(book)) {
+            continue;
+        }
+        const abbrevs = book_abbrevations.get(book) as Set<string>;
+        const extra = extra_abbrevations[book];
+        for (const abbrev of extra) {
+            abbrevs.add(abbrev);
+        }
     }
 
     return book_abbrevations;

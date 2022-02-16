@@ -122,7 +122,7 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, functions }) 
 
     return (
         <Cell>
-            <CellHeader functions={functions} uuid={cell.uuid} buttons={[<HideButton />]}>
+            <CellHeader functions={functions} uuid={cell.uuid} buttons={[<HideButton key={0} />]}>
                 <VerseRefPicker data={{ shortcode: data.shortcode, verseref: data.verseref }} setData={updateVR} />
             </CellHeader>
             <CellBody>{scripture}</CellBody>
