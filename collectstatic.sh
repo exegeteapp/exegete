@@ -11,8 +11,8 @@ rm -rf static/build/
 (
     cd frontend
     rm -rf build/
-    yarn install
-    yarn build
+    npm install
+    npm run build
     rsync -av build/ ../static/build/
     rm -rf build/
 )

@@ -69,12 +69,17 @@ jobs:
       - name: Install (Typescript)
         working-directory: frontend
         run: |
-          yarn install
+          npm install
+
+      - name: Lint (Typescript)
+        working-directory: frontend
+        run: |
+          npx prettier --check .
 
       - name: Tests (Typescript)
         working-directory: frontend
         run: |
-          yarn test
+          npm run test
 
       - name: Build static assets (frontend)
         run: |
