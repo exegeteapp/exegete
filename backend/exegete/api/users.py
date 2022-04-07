@@ -2,7 +2,11 @@ from typing import Optional
 
 from fastapi import Depends, Request
 from fastapi_users import BaseUserManager, FastAPIUsers
-from fastapi_users.authentication import JWTAuthentication
+from fastapi_users.authentication import (
+    AuthenticationBackend,
+    BearerTransport,
+    JWTStrategy,
+)
 from fastapi_users.db import SQLAlchemyUserDatabase
 
 from .database import get_user_db
@@ -35,15 +39,26 @@ def get_user_manager(user_db: SQLAlchemyUserDatabase = Depends(get_user_db)):
     yield UserManager(user_db)
 
 
-jwt_authentication = JWTAuthentication(
-    secret=settings.token_secret,
-    lifetime_seconds=60 * 60 * 24 * 7,  # 1 week
-    tokenUrl="auth/jwt/login",
+bearer_transport = BearerTransport(tokenUrl="auth/jwt/login")
+
+
+def get_jwt_strategy() -> JWTStrategy:
+    return JWTStrategy(
+        secret=settings.token_secret,
+        lifetime_seconds=60 * 60 * 24 * 7,  # 1 week)
+    )
+
+
+auth_backend = AuthenticationBackend(
+    name="jwt",
+    transport=bearer_transport,
+    get_strategy=get_jwt_strategy,
 )
+
 
 fastapi_users = FastAPIUsers(
     get_user_manager,
-    [jwt_authentication],
+    [auth_backend],
     User,
     UserCreate,
     UserUpdate,

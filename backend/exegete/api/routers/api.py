@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from ..models import UserDB
-from ..users import fastapi_users, jwt_authentication, User
+from ..users import fastapi_users, auth_backend, User
 from ..register import get_register_captcha_router
 from ..database import UserDB
 from .scripture import scripture_router
@@ -10,7 +10,7 @@ from .config import config_router
 
 api_router = APIRouter(prefix="/api/v1")
 api_router.include_router(
-    fastapi_users.get_auth_router(jwt_authentication),
+    fastapi_users.get_auth_router(auth_backend),
     prefix="/auth",
     tags=["auth"],
 )
