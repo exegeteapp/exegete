@@ -165,7 +165,7 @@ class Module:
 
     def import_book_stream(self, linear_id, book_id, entities_iter):
         def to_plaintext(text):
-            return "".join(t["value"] for t in text)
+            return " ".join(t["value"] for t in text)
 
         object = self._entities["object"]
         with self._manager.engine.connect() as conn:

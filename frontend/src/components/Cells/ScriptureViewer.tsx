@@ -4,13 +4,14 @@ import parseReference from "../../verseref/VerseRef";
 import { IScriptureContext, ScriptureContext } from "../../scripture/Scripture";
 import { getScripture, ScriptureObject } from "../../scripture/ScriptureAPI";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
-import { ScriptureText } from "../../scripture/ScriptureText";
+import { ScriptureTextView } from "../../scripture/ScriptureTextView";
 import { getModuleParser } from "../../scripture/ParserCache";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import { Link } from "react-router-dom";
 import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
+import { RegistryEntry } from "../../workspace/CellRegistry";
 
 export interface ScriptureCellData {
     shortcode: string;
@@ -30,7 +31,7 @@ export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: Wo
     }
     return {
         shortcode: "NET",
-        verseref: "Matthew 1",
+        verseref: "Matthew 6:26-34",
         hidemarkup: false,
     };
 };
@@ -71,13 +72,14 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, functions }) 
                         const last_book = i > 0 ? res.sbcs[i - 1].book : null;
 
                         elems.push(
-                            <ScriptureText
+                            <ScriptureTextView
+                                shortcode={data.shortcode}
                                 last_book={last_book}
                                 book={res.sbcs[i].book}
                                 key={i}
                                 module={module}
                                 last_scripture_object={last_scripture_object}
-                                data={scriptures[i]}
+                                scriptures={scriptures[i]}
                                 markup={!data.hidemarkup}
                             />
                         );
@@ -137,4 +139,8 @@ export const ScriptureViewer: CellFC<ScriptureCellData> = ({ cell, functions }) 
     );
 };
 
-export default ScriptureViewer;
+export const ScriptureViewerDefinition: RegistryEntry = {
+    title: "Scripture viewer",
+    component: ScriptureViewer,
+    newData: newScriptureCell,
+};

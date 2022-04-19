@@ -4,6 +4,7 @@ from glob import glob
 from io import StringIO
 
 from collections import defaultdict
+from exegete.text.cleanup import clean_words
 from exegete.text.library import Manager
 from exegete.text.library.schema import v1
 from lxml import etree
@@ -96,7 +97,7 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
             }
 
         def state_to_verse_and_footnotes(verse_state):
-            obj = {"type": "verse", "text": verse_state["words"]}
+            obj = {"type": "verse", "text": clean_words(verse_state["words"])}
 
             # the shorter ending of Mark hasn't got a chapter or verse address
             if verse_state["chapter"] is not None:
@@ -157,7 +158,7 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                 verse_state = verse_state_blank()
                 yield {
                     "type": "title",
-                    "text": [{"value": "".join(node.xpath(".//text()"))}],
+                    "text": clean_words([{"value": "".join(node.xpath(".//text()"))}]),
                 }
             elif node.tag == "p":
                 verse_state = yield from handle_p(node, verse_state)
@@ -197,7 +198,7 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                     "chapter_end": chapter,
                     "verse_start": verse_start,
                     "verse_end": verse_end,
-                    "text": make_words(nodes[1:], {}),
+                    "text": clean_words(make_words(nodes[1:], {})),
                 }
             )
 

@@ -1,5 +1,6 @@
 from exegete.text.library.schema import v1
 from exegete.text.library import Manager
+from exegete.text.cleanup import clean_words
 from functools import reduce
 import argparse
 from glob import glob
@@ -174,19 +175,18 @@ You can download it at https://bible.org/downloads
 
         # each file is a chapter, consisting of a list of (chapter, verse) addressed hunks of marked up text
         for hunk in text:
-            words = []
             if hunk["text"] != "":
                 et = etree.parse(StringIO(hunk["text"]), parser)
                 nodes = et.xpath("/child::node()")
                 if len(nodes) == 0:
                     raise Exception([hunk, nodes, len(nodes)])
-
             else:
                 # Acts 24:7 ruins everything
                 nodes = [""]
 
             # object level attributes such as the poetry flag; these are scoped to the whole object, not
             # particular words
+            words = []
             object_attrs = {}
             for node in nodes:
                 try:
@@ -195,6 +195,10 @@ You can download it at https://bible.org/downloads
                     print(node)
                     raise e
             assert all(type(t) is dict for t in words)
+
+            # exegete requires words to really be words, not multiple words, and not containing whitespace.
+            # (we are focussed upon exegesis/analysis, not presentation)
+            words = clean_words(words)
 
             yield {
                 "type": "verse",

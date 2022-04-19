@@ -8,15 +8,16 @@ interface RenderState {
     verse: number | null;
 }
 
-export const ScriptureText: React.FC<{
+export const ScriptureTextView: React.FC<{
     module: ModuleInfo;
     book: string;
-    data: ScriptureObject[] | null;
+    shortcode: string;
+    scriptures: ScriptureObject[] | null;
     last_scripture_object: ScriptureObject | null;
     last_book: string | null;
     markup: boolean;
-}> = ({ module, data, last_book, book, last_scripture_object, markup }) => {
-    if (!data) {
+}> = ({ module, shortcode, scriptures, last_book, book, last_scripture_object, markup }) => {
+    if (!scriptures) {
         return <></>;
     }
     var state: RenderState = {
@@ -35,23 +36,25 @@ export const ScriptureText: React.FC<{
         }
     };
 
-    const renderText = (text: ScriptureWord[]) => {
-        return text.map((word, i) => {
+    const renderText = (words: ScriptureWord[]) => {
+        return words.map((text, i) => {
             let className = "";
-            if (word.language && word.language !== module.language) {
-                className = languageClass(word.language);
+            if (text.language && text.language !== module.language) {
+                className = languageClass(text.language);
             }
             return (
-                <span className={className} key={i}>
-                    {word.value}
-                </span>
+                <>
+                    <span className={className} key={i}>
+                        {text.value}
+                    </span>{" "}
+                </>
             );
         });
     };
 
     const elems: JSX.Element[] = [];
-    for (let i = 0; i < data.length; ++i) {
-        const d = data[i];
+    for (let i = 0; i < scriptures.length; ++i) {
+        const d = scriptures[i];
 
         if (d.type === "title") {
             if (markup) {

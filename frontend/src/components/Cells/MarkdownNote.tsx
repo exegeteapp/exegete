@@ -3,6 +3,7 @@ import { CellFC, NewCellDataFn, WorkspaceData } from "../../workspace/Workspace"
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import ReactMarkdown from "react-markdown";
 import { Button } from "reactstrap";
+import { RegistryEntry } from "../../workspace/CellRegistry";
 
 export interface MarkdownNoteCellData {
     text: string;
@@ -63,4 +64,8 @@ export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell, functions }) 
     );
 };
 
-export default MarkdownNote;
+export const MarkdownNoteDefinition: RegistryEntry = {
+    title: "Note",
+    component: MarkdownNote,
+    newData: newMarkdownNoteCell,
+};
