@@ -43,11 +43,11 @@ export const ScriptureTextView: React.FC<{
                 className = languageClass(text.language);
             }
             return (
-                <>
+                <span key={i}>
                     <span className={className} key={i}>
                         {text.value}
                     </span>{" "}
-                </>
+                </span>
             );
         });
     };
