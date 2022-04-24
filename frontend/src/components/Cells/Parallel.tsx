@@ -60,7 +60,6 @@ const ParallelColumn: React.FC<{
     functions: CellFunctions;
     editing: boolean;
 }> = ({ index, cell, functions, editing }) => {
-    const navigate = useNavigate();
     const data = cell.data.columns[index];
 
     const setAnnotation = (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
@@ -75,10 +74,6 @@ const ParallelColumn: React.FC<{
     const annotation_functions: ScriptureWordAnnotationFunctions = {
         get: () => cell.data.columns[index].annotation,
         set: setAnnotation,
-    };
-
-    const goToModule = () => {
-        navigate(`/module/${data.shortcode}`);
     };
 
     const inner: JSX.Element = editing ? (
@@ -97,6 +92,7 @@ const ParallelColumn: React.FC<{
 
 export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
     const data = cell.data;
+    const navigate = useNavigate();
     const [editing, setEditing] = React.useState(false);
 
     const setHideMarkup = (hidemarkup: boolean) => {
@@ -119,11 +115,16 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
         return <div>Unsupported column definitions for parallel viewer</div>;
     }
 
+    const goToModule = (index: number) => {
+        navigate(`/module/${data.columns[index].shortcode}`);
+    };
+
     // markdown width of our columns.
     const cw = data.columns.length === 3 ? 4 : 3;
 
     const header: JSX.Element[] = [];
     const inner: JSX.Element[] = [];
+    const footer: JSX.Element[] = [];
 
     for (let i = 0; i < data.columns.length; i++) {
         if (editing) {
@@ -150,6 +151,11 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
                 <ParallelColumn key={i} index={i} cell={cell} functions={functions} editing={editing} />
             </Col>
         );
+        footer.push(
+            <Col xs={{ size: cw, offset: 0 }} key={i}>
+                <Button onClick={() => goToModule(i)}>({data.columns[i].shortcode})</Button>
+            </Col>
+        );
     }
 
     const HideButton: React.FC = () => {
@@ -166,6 +172,7 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
             <CellBody>
                 <Row>{header}</Row>
                 <Row>{inner}</Row>
+                <Row>{footer}</Row>
             </CellBody>
             <CellFooter>
                 <div className="text-end">
@@ -177,8 +184,6 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
                 </div>
             </CellFooter>
         </Cell>
-
-        // <Button onClick={() => goToModule()}>({data.shortcode})</Button>
     );
 };
 
