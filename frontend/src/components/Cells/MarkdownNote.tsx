@@ -11,7 +11,9 @@ export interface MarkdownNoteCellData {
 
 export const MarkdownNoteSlug = "markdown-note";
 
-export const newMarkdownNoteCell: NewCellDataFn<MarkdownNoteCellData> = (workspace: WorkspaceData) => {
+export const newMarkdownNoteCell: NewCellDataFn<MarkdownNoteCellData> = (
+    workspace: WorkspaceData
+): MarkdownNoteCellData => {
     return {
         text: "# New Note\n\nWrite your note here.",
     };

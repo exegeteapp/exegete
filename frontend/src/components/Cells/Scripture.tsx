@@ -9,16 +9,18 @@ import { faTags } from "@fortawesome/free-solid-svg-icons";
 import { RegistryEntry } from "../../workspace/CellRegistry";
 import { ScriptureViewer } from "../ScriptureViewer";
 import { ScriptureEditor } from "../ScriptureEditor";
+import { ScriptureWordAnnotation, ScriptureWordAnnotationFunctions, WordPosition } from "../ScriptureAnnotation";
+
+export const ScriptureSlug = "scripture-viewer";
 
 export interface ScriptureCellData {
     shortcode: string;
     verseref: string;
     hidemarkup: boolean;
+    annotation: [WordPosition, ScriptureWordAnnotation][];
 }
 
-export const ScriptureSlug = "scripture-viewer";
-
-export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: WorkspaceData) => {
+export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: WorkspaceData): ScriptureCellData => {
     // if possible, we just clone the last cell
     for (let i = workspace.cells.length - 1; i >= 0; i--) {
         const cell = workspace.cells[i];
@@ -30,6 +32,7 @@ export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: Wo
         shortcode: "NET",
         verseref: "Matthew 6:26-34",
         hidemarkup: false,
+        annotation: [],
     };
 };
 
@@ -37,6 +40,18 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     const data = cell.data;
     const [editing, setEditing] = React.useState(false);
     const navigate = useNavigate();
+
+    const setAnnotation = (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
+        functions.set({
+            ...cell.data,
+            annotation: new_annotation,
+        });
+    };
+
+    const annotation_functions: ScriptureWordAnnotationFunctions = {
+        get: () => cell.data.annotation,
+        set: setAnnotation,
+    };
 
     const updateVR = (vr: SCVerseRef) => {
         functions.set({
@@ -65,9 +80,14 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     };
 
     const inner: JSX.Element = editing ? (
-        <ScriptureEditor shortcode={data.shortcode} verseref={data.verseref} />
+        <ScriptureEditor shortcode={data.shortcode} verseref={data.verseref} annotation={annotation_functions} />
     ) : (
-        <ScriptureViewer shortcode={data.shortcode} verseref={data.verseref} hidemarkup={data.hidemarkup} />
+        <ScriptureViewer
+            shortcode={data.shortcode}
+            verseref={data.verseref}
+            hidemarkup={data.hidemarkup}
+            annotation={annotation_functions}
+        />
     );
 
     const header: JSX.Element = editing ? (

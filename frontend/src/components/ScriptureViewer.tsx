@@ -4,11 +4,13 @@ import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { getScripture, ScriptureObject } from "../scripture/ScriptureAPI";
 import { ScriptureTextView } from "../scripture/ScriptureTextView";
 import { getModuleParser } from "../scripture/ParserCache";
+import { ScriptureWordAnnotationFunctions } from "./ScriptureAnnotation";
 
 export interface ScriptureViewerData {
     shortcode: string;
     verseref: string;
     hidemarkup: boolean;
+    annotation: ScriptureWordAnnotationFunctions;
 }
 
 export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidemarkup, shortcode }) => {
