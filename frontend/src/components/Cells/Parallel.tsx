@@ -1,0 +1,189 @@
+import { CellFC, CellFunctions, NewCellDataFn, WorkspaceCell, WorkspaceData } from "../../workspace/Workspace";
+import React from "react";
+import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
+import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
+import { useNavigate } from "react-router-dom";
+import { Button, ButtonGroup, Col, Row } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTags } from "@fortawesome/free-solid-svg-icons";
+import { RegistryEntry } from "../../workspace/CellRegistry";
+import { ScriptureViewer } from "../ScriptureViewer";
+import { ScriptureEditor } from "../ScriptureEditor";
+import { ScriptureWordAnnotation, ScriptureWordAnnotationFunctions, WordPosition } from "../ScriptureAnnotation";
+
+export const ParallelSlug = "parallel";
+
+interface ParallelCellColumn {
+    shortcode: string;
+    verseref: string;
+    annotation: [WordPosition, ScriptureWordAnnotation][];
+}
+
+export interface ParallelCellData {
+    columns: ParallelCellColumn[];
+    hidemarkup: boolean;
+}
+
+export const newParallelCell: NewCellDataFn<ParallelCellData> = (workspace: WorkspaceData): ParallelCellData => {
+    // if possible, we just clone the last cell
+    for (let i = workspace.cells.length - 1; i >= 0; i--) {
+        const cell = workspace.cells[i];
+        if (cell.cell_type === ParallelSlug) {
+            return { ...cell.data };
+        }
+    }
+    return {
+        hidemarkup: true,
+        columns: [
+            {
+                shortcode: "NET",
+                verseref: "Matthew 14.3-4",
+                annotation: [],
+            },
+            {
+                shortcode: "NET",
+                verseref: "Mark 6.17-18",
+                annotation: [],
+            },
+            {
+                shortcode: "NET",
+                verseref: "Luke 3.19-20",
+                annotation: [],
+            },
+        ],
+    };
+};
+
+const ParallelColumn: React.FC<{
+    index: number;
+    cell: WorkspaceCell<ParallelCellData>;
+    functions: CellFunctions;
+    editing: boolean;
+}> = ({ index, cell, functions, editing }) => {
+    const navigate = useNavigate();
+    const data = cell.data.columns[index];
+
+    const setAnnotation = (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
+        const new_columns = [...cell.data.columns];
+        new_columns[index].annotation = new_annotation;
+        functions.set({
+            ...cell.data,
+            columns: new_columns,
+        });
+    };
+
+    const annotation_functions: ScriptureWordAnnotationFunctions = {
+        get: () => cell.data.columns[index].annotation,
+        set: setAnnotation,
+    };
+
+    const goToModule = () => {
+        navigate(`/module/${data.shortcode}`);
+    };
+
+    const inner: JSX.Element = editing ? (
+        <ScriptureEditor shortcode={data.shortcode} verseref={data.verseref} annotation={annotation_functions} />
+    ) : (
+        <ScriptureViewer
+            shortcode={data.shortcode}
+            verseref={data.verseref}
+            hidemarkup={cell.data.hidemarkup}
+            annotation={annotation_functions}
+        />
+    );
+
+    return inner;
+};
+
+export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
+    const data = cell.data;
+    const [editing, setEditing] = React.useState(false);
+
+    const setHideMarkup = (hidemarkup: boolean) => {
+        functions.set({
+            ...cell.data,
+            hidemarkup,
+        });
+    };
+
+    const updateVR = (index: number, vr: SCVerseRef) => {
+        const new_columns = [...cell.data.columns];
+        new_columns[index] = { ...cell.data.columns[index], ...vr };
+        functions.set({
+            ...cell.data,
+            columns: new_columns,
+        });
+    };
+
+    if (!data.columns || (data.columns.length !== 3 && data.columns.length !== 4)) {
+        return <div>Unsupported column definitions for parallel viewer</div>;
+    }
+
+    // markdown width of our columns.
+    const cw = data.columns.length === 3 ? 4 : 3;
+
+    const header: JSX.Element[] = [];
+    const inner: JSX.Element[] = [];
+
+    for (let i = 0; i < data.columns.length; i++) {
+        if (editing) {
+            header.push(
+                <Col xs={{ size: cw, offset: 0 }} key={i}>
+                    <p>
+                        <strong>{data.columns[i].verseref}</strong>
+                    </p>
+                </Col>
+            );
+        } else {
+            header.push(
+                <Col xs={{ size: cw, offset: 0 }} key={i}>
+                    <VerseRefPicker
+                        small={true}
+                        data={{ shortcode: data.columns[i].shortcode, verseref: data.columns[i].verseref }}
+                        setData={(vr) => updateVR(i, vr)}
+                    />
+                </Col>
+            );
+        }
+        inner.push(
+            <Col xs={{ size: cw, offset: 0 }} key={i}>
+                <ParallelColumn key={i} index={i} cell={cell} functions={functions} editing={editing} />
+            </Col>
+        );
+    }
+
+    const HideButton: React.FC = () => {
+        return (
+            <Button onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
+                <FontAwesomeIcon icon={faTags} />
+            </Button>
+        );
+    };
+
+    return (
+        <Cell>
+            <CellHeader functions={functions} uuid={cell.uuid} buttons={[<HideButton key={0} />]}></CellHeader>
+            <CellBody>
+                <Row>{header}</Row>
+                <Row>{inner}</Row>
+            </CellBody>
+            <CellFooter>
+                <div className="text-end">
+                    <ButtonGroup className="float-end mb-1">
+                        <Button onClick={() => setEditing(!editing)}>
+                            {editing ? "Done" : "Structure and annotate"}
+                        </Button>
+                    </ButtonGroup>
+                </div>
+            </CellFooter>
+        </Cell>
+
+        // <Button onClick={() => goToModule()}>({data.shortcode})</Button>
+    );
+};
+
+export const ParallelDefinition: RegistryEntry = {
+    title: "Parallel",
+    component: Parallel,
+    newData: newParallelCell,
+};

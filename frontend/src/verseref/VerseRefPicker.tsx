@@ -34,7 +34,8 @@ export interface SCVerseRef {
 export const VerseRefPicker: React.FC<{
     data: SCVerseRef;
     setData: (data: SCVerseRef) => void;
-}> = ({ data, setData }) => {
+    small?: boolean;
+}> = ({ data, setData, small }) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const vr = useInput(data["verseref"]);
     const [sc, setSC] = useState(data["shortcode"]);
@@ -53,6 +54,9 @@ export const VerseRefPicker: React.FC<{
             return <Alert>{parserError}</Alert>;
         }
     };
+
+    const sc_width = small ? 6 : 3;
+    const in_width = small ? 6 : 9;
 
     useEffect(() => {
         if (!scriptureState.valid || !scriptureState.catalog) {
@@ -74,7 +78,7 @@ export const VerseRefPicker: React.FC<{
         <>
             <Form onSubmit={submit}>
                 <Row>
-                    <Col sm={{ size: 3, offset: 0 }}>
+                    <Col sm={{ size: sc_width, offset: 0 }}>
                         <ShortCodeInput
                             value={sc}
                             setValue={(s: string) => {
@@ -88,7 +92,7 @@ export const VerseRefPicker: React.FC<{
                             }}
                         />
                     </Col>
-                    <Col sm={{ size: 9, offset: 0 }}>
+                    <Col sm={{ size: in_width, offset: 0 }}>
                         <Input autoComplete="off" id="verseref" name="verseref" placeholder="Verse reference" {...vr} />
                     </Col>
                 </Row>

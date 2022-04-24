@@ -307,7 +307,8 @@ export const ScriptureEditor: React.FC<{
                 return;
             }
             // we let the user input whitespace characters for padding, but nothing else.
-            if (event.key !== " " && event.key !== "Enter") {
+            if (event.key !== " " && event.key !== "Enter" && event.key !== "Backspace") {
+                console.log(event.key);
                 event.preventDefault();
                 return;
             }
