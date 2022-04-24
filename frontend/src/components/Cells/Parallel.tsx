@@ -153,7 +153,9 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
         );
         footer.push(
             <Col xs={{ size: cw, offset: 0 }} key={i}>
-                <Button onClick={() => goToModule(i)}>({data.columns[i].shortcode})</Button>
+                <ButtonGroup className="float-end mb-1">
+                    <Button onClick={() => goToModule(i)}>({data.columns[i].shortcode})</Button>
+                </ButtonGroup>
             </Col>
         );
     }

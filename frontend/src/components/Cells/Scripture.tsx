@@ -101,14 +101,18 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
             <CellHeader functions={functions} uuid={cell.uuid} buttons={[<HideButton key={0} />]}>
                 {header}
             </CellHeader>
-            <CellBody>{inner}</CellBody>
+            <CellBody>
+                {inner}
+                <ButtonGroup className="float-end mb-1">
+                    <Button onClick={() => goToModule()}>({data.shortcode})</Button>
+                </ButtonGroup>
+            </CellBody>
             <CellFooter>
                 <div className="text-end">
                     <ButtonGroup className="float-end mb-1">
                         <Button onClick={() => setEditing(!editing)}>
                             {editing ? "Done" : "Structure and annotate"}
                         </Button>
-                        <Button onClick={() => goToModule()}>({data.shortcode})</Button>
                     </ButtonGroup>
                 </div>
             </CellFooter>
