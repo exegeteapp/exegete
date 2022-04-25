@@ -2,7 +2,6 @@ import { CellFC, CellFunctions, NewCellDataFn, WorkspaceCell, WorkspaceData } fr
 import React from "react";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
-import { useNavigate } from "react-router-dom";
 import { Button, ButtonGroup, Col, Row } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +9,7 @@ import { RegistryEntry } from "../../workspace/CellRegistry";
 import { ScriptureViewer } from "../ScriptureViewer";
 import { ScriptureEditor } from "../ScriptureEditor";
 import { ScriptureWordAnnotation, ScriptureWordAnnotationFunctions, WordPosition } from "../ScriptureAnnotation";
+import { ModuleButton } from "../ModuleButton";
 
 export const ParallelSlug = "parallel";
 
@@ -62,7 +62,6 @@ const ParallelColumn: React.FC<{
 
 export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
     const data = cell.data;
-    const navigate = useNavigate();
     const [editing, setEditing] = React.useState(false);
 
     const setHideMarkup = (hidemarkup: boolean) => {
@@ -84,10 +83,6 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
     if (!data.columns || (data.columns.length !== 3 && data.columns.length !== 4)) {
         return <div>Unsupported column definitions for parallel viewer</div>;
     }
-
-    const goToModule = (index: number) => {
-        navigate(`/module/${data.columns[index].shortcode}`);
-    };
 
     // markdown width of our columns.
     const cw = data.columns.length === 3 ? 4 : 3;
@@ -124,7 +119,7 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
         footer.push(
             <Col xs={{ size: cw, offset: 0 }} key={i}>
                 <ButtonGroup className="float-end mb-1">
-                    <Button onClick={() => goToModule(i)}>({data.columns[i].shortcode})</Button>
+                    <ModuleButton shortcode={data.columns[i].shortcode} />
                 </ButtonGroup>
             </Col>
         );

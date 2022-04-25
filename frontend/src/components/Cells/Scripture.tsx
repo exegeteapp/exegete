@@ -2,7 +2,6 @@ import { CellFC, NewCellDataFn, WorkspaceData } from "../../workspace/Workspace"
 import React from "react";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
-import { useNavigate } from "react-router-dom";
 import { Button, ButtonGroup } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
@@ -10,6 +9,7 @@ import { RegistryEntry } from "../../workspace/CellRegistry";
 import { ScriptureViewer } from "../ScriptureViewer";
 import { ScriptureEditor } from "../ScriptureEditor";
 import { ScriptureWordAnnotation, ScriptureWordAnnotationFunctions, WordPosition } from "../ScriptureAnnotation";
+import { ModuleButton } from "../ModuleButton";
 
 export const ScriptureSlug = "scripture-viewer";
 
@@ -39,7 +39,6 @@ export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: Wo
 export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     const data = cell.data;
     const [editing, setEditing] = React.useState(false);
-    const navigate = useNavigate();
 
     const setAnnotation = (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
         functions.set({
@@ -75,10 +74,6 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
         );
     };
 
-    const goToModule = () => {
-        navigate(`/module/${data.shortcode}`);
-    };
-
     const inner: JSX.Element = editing ? (
         <ScriptureEditor shortcode={data.shortcode} verseref={data.verseref} annotation={annotation_functions} />
     ) : (
@@ -104,7 +99,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
             <CellBody>
                 {inner}
                 <ButtonGroup className="float-end mb-1">
-                    <Button onClick={() => goToModule()}>({data.shortcode})</Button>
+                    <ModuleButton shortcode={data.shortcode} />
                 </ButtonGroup>
             </CellBody>
             <CellFooter>
