@@ -1,4 +1,4 @@
-import { CardHeader, CardBody, ButtonGroup, Button, Row, Col, Card, CardFooter } from "reactstrap";
+import { CardHeader, CardBody, ButtonGroup, Button, Row, Col, Card, CardFooter, ButtonToolbar } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp, faWindowClose } from "@fortawesome/free-solid-svg-icons";
 import { CellFunctions } from "../workspace/Workspace";
@@ -22,18 +22,20 @@ export const CellHeader: React.FC<{ functions: CellFunctions; uuid: string; butt
 }) => {
     return (
         <CardHeader>
-            <ButtonGroup className="float-end mb-1">
+            <ButtonToolbar className="float-end mb-1">
                 {buttons}
-                <Button color="secondary" className="float-end" onClick={() => functions.moveUp()}>
-                    <FontAwesomeIcon icon={faArrowUp} />
-                </Button>
-                <Button color="secondary" className="float-end" onClick={() => functions.moveDown()}>
-                    <FontAwesomeIcon icon={faArrowDown} />
-                </Button>
-                <Button color="secondary" className="float-end" onClick={() => functions.delete()}>
-                    <FontAwesomeIcon icon={faWindowClose} />
-                </Button>
-            </ButtonGroup>
+                <ButtonGroup>
+                    <Button color="secondary" className="float-end" onClick={() => functions.moveUp()}>
+                        <FontAwesomeIcon icon={faArrowUp} />
+                    </Button>
+                    <Button color="secondary" className="float-end" onClick={() => functions.moveDown()}>
+                        <FontAwesomeIcon icon={faArrowDown} />
+                    </Button>
+                    <Button color="secondary" className="float-end" onClick={() => functions.delete()}>
+                        <FontAwesomeIcon icon={faWindowClose} />
+                    </Button>
+                </ButtonGroup>
+            </ButtonToolbar>
             <Row>
                 <Col>{children}</Col>
             </Row>

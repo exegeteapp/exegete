@@ -88,8 +88,6 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
             {...attributes}
             contentEditable={false}
             style={{
-                padding: "3px 3px 2px",
-                margin: "0 1px",
                 textDecoration: element.hidden ? "line-through" : "none",
                 color: sourceDefn ? sourceDefn.colour : "black",
                 verticalAlign: "baseline",

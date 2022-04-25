@@ -127,9 +127,11 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
 
     const HideButton: React.FC = () => {
         return (
-            <Button onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
-                <FontAwesomeIcon icon={faTags} />
-            </Button>
+            <ButtonGroup>
+                <Button onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
+                    <FontAwesomeIcon icon={faTags} />
+                </Button>
+            </ButtonGroup>
         );
     };
 

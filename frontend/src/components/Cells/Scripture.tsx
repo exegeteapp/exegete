@@ -2,7 +2,7 @@ import { CellFC, NewCellDataFn, WorkspaceData } from "../../workspace/Workspace"
 import React from "react";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
-import { Button, ButtonGroup } from "reactstrap";
+import { Button, ButtonGroup, ButtonToolbar } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
 import { RegistryEntry } from "../../workspace/CellRegistry";
@@ -68,9 +68,11 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
 
     const HideButton: React.FC = () => {
         return (
-            <Button onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
-                <FontAwesomeIcon icon={faTags} />
-            </Button>
+            <ButtonGroup>
+                <Button onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
+                    <FontAwesomeIcon icon={faTags} />
+                </Button>
+            </ButtonGroup>
         );
     };
 
