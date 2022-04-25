@@ -52,6 +52,7 @@ html {
 }
 
 .scripture-text {
+    white-space: pre-wrap;
     padding-bottom: 1rem;
 }
 
