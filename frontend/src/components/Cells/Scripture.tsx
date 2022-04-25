@@ -30,7 +30,7 @@ export const newScriptureCell: NewCellDataFn<ScriptureCellData> = (workspace: Wo
     }
     return {
         shortcode: "NET",
-        verseref: "Matthew 6:26-34",
+        verseref: "Matthew 6.26-34",
         hidemarkup: false,
         annotation: [],
     };
