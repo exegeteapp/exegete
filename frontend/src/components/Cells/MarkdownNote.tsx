@@ -67,7 +67,11 @@ export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell, functions }) 
 };
 
 export const MarkdownNoteDefinition: RegistryEntry = {
-    title: "Note",
     component: MarkdownNote,
-    newData: newMarkdownNoteCell,
+    launchers: [
+        {
+            title: "Note",
+            newData: newMarkdownNoteCell,
+        },
+    ],
 };

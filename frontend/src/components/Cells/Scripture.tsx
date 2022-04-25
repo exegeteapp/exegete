@@ -121,7 +121,11 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
 };
 
 export const ScriptureDefinition: RegistryEntry = {
-    title: "Scripture",
     component: Scripture,
-    newData: newScriptureCell,
+    launchers: [
+        {
+            title: "Scripture",
+            newData: newScriptureCell,
+        },
+    ],
 };

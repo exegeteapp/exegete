@@ -131,20 +131,25 @@ const DeleteWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => v
 const AddComponentMenu: React.FC = () => {
     const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
-    const items = Object.keys(Registry).map((key) => {
+    const items: JSX.Element[] = [];
+
+    for (const key in Registry) {
         const defn = Registry[key];
-        const newCell = () => {
-            dispatch({
-                type: "workspace_cell_add",
-                cell: makeNewCell(state.workspace!.data, key, defn),
-            });
-        };
-        return (
-            <DropdownItem key={key} onClick={newCell}>
-                {defn.title}
-            </DropdownItem>
-        );
-    });
+        for (let i = 0; i < defn.launchers.length; i++) {
+            const launcher = defn.launchers[i];
+            const newCell = () => {
+                dispatch({
+                    type: "workspace_cell_add",
+                    cell: makeNewCell(state.workspace!.data, key, defn, launcher),
+                });
+            };
+            items.push(
+                <DropdownItem key={`${key}.${i}`} onClick={newCell}>
+                    {launcher.title}
+                </DropdownItem>
+            );
+        }
+    }
 
     return (
         <UncontrolledDropdown nav>

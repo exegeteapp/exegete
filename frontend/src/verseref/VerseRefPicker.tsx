@@ -55,8 +55,8 @@ export const VerseRefPicker: React.FC<{
         }
     };
 
-    const sc_width = small ? 6 : 3;
-    const in_width = small ? 6 : 9;
+    const sc_width = small ? 4 : 3;
+    const in_width = small ? 8 : 9;
 
     useEffect(() => {
         if (!scriptureState.valid || !scriptureState.catalog) {

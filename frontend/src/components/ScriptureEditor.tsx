@@ -1,6 +1,6 @@
 // This example is for an Editor with `ReactEditor` and `HistoryEditor`
-import { BaseEditor, Editor } from "slate";
-import { ReactEditor, RenderElementProps, useFocused, useSelected } from "slate-react";
+import { BaseEditor, Editor, Transforms } from "slate";
+import { ReactEditor, RenderElementProps, useFocused, useSelected, useSlate } from "slate-react";
 import { HistoryEditor, withHistory } from "slate-history";
 import React from "react";
 import { createEditor, Descendant } from "slate";
@@ -10,7 +10,17 @@ import { getScripture } from "../scripture/ScriptureAPI";
 import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { getModuleParser } from "../scripture/ParserCache";
 import parseReference, { ParseResultSuccess } from "../verseref/VerseRef";
-import { ScriptureWordAnnotation, ScriptureWordAnnotationFunctions, WordPosition } from "./ScriptureAnnotation";
+import {
+    annoKey,
+    ScriptureWordAnnotation,
+    ScriptureWordAnnotationFunctions,
+    WordPosition,
+} from "./ScriptureAnnotation";
+import ReactDOM from "react-dom";
+import { Button, ButtonGroup, ButtonToolbar } from "reactstrap";
+import { faCheck, faStrikethrough, faWindowClose, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { getSource } from "../sources/Sources";
 
 type ParaElement = {
     type: "paragraph";
@@ -22,6 +32,8 @@ type WordElement = {
     value: string;
     children: CustomText[];
     position: WordPosition;
+    source: string;
+    hidden: boolean;
 };
 
 type CustomText = {
@@ -53,7 +65,7 @@ const withWords = (editor: Editor) => {
     return editor;
 };
 
-const Element = (props: RenderElementProps) => {
+const EditorElement: React.FC<RenderElementProps> = (props) => {
     const { attributes, children, element } = props;
     switch (element.type) {
         case "word":
@@ -69,6 +81,7 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
     if (element.type !== "word") {
         return <></>;
     }
+    const sourceDefn = getSource("NT", element.source);
     return (
         <span
             {...attributes}
@@ -76,6 +89,8 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
             style={{
                 padding: "3px 3px 2px",
                 margin: "0 1px",
+                textDecoration: element.hidden ? "line-through" : "none",
+                color: sourceDefn ? sourceDefn.colour : "black",
                 verticalAlign: "baseline",
                 display: "inline-block",
                 borderRadius: "4px",
@@ -89,97 +104,196 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
     );
 };
 
-const calculateInitialValue = (
+const calculateInitialValue = async (
     shortcode: string,
     res: ParseResultSuccess,
     annotation: ScriptureWordAnnotationFunctions
 ): Promise<Descendant[]> => {
     const scripturePromises = res.sbcs.map((sbc) => getScripture({ ...sbc, shortcode: shortcode }));
-    return Promise.all(scripturePromises).then((scriptures) => {
-        const anno = annotation.get();
-        const annoMap = new Map<string, ScriptureWordAnnotation>();
-
-        const make_para = (elems: Descendant[]): ParaElement => {
-            // the mandatory space at the start of every paragraph is there so the user can
-            // get their cursor in before the first immutable/null word
-            return {
-                type: "paragraph",
-                children: [{ type: "text", text: " " }, ...elems],
-            };
+    const scriptures = await Promise.all(scripturePromises);
+    const anno = annotation.get();
+    const annoMap = new Map<string, ScriptureWordAnnotation>();
+    const make_para = (elems_1: Descendant[]): ParaElement => {
+        // the mandatory space at the start of every paragraph is there so the user can
+        // get their cursor in before the first immutable/null word
+        return {
+            type: "paragraph",
+            children: [{ type: "text", text: " " }, ...elems_1],
         };
-
-        const annoKey = (p: WordPosition) => {
-            return JSON.stringify([p.book, p.chapter, p.verse, p.index]);
-        };
-
-        for (const [p, a] of anno) {
-            annoMap.set(annoKey(p), a);
+    };
+    for (const [p_2, a] of anno) {
+        annoMap.set(annoKey(p_2), a);
+    }
+    const initialValue: ParaElement[] = [];
+    let wordElem: Descendant[] = [];
+    for (let i = 0; i < scriptures.length; i++) {
+        const book = res.sbcs[i].book;
+        const objs = scriptures[i];
+        if (!objs) {
+            continue;
         }
-        const initialValue: ParaElement[] = [];
-
-        let wordElem: Descendant[] = [];
-        for (let i = 0; i < scriptures.length; i++) {
-            const book = res.sbcs[i].book;
-            const objs = scriptures[i];
-            if (!objs) {
-                continue;
+        for (const obj of objs) {
+            if (obj.type !== "verse") {
+                continue; // we don't want to annotate footnotes or titles...
             }
-            for (const obj of objs) {
-                for (let wi = 0; wi < obj.text.length; wi++) {
-                    const word = obj.text[wi];
-                    const position = {
-                        book: book,
-                        chapter: obj.chapter_start,
-                        verse: obj.verse_start,
-                        index: wi,
-                    };
-                    const wordAnno = annoMap.get(annoKey(position));
-                    if (wordAnno && wordAnno.paraSkip > 0) {
-                        initialValue.push(make_para(wordElem));
-                        for (let i = 0; i < wordAnno.paraSkip - 1; i++) {
-                            initialValue.push(make_para([]));
-                        }
-                        wordElem = [];
+            for (let wi = 0; wi < obj.text.length; wi++) {
+                const word = obj.text[wi];
+                const position = {
+                    book: book,
+                    chapter: obj.chapter_start,
+                    verse: obj.verse_start,
+                    index: wi,
+                };
+                const wordAnno = annoMap.get(annoKey(position));
+                if (wordAnno && wordAnno.paraSkip > 0) {
+                    initialValue.push(make_para(wordElem));
+                    for (let i_1 = 0; i_1 < wordAnno.paraSkip - 1; i_1++) {
+                        initialValue.push(make_para([]));
                     }
-                    if (wordAnno && wordAnno.preText) {
-                        wordElem.push({
-                            type: "text",
-                            text: wordAnno.preText,
-                        });
-                    }
-                    wordElem.push({
-                        type: "word",
-                        value: word.value,
-                        children: [{ type: "text", text: "" }],
-                        position,
-                    });
+                    wordElem = [];
+                }
+                if (wordAnno && wordAnno.preText) {
                     wordElem.push({
                         type: "text",
-                        text: wordAnno && wordAnno.postText ? wordAnno.postText : " ",
+                        text: wordAnno.preText,
                     });
                 }
+                wordElem.push({
+                    type: "word",
+                    value: word.value,
+                    children: [{ type: "text", text: "" }],
+                    source: wordAnno ? wordAnno.source : "",
+                    hidden: wordAnno ? wordAnno.hidden : false,
+                    position,
+                });
+                wordElem.push({
+                    type: "text",
+                    text: wordAnno && wordAnno.postText ? wordAnno.postText : " ",
+                });
             }
         }
-        if (wordElem) {
-            initialValue.push(make_para(wordElem));
-        }
+    }
+    if (wordElem) {
+        initialValue.push(make_para(wordElem));
+    }
+    return initialValue;
+};
 
-        return initialValue;
+export const Portal: React.FC = ({ children }) => {
+    return ReactDOM.createPortal(children, document.body);
+};
+
+const setOnSelection = (editor: Editor, props: any) => {
+    Transforms.setNodes(editor, props, {
+        match: (node, path) => {
+            // FIXME: I can't work out how to do this properly with slate's typescript stuff
+            // (where is Element.isElement that the docs point to?).. so we hack around it.
+            const word = node as WordElement;
+            if (word.type !== "word") {
+                return false;
+            }
+            return true;
+        },
+        split: false,
+        mode: "lowest",
     });
 };
 
-const calculateAnnotations = (value: Descendant[]) => {
+const HideButton: React.FC<{ value: boolean; icon: IconDefinition }> = ({ value, icon }) => {
+    const editor = useSlate();
+    return (
+        <Button className="float-end" onClick={() => setOnSelection(editor, { hidden: value })}>
+            <FontAwesomeIcon icon={icon} />
+        </Button>
+    );
+};
+
+const SourceButton: React.FC<{ source: string; icon?: IconDefinition }> = ({ source, icon }) => {
+    const editor = useSlate();
+    return (
+        <Button className="float-end" onClick={() => setOnSelection(editor, { source: source })}>
+            {icon ? <FontAwesomeIcon icon={icon} /> : source}
+        </Button>
+    );
+};
+
+const EditorMenu = React.forwardRef<HTMLDivElement>((props, ref) => {
+    return (
+        <div
+            className="editor-popupmenu"
+            ref={ref}
+            onMouseDown={(e) => {
+                // stop focus grab
+                e.preventDefault();
+            }}
+        >
+            <ButtonToolbar className="float-end mb-1">
+                <ButtonGroup>
+                    <SourceButton source="" icon={faWindowClose} />
+                    <SourceButton source="Mk" />
+                    <SourceButton source="M" />
+                    <SourceButton source="L" />
+                    <SourceButton source="Q" />
+                </ButtonGroup>
+                <ButtonGroup>
+                    <HideButton value={true} icon={faStrikethrough} />
+                    <HideButton value={false} icon={faCheck} />
+                </ButtonGroup>
+            </ButtonToolbar>
+        </div>
+    );
+});
+
+const HoveringToolbar = () => {
+    const ref = React.useRef<HTMLDivElement | null>(null);
+    const editor = useSlate();
+    const inFocus = useFocused();
+
+    React.useEffect(() => {
+        const el = ref.current;
+        const { selection } = editor;
+
+        if (!el) {
+            return;
+        }
+
+        // we have a word to annotate if there is a void, or there is a string selected
+        if (!selection || !inFocus || (!Editor.void(editor) && Editor.string(editor, selection) === "")) {
+            el.removeAttribute("style");
+            return;
+        }
+
+        const domSelection = window.getSelection();
+        if (domSelection) {
+            const domRange = domSelection.getRangeAt(0);
+            const rect = domRange.getBoundingClientRect();
+            el.style.opacity = "1";
+            el.style.top = `${rect.top + window.pageYOffset - el.offsetHeight}px`;
+            el.style.left = `${rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2}px`;
+        }
+    });
+
+    return (
+        <Portal>
+            <EditorMenu ref={ref} />
+        </Portal>
+    );
+};
+
+const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWordAnnotation][] => {
     // build a fast lookup table for annotations by position
     // we don't need to keep existing annotations, we're rebuilding them
     // all from the state of slate
-    const annoMap = new Map<WordPosition, ScriptureWordAnnotation>();
+    const annoMap = new Map<string, ScriptureWordAnnotation>();
+    const annotated = new Set<WordPosition>();
 
-    const newAnno = () => {
+    const newAnno = (): ScriptureWordAnnotation => {
         return {
             postText: "",
             preText: "",
             source: "",
             paraSkip: 0,
+            hidden: false,
         };
     };
 
@@ -197,63 +311,79 @@ const calculateAnnotations = (value: Descendant[]) => {
 
             if (child.type === "word") {
                 currentPos = child.position;
+                let key = annoKey(currentPos);
+                let anno = annoMap.get(key);
 
-                if (para_pending > 0) {
-                    let anno: ScriptureWordAnnotation = annoMap.has(currentPos) ? annoMap.get(currentPos)! : newAnno();
+                if (para_pending > 0 || child.source !== "" || child.hidden) {
+                    if (!anno) {
+                        anno = newAnno();
+                    }
                     anno.paraSkip = para_pending;
+                    anno.hidden = child.hidden;
+                    anno.source = child.source;
                     para_pending = 0;
-                    annoMap.set(currentPos, anno);
+                }
+
+                if (anno) {
+                    annoMap.set(key, anno);
+                    annotated.add(currentPos);
                 }
 
                 continue;
-            }
+            } else if (child.type === "text") {
+                let text = child.text;
+                // special case: regular space between words doesn't really count (they're just a UI detail,
+                // not user input), but we do need to go through the handling in case there was a previous value
+                if (text === " ") {
+                    text = "";
+                }
 
-            // this ought not to happen
-            if (child.type !== "text") {
-                continue;
-            }
+                let pos = currentPos;
 
-            let text = child.text;
-            // special case: regular space between words doesn't really count (they're just a UI detail,
-            // not user input), but we do need to go through the handling in case there was a previous value
-            if (text === " ") {
-                text = "";
-            }
-
-            let pos = currentPos;
-            const forward = pos === null;
-            if (forward) {
-                // scan forward until we find a word
-                for (let j = i; j < para.children.length; j++) {
-                    const nextChild = para.children[j];
-                    if (nextChild.type === "word") {
-                        pos = nextChild.position;
-                        break;
+                const forward = pos === null;
+                if (forward) {
+                    // scan forward until we find a word
+                    for (let j = i; j < para.children.length; j++) {
+                        const nextChild = para.children[j];
+                        if (nextChild.type === "word") {
+                            pos = nextChild.position;
+                            break;
+                        }
                     }
                 }
-            }
 
-            // this won't happen unless there just aren't any words
-            if (pos === null) {
-                continue;
-            }
-
-            if (text) {
-                let anno: ScriptureWordAnnotation = annoMap.has(pos) ? annoMap.get(pos)! : newAnno();
-                if (forward) {
-                    anno.preText = text;
-                } else {
-                    anno.postText = text;
+                // this won't happen unless there just aren't any words
+                if (pos === null) {
+                    continue;
                 }
-                annoMap.set(pos, anno);
+
+                const key = annoKey(pos);
+                let anno = annoMap.get(key);
+
+                if (text) {
+                    if (!anno) {
+                        anno = newAnno();
+                    }
+                    if (forward) {
+                        anno.preText = text;
+                    } else {
+                        anno.postText = text;
+                    }
+                    if (anno) {
+                        annoMap.set(key, anno);
+                        annotated.add(pos);
+                    }
+                }
             }
         }
 
         para_pending += 1;
     }
 
-    // the filter is so we don't bother writing out trivial non-annotations
-    return Array.from(annoMap).filter(([_, anno]) => anno.preText || anno.postText || anno.source || anno.paraSkip > 0);
+    return Array.from(annotated).map((pos) => {
+        const key = annoKey(pos);
+        return [pos, annoMap.get(key)!];
+    });
 };
 
 export const ScriptureEditor: React.FC<{
@@ -266,7 +396,7 @@ export const ScriptureEditor: React.FC<{
     const [editorElem, setEditorElem] = React.useState<JSX.Element>(<></>);
     const [haveInitialValue, setHaveInitialValue] = React.useState(false);
 
-    const renderElement = React.useCallback((props: RenderElementProps) => <Element {...props} />, []);
+    const renderElement = React.useCallback((props: RenderElementProps) => <EditorElement {...props} />, []);
 
     React.useEffect(() => {
         let isSubscribed = true;
@@ -308,7 +438,6 @@ export const ScriptureEditor: React.FC<{
             }
             // we let the user input whitespace characters for padding, but nothing else.
             if (event.key !== " " && event.key !== "Enter" && event.key !== "Backspace") {
-                console.log(event.key);
                 event.preventDefault();
                 return;
             }
@@ -319,6 +448,7 @@ export const ScriptureEditor: React.FC<{
                 if (isSubscribed) {
                     setEditorElem(
                         <Slate editor={editor} value={initialValue} onChange={onChange}>
+                            <HoveringToolbar />
                             <Editable renderElement={renderElement} onKeyDown={onKeyDown} />
                         </Slate>
                     );

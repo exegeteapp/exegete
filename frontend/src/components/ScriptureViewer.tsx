@@ -4,7 +4,12 @@ import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { getScripture, ScriptureObject } from "../scripture/ScriptureAPI";
 import { ScriptureTextView } from "../scripture/ScriptureTextView";
 import { getModuleParser } from "../scripture/ParserCache";
-import { ScriptureWordAnnotationFunctions } from "./ScriptureAnnotation";
+import {
+    annoKey,
+    ScriptureWordAnnotation,
+    ScriptureWordAnnotationFunctions,
+    WordPosition,
+} from "./ScriptureAnnotation";
 
 export interface ScriptureViewerData {
     shortcode: string;
@@ -13,7 +18,7 @@ export interface ScriptureViewerData {
     annotation: ScriptureWordAnnotationFunctions;
 }
 
-export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidemarkup, shortcode }) => {
+export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidemarkup, shortcode, annotation }) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const [scripture, setScripture] = React.useState<JSX.Element[]>([]);
 
@@ -22,6 +27,15 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
         if (!scriptureState.valid || !scriptureState.catalog) {
             return;
         }
+
+        const annoMap = new Map<string, ScriptureWordAnnotation>();
+        for (const [pos, anno] of annotation.get()) {
+            annoMap.set(annoKey(pos), anno);
+        }
+
+        const getAnno = (p: WordPosition) => {
+            return annoMap.get(annoKey(p));
+        };
 
         const module = scriptureState.catalog[shortcode];
         const parser = getModuleParser(module, shortcode);
@@ -48,6 +62,7 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
 
                     elems.push(
                         <ScriptureTextView
+                            getAnno={getAnno}
                             shortcode={shortcode}
                             last_book={last_book}
                             book={res.sbcs[i].book}
@@ -68,7 +83,7 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
         return () => {
             isSubscribed = false;
         };
-    }, [scriptureState.catalog, scriptureState.valid, shortcode, verseref, hidemarkup]);
+    }, [scriptureState.catalog, scriptureState.valid, shortcode, verseref, hidemarkup, annotation]);
 
     if (!scriptureState.valid || !scriptureState.catalog) {
         return <div>Loading...</div>;

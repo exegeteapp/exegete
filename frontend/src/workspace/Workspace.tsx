@@ -249,7 +249,7 @@ export const createWorkspace = async (local: boolean) => {
         data: data,
     };
     const newSlug = "scripture-viewer";
-    newData.data.cells.push(makeNewCell(data, newSlug, Registry[newSlug]));
+    newData.data.cells.push(makeNewCell(data, newSlug, Registry[newSlug], Registry[newSlug].launchers[0]));
 
     if (local) {
         createWorkspaceLocal(newData);

@@ -24,36 +24,6 @@ export interface ParallelCellData {
     hidemarkup: boolean;
 }
 
-export const newParallelCell: NewCellDataFn<ParallelCellData> = (workspace: WorkspaceData): ParallelCellData => {
-    // if possible, we just clone the last cell
-    for (let i = workspace.cells.length - 1; i >= 0; i--) {
-        const cell = workspace.cells[i];
-        if (cell.cell_type === ParallelSlug) {
-            return { ...cell.data };
-        }
-    }
-    return {
-        hidemarkup: true,
-        columns: [
-            {
-                shortcode: "NET",
-                verseref: "Matthew 14.3-4",
-                annotation: [],
-            },
-            {
-                shortcode: "NET",
-                verseref: "Mark 6.17-18",
-                annotation: [],
-            },
-            {
-                shortcode: "NET",
-                verseref: "Luke 3.19-20",
-                annotation: [],
-            },
-        ],
-    };
-};
-
 const ParallelColumn: React.FC<{
     index: number;
     cell: WorkspaceCell<ParallelCellData>;
@@ -189,8 +159,67 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
     );
 };
 
+export const newParallel3Cell: NewCellDataFn<ParallelCellData> = (workspace: WorkspaceData): ParallelCellData => {
+    return {
+        hidemarkup: true,
+        columns: [
+            {
+                shortcode: "NET",
+                verseref: "Matthew 14.3-4",
+                annotation: [],
+            },
+            {
+                shortcode: "NET",
+                verseref: "Mark 6.17-18",
+                annotation: [],
+            },
+            {
+                shortcode: "NET",
+                verseref: "Luke 3.19-20",
+                annotation: [],
+            },
+        ],
+    };
+};
+
+export const newParallel4Cell: NewCellDataFn<ParallelCellData> = (workspace: WorkspaceData): ParallelCellData => {
+    return {
+        hidemarkup: true,
+        columns: [
+            {
+                shortcode: "NET",
+                verseref: "Matthew 3.13-17",
+                annotation: [],
+            },
+            {
+                shortcode: "NET",
+                verseref: "Mark 1.9-11",
+                annotation: [],
+            },
+            {
+                shortcode: "NET",
+                verseref: "Luke 3.21-22",
+                annotation: [],
+            },
+            {
+                shortcode: "NET",
+                verseref: "John 1.29-34",
+                annotation: [],
+            },
+        ],
+    };
+};
+
 export const ParallelDefinition: RegistryEntry = {
-    title: "Parallel",
     component: Parallel,
-    newData: newParallelCell,
+    launchers: [
+        {
+            title: "Parallel (3 Columns)",
+            newData: newParallel3Cell,
+        },
+        {
+            title: "Parallel (4 Columns)",
+            newData: newParallel4Cell,
+        },
+    ],
 };
