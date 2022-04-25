@@ -67,3 +67,8 @@ html {
     transition: opacity 0.75s;
     border-radius: 2px;
 }
+
+.editor-para {
+    border: 1px solid gray;
+    margin: -1px;
+}

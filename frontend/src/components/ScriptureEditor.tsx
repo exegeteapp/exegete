@@ -83,7 +83,11 @@ const EditorElement: React.FC<RenderElementProps> = (props) => {
         case "word":
             return <Word {...props} />;
         default:
-            return <p {...attributes}>{children}</p>;
+            return (
+                <p className="editor-para" {...attributes}>
+                    {children}
+                </p>
+            );
     }
 };
 
