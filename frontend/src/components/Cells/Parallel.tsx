@@ -4,7 +4,7 @@ import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import { Button, ButtonGroup, Col, Row } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTags } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faTags } from "@fortawesome/free-solid-svg-icons";
 import { RegistryEntry } from "../../workspace/CellRegistry";
 import { ScriptureViewer } from "../ScriptureViewer";
 import { ScriptureEditor } from "../ScriptureEditor";
@@ -80,13 +80,20 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
         });
     };
 
-    if (!data.columns || (data.columns.length !== 3 && data.columns.length !== 4)) {
-        return <div>Unsupported column definitions for parallel viewer</div>;
-    }
+    const columnWidth = () => {
+        const l = data.columns.length;
+        if (l === 4) {
+            return 3;
+        } else if (l === 3) {
+            return 4;
+        } else if (l === 2) {
+            return 6;
+        }
+        // this should never happen, but bodge through just in case
+        return 4;
+    };
 
-    // markdown width of our columns.
-    const cw = data.columns.length === 3 ? 4 : 3;
-
+    const cw = columnWidth();
     const header: JSX.Element[] = [];
     const inner: JSX.Element[] = [];
     const footer: JSX.Element[] = [];
@@ -127,17 +134,58 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
 
     const HideButton: React.FC = () => {
         return (
-            <ButtonGroup>
-                <Button onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
-                    <FontAwesomeIcon icon={faTags} />
-                </Button>
-            </ButtonGroup>
+            <Button onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
+                <FontAwesomeIcon icon={faTags} />
+            </Button>
+        );
+    };
+
+    const addColumn = () => {
+        const new_column = { ...data.columns[data.columns.length - 1] };
+        const new_columns = [...data.columns, new_column];
+        functions.set({
+            ...cell.data,
+            columns: new_columns,
+        });
+    };
+
+    const removeLastColumn = () => {
+        const new_columns = data.columns.slice(0, -1);
+        functions.set({
+            ...cell.data,
+            columns: new_columns,
+        });
+    };
+
+    const AddColumnButton: React.FC = () => {
+        if (data.columns.length >= 4) {
+            return <></>;
+        }
+        return (
+            <Button onClick={() => addColumn()}>
+                <FontAwesomeIcon icon={faArrowRight} />
+            </Button>
+        );
+    };
+
+    const RemoveColumnButton: React.FC = () => {
+        if (data.columns.length <= 2) {
+            return <></>;
+        }
+        return (
+            <Button onClick={() => removeLastColumn()}>
+                <FontAwesomeIcon icon={faArrowLeft} />
+            </Button>
         );
     };
 
     return (
         <Cell>
-            <CellHeader functions={functions} uuid={cell.uuid} buttons={[<HideButton key={0} />]}></CellHeader>
+            <CellHeader
+                functions={functions}
+                uuid={cell.uuid}
+                buttons={[<RemoveColumnButton />, <AddColumnButton />, <HideButton key={0} />]}
+            ></CellHeader>
             <CellBody>
                 <Row>{header}</Row>
                 <Row>{inner}</Row>
@@ -156,30 +204,7 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
     );
 };
 
-export const newParallel3Cell: NewCellDataFn<ParallelCellData> = (workspace: WorkspaceData): ParallelCellData => {
-    return {
-        hidemarkup: true,
-        columns: [
-            {
-                shortcode: "NET",
-                verseref: "Matthew 14.3-4",
-                annotation: [],
-            },
-            {
-                shortcode: "NET",
-                verseref: "Mark 6.17-18",
-                annotation: [],
-            },
-            {
-                shortcode: "NET",
-                verseref: "Luke 3.19-20",
-                annotation: [],
-            },
-        ],
-    };
-};
-
-export const newParallel4Cell: NewCellDataFn<ParallelCellData> = (workspace: WorkspaceData): ParallelCellData => {
+export const newParallelCell: NewCellDataFn<ParallelCellData> = (workspace: WorkspaceData): ParallelCellData => {
     return {
         hidemarkup: true,
         columns: [
@@ -198,11 +223,6 @@ export const newParallel4Cell: NewCellDataFn<ParallelCellData> = (workspace: Wor
                 verseref: "Luke 3.21-22",
                 annotation: [],
             },
-            {
-                shortcode: "NET",
-                verseref: "John 1.29-34",
-                annotation: [],
-            },
         ],
     };
 };
@@ -211,12 +231,8 @@ export const ParallelDefinition: RegistryEntry = {
     component: Parallel,
     launchers: [
         {
-            title: "Parallel (3 Columns)",
-            newData: newParallel3Cell,
-        },
-        {
-            title: "Parallel (4 Columns)",
-            newData: newParallel4Cell,
+            title: "Parallel texts",
+            newData: newParallelCell,
         },
     ],
 };

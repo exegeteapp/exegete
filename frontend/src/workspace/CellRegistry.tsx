@@ -18,9 +18,9 @@ interface CellRegistry {
 }
 
 const Registry: CellRegistry = {
-    [ScriptureSlug]: ScriptureDefinition,
     [MarkdownNoteSlug]: MarkdownNoteDefinition,
     [ParallelSlug]: ParallelDefinition,
+    [ScriptureSlug]: ScriptureDefinition,
 };
 
 export default Registry;

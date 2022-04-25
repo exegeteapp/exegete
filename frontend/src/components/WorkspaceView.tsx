@@ -154,7 +154,7 @@ const AddComponentMenu: React.FC = () => {
     return (
         <UncontrolledDropdown nav>
             <DropdownToggle caret nav>
-                Add
+                Add tool
             </DropdownToggle>
             <DropdownMenu>{items}</DropdownMenu>
         </UncontrolledDropdown>
