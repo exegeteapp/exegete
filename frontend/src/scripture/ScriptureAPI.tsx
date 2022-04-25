@@ -40,12 +40,13 @@ export const getScripture = async (params: ScriptureParams): Promise<ScriptureOb
     const match = scriptureCache.find(([k]) => key === k);
     if (match) {
         return match[1];
+    } else {
     }
     try {
         const url = `/api/v1/scripture/verses/${params.shortcode}/${params.book}`;
         const resp = await axios.get<ScriptureObject[]>(url, { params: params });
         scriptureCache.push([key, resp.data]);
-        scriptureCache = scriptureCache.slice(scriptureCache.length - CACHE_SIZE, scriptureCache.length);
+        scriptureCache = scriptureCache.slice(-CACHE_SIZE);
         return resp.data;
     } catch (error: any) {
         return null;
