@@ -21,6 +21,7 @@ import { Button, ButtonGroup, ButtonToolbar } from "reactstrap";
 import { faCheck, faStrikethrough, faWindowClose, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getSource } from "../sources/Sources";
+import { languageClass } from "../scripture/ScriptureCatalog";
 
 type ParaElement = {
     type: "paragraph";
@@ -454,7 +455,11 @@ export const ScriptureEditor: React.FC<{
                     setEditorElem(
                         <Slate editor={editor} value={initialValue} onChange={onChange}>
                             <HoveringToolbar />
-                            <Editable renderElement={renderElement} onKeyDown={onKeyDown} />
+                            <Editable
+                                className={languageClass(module.language)}
+                                renderElement={renderElement}
+                                onKeyDown={onKeyDown}
+                            />
                         </Slate>
                     );
                     setHaveInitialValue(true);

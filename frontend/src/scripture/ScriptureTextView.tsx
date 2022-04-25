@@ -2,7 +2,7 @@ import React from "react";
 import { ScriptureWordAnnotation, WordPosition } from "../components/ScriptureAnnotation";
 import { getSource } from "../sources/Sources";
 import { ScriptureObject, ScriptureWord } from "./ScriptureAPI";
-import { ModuleInfo } from "./ScriptureCatalog";
+import { languageClass, ModuleInfo } from "./ScriptureCatalog";
 
 interface RenderState {
     book: string | null;
@@ -27,16 +27,6 @@ export const ScriptureTextView: React.FC<{
         book: last_book,
         chapter: last_scripture_object ? last_scripture_object.chapter_end : null,
         verse: last_scripture_object ? last_scripture_object.verse_end : null,
-    };
-
-    const languageClass = (language: string) => {
-        if (language === "ecg") {
-            return "biblical-text-greek";
-        } else if (language === "hbo") {
-            return "biblical-text-hebrew";
-        } else {
-            return "biblical-text-english";
-        }
     };
 
     const renderText = (words: ScriptureWord[], startingPosition: WordPosition) => {

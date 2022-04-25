@@ -52,6 +52,16 @@ export const FindChapter = (book: BookInfo, chapter: number): ChapterInfo | unde
     return book.chapters.find((c) => c.chapter === chapter);
 };
 
+export const languageClass = (language: string) => {
+    if (language === "ecg") {
+        return "biblical-text-greek";
+    } else if (language === "hbo") {
+        return "biblical-text-hebrew";
+    } else {
+        return "biblical-text-english";
+    }
+};
+
 export interface ScriptureCatalog {
     [index: string]: ModuleInfo;
 }
