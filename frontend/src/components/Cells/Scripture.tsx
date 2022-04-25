@@ -2,7 +2,7 @@ import { CellFC, NewCellDataFn, WorkspaceData } from "../../workspace/Workspace"
 import React from "react";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
-import { Button, ButtonGroup, ButtonToolbar } from "reactstrap";
+import { Button, ButtonGroup } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTags } from "@fortawesome/free-solid-svg-icons";
 import { RegistryEntry } from "../../workspace/CellRegistry";
