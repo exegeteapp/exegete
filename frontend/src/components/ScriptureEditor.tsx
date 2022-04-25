@@ -23,6 +23,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getSource } from "../sources/Sources";
 import { languageClass } from "../scripture/ScriptureCatalog";
 
+const PermittedKeys = new Set<string>([
+    " ",
+    "Enter",
+    "Backspace",
+    "Delete",
+    "ArrowLeft",
+    "ArrowRight",
+    "ArrowUp",
+    "ArrowDown",
+]);
+
 type ParaElement = {
     type: "paragraph";
     children: (CustomElement | CustomText)[];
@@ -441,7 +452,7 @@ export const ScriptureEditor: React.FC<{
                 return;
             }
             // we let the user input whitespace characters for padding, but nothing else.
-            if (event.key !== " " && event.key !== "Enter" && event.key !== "Backspace") {
+            if (!PermittedKeys.has(event.key)) {
                 event.preventDefault();
                 return;
             }

@@ -184,7 +184,7 @@ export const Parallel: CellFC<ParallelCellData> = ({ cell, functions }) => {
             <CellHeader
                 functions={functions}
                 uuid={cell.uuid}
-                buttons={[<RemoveColumnButton />, <AddColumnButton />, <HideButton key={0} />]}
+                buttons={[<RemoveColumnButton key={1} />, <AddColumnButton key={2} />, <HideButton key={3} />]}
             ></CellHeader>
             <CellBody>
                 <Row>{header}</Row>
