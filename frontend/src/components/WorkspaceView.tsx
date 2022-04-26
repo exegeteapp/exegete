@@ -232,7 +232,7 @@ const WorkspaceView = () => {
         <>
             <WorkspaceProvider id={id} local={local}>
                 <WorkspaceHeader />
-                <Container id="main" fluid="md">
+                <Container id="main" fluid="lg">
                     <InnerWorkspaceView />
                 </Container>
             </WorkspaceProvider>

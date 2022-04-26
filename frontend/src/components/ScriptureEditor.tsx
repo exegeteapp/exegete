@@ -107,7 +107,6 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
                 color: sourceDefn ? sourceDefn.colour : "black",
                 verticalAlign: "baseline",
                 display: "inline-block",
-                borderRadius: "4px",
                 backgroundColor: "#eee",
                 boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
             }}
@@ -244,10 +243,10 @@ const EditorMenu = React.forwardRef<HTMLDivElement>((props, ref) => {
             <ButtonToolbar className="float-end mb-1">
                 <ButtonGroup>
                     <SourceButton source="" icon={faWindowClose} />
+                    <SourceButton source="Q" />
                     <SourceButton source="Mk" />
                     <SourceButton source="M" />
                     <SourceButton source="L" />
-                    <SourceButton source="Q" />
                 </ButtonGroup>
                 <ButtonGroup>
                     <HideButton value={true} icon={faStrikethrough} />

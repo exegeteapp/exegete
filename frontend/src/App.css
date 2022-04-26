@@ -22,21 +22,21 @@ html {
 
 .biblical-text-hebrew {
     font-family: "SBL Hebrew";
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: normal;
     font-style: normal;
 }
 
 .biblical-text-greek {
     font-family: "SBL Greek";
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: normal;
     font-style: normal;
 }
 
 .biblical-text-english {
     font-family: "Times";
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     font-weight: normal;
     font-style: normal;
 }
