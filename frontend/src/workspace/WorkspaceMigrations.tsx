@@ -7,37 +7,40 @@ import { WorkspaceData, WorkspaceMetadata } from "./Workspace";
 // can then safely be chained.
 
 export const CurrentWorkspaceFormat = 2;
-const migrations: { [key: number]: (workspace: WorkspaceData) => WorkspaceData } = {
-    1: (workspace: WorkspaceData) => {
-        for (const c of workspace.cells) {
-            // parallel became the scripture cell type
-            if (c.cell_type === "parallel") {
-                c.cell_type = "scripture";
+const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => WorkspaceData][] = [
+    [
+        2,
+        (workspace: WorkspaceData) => {
+            for (const c of workspace.cells) {
+                // parallel became the scripture cell type
+                if (c.cell_type === "parallel") {
+                    c.cell_type = "scripture";
+                }
+                // scripture-viewer became scripture; we merged the two
+                if (c.cell_type === "scripture-viewer") {
+                    const old_data = c.data as {
+                        shortcode: any;
+                        verseref: any;
+                        hidemarkup: any;
+                        annotation: any;
+                    };
+                    c.cell_type = "scripture";
+                    c.data = {
+                        hidemarkup: old_data.hidemarkup,
+                        columns: [
+                            {
+                                shortcode: old_data.shortcode,
+                                verseref: old_data.verseref,
+                                annotation: old_data.annotation,
+                            },
+                        ],
+                    };
+                }
             }
-            // scripture-viewer became scripture; we merged the two
-            if (c.cell_type === "scripture-viewer") {
-                const old_data = c.data as {
-                    shortcode: any;
-                    verseref: any;
-                    hidemarkup: any;
-                    annotation: any;
-                };
-                c.cell_type = "scripture";
-                c.data = {
-                    hidemarkup: old_data.hidemarkup,
-                    columns: [
-                        {
-                            shortcode: old_data.shortcode,
-                            verseref: old_data.verseref,
-                            annotation: old_data.annotation,
-                        },
-                    ],
-                };
-            }
-        }
-        return workspace;
-    },
-};
+            return workspace;
+        },
+    ],
+];
 
 export const MigrateWorkspace = (w: WorkspaceMetadata | null): WorkspaceMetadata | null => {
     if (!w) {
@@ -48,11 +51,12 @@ export const MigrateWorkspace = (w: WorkspaceMetadata | null): WorkspaceMetadata
     }
 
     // run migrations in sequence
-    for (let i = w.data.workspace_format; i < CurrentWorkspaceFormat; i++) {
-        const migration = migrations[i];
-        if (migration) {
-            w.data = migration(w.data);
+    for (const [toVersion, migration] of migrations) {
+        if (toVersion <= w.data.workspace_format) {
+            continue;
         }
+        w.data = migration(w.data);
+        w.data.workspace_format = toVersion;
     }
 
     return w;
