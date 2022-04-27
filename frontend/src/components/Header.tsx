@@ -50,10 +50,8 @@ export const BaseHeader: React.FC = ({ children }) => {
             </NavbarBrand>
             <NavbarToggler onClick={() => setToggled(!toggled)} />
             <Collapse navbar isOpen={toggled}>
-                <Nav navbar className="me-auto">
+                <Nav navbar className="ms-auto">
                     {children}
-                </Nav>
-                <Nav navbar>
                     <UserMenu />
                 </Nav>
             </Collapse>
