@@ -156,7 +156,9 @@ const AddComponentMenu: React.FC = () => {
             <DropdownToggle caret nav>
                 Add tool
             </DropdownToggle>
-            <DropdownMenu>{items}</DropdownMenu>
+            <DropdownMenu md-end={"true"} color="dark" dark>
+                {items}
+            </DropdownMenu>
         </UncontrolledDropdown>
     );
 };
@@ -201,7 +203,7 @@ const WorkspaceHeader: React.FC = () => {
                     <DropdownToggle caret nav>
                         Workspace: {title}
                     </DropdownToggle>
-                    <DropdownMenu>
+                    <DropdownMenu md-end={"true"} color="dark" dark>
                         <DropdownItem onClick={() => setShowRenameWorkspaceModal(true)}>Rename</DropdownItem>
                         <DropdownItem onClick={() => setShowDeleteWorkspaceModal(true)}>Delete</DropdownItem>
                     </DropdownMenu>

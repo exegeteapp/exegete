@@ -34,7 +34,7 @@ function UserMenu() {
             <DropdownToggle caret nav>
                 <FontAwesomeIcon icon={faUser} />
             </DropdownToggle>
-            <DropdownMenu md-end={"true"}>
+            <DropdownMenu md-end={"true"} color="dark" dark>
                 <DropdownItem onClick={handleLogout}>Logout</DropdownItem>
             </DropdownMenu>
         </UncontrolledDropdown>
