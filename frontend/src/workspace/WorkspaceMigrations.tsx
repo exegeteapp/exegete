@@ -31,7 +31,7 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
                             {
                                 shortcode: old_data.shortcode,
                                 verseref: old_data.verseref,
-                                annotation: old_data.annotation,
+                                annotation: old_data.annotation || [],
                             },
                         ],
                     };
