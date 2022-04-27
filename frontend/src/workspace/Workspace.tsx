@@ -9,6 +9,7 @@ import defaultDocument from "../workspace/New";
 import { makeNewCell } from "./Cell";
 import Registry from "./CellRegistry";
 import { WorkspaceAutoSave } from "./Autosave";
+import { MigrateWorkspace } from "./WorkspaceMigrations";
 
 export type NewCellDataFn<T> = (workspace: WorkspaceData) => T;
 
@@ -215,12 +216,14 @@ export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ ch
     React.useEffect(() => {
         async function getFromApi() {
             dispatch({ type: "workspace_start" });
-            const workspace = await loadWorkspaceAPI(id);
-            dispatch({ type: "workspace_loaded", workspace: workspace });
+            const workspace = MigrateWorkspace(await loadWorkspaceAPI(id));
+            if (workspace) {
+                dispatch({ type: "workspace_loaded", workspace: workspace });
+            }
         }
 
         function getFromLocal() {
-            const workspace = loadWorkspaceLocal(id);
+            const workspace = MigrateWorkspace(loadWorkspaceLocal(id));
             if (workspace) {
                 dispatch({ type: "workspace_loaded", workspace: workspace });
             }
@@ -248,7 +251,7 @@ export const createWorkspace = async (local: boolean) => {
         title: "Untitled",
         data: data,
     };
-    const newSlug = "scripture-viewer";
+    const newSlug = "scripture";
     newData.data.cells.push(makeNewCell(data, newSlug, Registry[newSlug], Registry[newSlug].launchers[0]));
 
     if (local) {
