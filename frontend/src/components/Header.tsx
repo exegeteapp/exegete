@@ -11,7 +11,7 @@ import {
     DropdownItem,
 } from "reactstrap";
 import { Link } from "react-router-dom";
-import { faBook, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faBookOpen, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { IUserContext, UserContext, Logout } from "../user/User";
 
@@ -46,7 +46,7 @@ export const BaseHeader: React.FC = ({ children }) => {
     return (
         <Navbar color="dark" expand="md" fixed="top" dark>
             <NavbarBrand tag={Link} to="/">
-                <FontAwesomeIcon color="purple" icon={faBook} /> exegete.app
+                <FontAwesomeIcon color="white" icon={faBookOpen} /> exegete.app
             </NavbarBrand>
             <NavbarToggler onClick={() => setToggled(!toggled)} />
             <Collapse navbar isOpen={toggled}>
