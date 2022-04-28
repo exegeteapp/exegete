@@ -7,6 +7,7 @@ import Home from "./components/Home";
 import Register from "./components/Register";
 import Verify from "./components/Verify";
 import Workspace from "./components/WorkspaceView";
+import { Helmet, HelmetProvider } from "react-helmet-async";
 import "./App.css";
 import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
@@ -38,13 +39,18 @@ function RouterComponent() {
 
 function App() {
     return (
-        <ConfigProvider>
-            <UserProvider>
-                <ScriptureProvider>
-                    <RouterComponent />
-                </ScriptureProvider>
-            </UserProvider>
-        </ConfigProvider>
+        <HelmetProvider>
+            <Helmet>
+                <title>exegete.app</title>
+            </Helmet>
+            <ConfigProvider>
+                <UserProvider>
+                    <ScriptureProvider>
+                        <RouterComponent />
+                    </ScriptureProvider>
+                </UserProvider>
+            </ConfigProvider>
+        </HelmetProvider>
     );
 }
 

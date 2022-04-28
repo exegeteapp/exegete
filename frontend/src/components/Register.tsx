@@ -6,6 +6,7 @@ import useInput from "../util/useInput";
 import ReCAPTCHA from "react-google-recaptcha";
 import { IUserContext, UserContext, Register as RegisterD, Login as LoginD } from "../user/User";
 import Header from "./Header";
+import { Helmet } from "react-helmet-async";
 
 function Register() {
     const navigate = useNavigate();
@@ -64,6 +65,9 @@ function Register() {
     return (
         <>
             <Header />
+            <Helmet>
+                <title>Register - exegete.app</title>
+            </Helmet>
             <Container id="main">
                 <Row>
                     <Col sm={{ size: 6, offset: 3 }}>

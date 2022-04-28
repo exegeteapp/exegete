@@ -21,6 +21,7 @@ import { BaseHeader } from "./Header";
 import useInput from "../util/useInput";
 import Registry from "../workspace/CellRegistry";
 import { makeNewCell } from "../workspace/Cell";
+import { Helmet } from "react-helmet-async";
 
 const InnerWorkspaceView = () => {
     const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
@@ -58,7 +59,16 @@ const InnerWorkspaceView = () => {
         return <Error key={cell.uuid} cell={cell} functions={functions} />;
     });
 
-    return <>{cells}</>;
+    return (
+        <>
+            <Helmet>
+                <title>
+                    {workspaceState && workspaceState.workspace ? workspaceState.workspace.title : ""} – exegete.app
+                </title>
+            </Helmet>
+            {cells}
+        </>
+    );
 };
 
 const RenameWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => void }> = ({ show, setShow }) => {

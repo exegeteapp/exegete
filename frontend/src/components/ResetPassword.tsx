@@ -4,6 +4,7 @@ import { Container, Row, Col, Input, Form, FormGroup, Label, Button, Alert } fro
 import useInput from "../util/useInput";
 import { useParams } from "react-router";
 import Header from "./Header";
+import { Helmet } from "react-helmet-async";
 
 function ResetPassword() {
     const params = useParams();
@@ -53,6 +54,9 @@ function ResetPassword() {
     return (
         <>
             <Header />
+            <Helmet>
+                <title>Reset password - exegete.app</title>
+            </Helmet>
             <Container id="main">
                 <Row>
                     <Col sm={{ size: 6, offset: 3 }}>

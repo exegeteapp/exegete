@@ -3,6 +3,7 @@ import axios from "axios";
 import { Container, Row, Col, Input, Form, FormGroup, Label, Button, Alert } from "reactstrap";
 import useInput from "../util/useInput";
 import Header from "./Header";
+import { Helmet } from "react-helmet-async";
 
 function ForgotPassword() {
     const email = useInput("");
@@ -36,6 +37,9 @@ function ForgotPassword() {
     return (
         <>
             <Header />
+            <Helmet>
+                <title>Forgot Password - exegete.app</title>
+            </Helmet>
             <Container id="main">
                 <Row>
                     <Col sm={{ size: 6, offset: 3 }}>

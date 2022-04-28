@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { Container, Table } from "reactstrap";
 import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
@@ -17,6 +18,9 @@ const ModuleInfo: React.FC = () => {
     return (
         <>
             <Header />
+            <Helmet>
+                <title>{shortcode} module - exegete.app</title>
+            </Helmet>
             <Container id="main">
                 <h1>Module: {shortcode}</h1>
                 <Table responsive>

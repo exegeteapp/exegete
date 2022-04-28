@@ -3,6 +3,7 @@ import { Row, Col, Container } from "reactstrap";
 import axios from "axios";
 import { useParams } from "react-router";
 import Header from "./Header";
+import { Helmet } from "react-helmet-async";
 
 function Verify() {
     const { token } = useParams();
@@ -24,6 +25,9 @@ function Verify() {
     return (
         <>
             <Header />
+            <Helmet>
+                <title>Verify email - exegete.app</title>
+            </Helmet>
             <Container id="main">
                 <Row>
                     <Col>
