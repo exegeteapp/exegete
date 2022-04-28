@@ -23,7 +23,7 @@ export const CellHeader: React.FC<{ functions: CellFunctions; uuid: string; butt
     return (
         <CardHeader>
             <ButtonToolbar className="float-end mb-1">
-                <ButtonGroup>{buttons}</ButtonGroup>
+                <ButtonGroup className="me-2">{buttons}</ButtonGroup>
                 <ButtonGroup>
                     <Button color="secondary" className="float-end" onClick={() => functions.moveUp()}>
                         <FontAwesomeIcon icon={faArrowUp} />

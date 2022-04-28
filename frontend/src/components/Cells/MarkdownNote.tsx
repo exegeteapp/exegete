@@ -4,6 +4,8 @@ import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import ReactMarkdown from "react-markdown";
 import { Button } from "reactstrap";
 import { RegistryEntry } from "../../workspace/CellRegistry";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
 export interface MarkdownNoteCellData {
     text: string;
@@ -44,9 +46,17 @@ export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell, functions }) 
 
     const inner = editing ? <Editor value={data.text} setValue={setText} /> : <Viewer text={data.text} />;
 
+    const EditButton: React.FC = () => {
+        return (
+            <Button onClick={() => setEditing(!editing)} active={editing}>
+                <FontAwesomeIcon icon={faPenToSquare} />
+            </Button>
+        );
+    };
+
     return (
         <Cell>
-            <CellHeader functions={functions} uuid={cell.uuid}></CellHeader>
+            <CellHeader functions={functions} buttons={[<EditButton key={0} />]} uuid={cell.uuid}></CellHeader>
             <CellBody>{inner}</CellBody>
             <CellFooter>
                 <div>
@@ -57,9 +67,6 @@ export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell, functions }) 
                     ) : (
                         ""
                     )}
-                    <Button className="float-end" onClick={() => setEditing(!editing)}>
-                        {editing ? "Done" : "Edit"}
-                    </Button>
                 </div>
             </CellFooter>
         </Cell>
@@ -67,6 +74,7 @@ export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell, functions }) 
 };
 
 export const MarkdownNoteDefinition: RegistryEntry = {
+    describe: (data: MarkdownNoteCellData) => "Note",
     component: MarkdownNote,
     launchers: [
         {

@@ -8,6 +8,7 @@ export type RegistryLauncher = {
 };
 
 export type RegistryEntry = {
+    describe: (data: any) => string;
     component: CellFC<any>;
     launchers: RegistryLauncher[];
 };
@@ -17,8 +18,8 @@ interface CellRegistry {
 }
 
 const Registry: CellRegistry = {
-    [MarkdownNoteSlug]: MarkdownNoteDefinition,
     [ScriptureSlug]: ScriptureDefinition,
+    [MarkdownNoteSlug]: MarkdownNoteDefinition,
 };
 
 export default Registry;

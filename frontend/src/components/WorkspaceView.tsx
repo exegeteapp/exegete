@@ -22,15 +22,22 @@ import useInput from "../util/useInput";
 import Registry from "../workspace/CellRegistry";
 import { makeNewCell } from "../workspace/Cell";
 import { Helmet } from "react-helmet-async";
+import { a } from "../scripture/ParserCache";
 
-const InnerWorkspaceView = () => {
+type RefsFC = React.FC<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>;
+
+const ScrollWrapper = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
+    return <div ref={ref}>{props.children}</div>;
+});
+
+const InnerWorkspaceView: RefsFC = ({ refs }) => {
     const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     if (!workspaceState.valid || !workspaceState.workspace) {
         return <p>Loading workspace...</p>;
     }
 
-    const cells = workspaceState.workspace.data.cells.map((cell) => {
+    const cells = workspaceState.workspace.data.cells.map((cell, index) => {
         const functions = {
             set: (data: any) => {
                 dispatch({ type: "workspace_cell_set", uuid: cell.uuid, data: data });
@@ -46,17 +53,25 @@ const InnerWorkspaceView = () => {
             },
         };
 
-        for (var key in Registry) {
-            if (key === cell.cell_type) {
-                return React.createElement(Registry[key].component, {
-                    key: cell.uuid,
-                    cell: cell,
-                    functions: functions,
-                });
+        const inner = () => {
+            for (var key in Registry) {
+                if (key === cell.cell_type) {
+                    return React.createElement(Registry[key].component, {
+                        key: cell.uuid,
+                        cell: cell,
+                        functions: functions,
+                    });
+                }
             }
-        }
 
-        return <Error key={cell.uuid} cell={cell} functions={functions} />;
+            return <Error key={cell.uuid} cell={cell} functions={functions} />;
+        };
+
+        return (
+            <ScrollWrapper key={cell.uuid} ref={(el) => (refs.current[index] = el)}>
+                {inner()}
+            </ScrollWrapper>
+        );
     });
 
     return (
@@ -138,8 +153,10 @@ const DeleteWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => v
     );
 };
 
-const AddComponentMenu: React.FC = () => {
+const ToolsMenu: RefsFC = ({ refs }) => {
     const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const cells = state.workspace ? state.workspace.data.cells : [];
+    const [newlyAdded, setNewlyAdded] = React.useState(false);
 
     const items: JSX.Element[] = [];
 
@@ -152,28 +169,71 @@ const AddComponentMenu: React.FC = () => {
                     type: "workspace_cell_add",
                     cell: makeNewCell(state.workspace!.data, key, defn, launcher),
                 });
+                setNewlyAdded(true);
             };
             items.push(
                 <DropdownItem key={`${key}.${i}`} onClick={newCell}>
-                    {launcher.title}
+                    Add {launcher.title}
                 </DropdownItem>
             );
         }
     }
 
+    const calcTargetY = (ref: HTMLDivElement) => {
+        return ref.getBoundingClientRect().top + window.pageYOffset - 60; // bootstrap top menu
+    };
+
+    const scrollTo = (index: number) => {
+        if (refs) {
+            const ref = refs.current[index];
+            if (ref) {
+                window.scrollTo({ top: calcTargetY(ref), behavior: "smooth" });
+            }
+        }
+    };
+
+    React.useEffect(() => {
+        if (newlyAdded) {
+            for (let j = refs.current.length - 1; j >= 0; j--) {
+                const ref = refs.current[j];
+                if (ref) {
+                    window.scrollTo({ top: calcTargetY(ref), behavior: "smooth" });
+                    setNewlyAdded(false);
+                    return;
+                }
+            }
+        }
+    }, [refs, newlyAdded]);
+
+    const jumpItems = cells.map((cell, index) => {
+        for (var key in Registry) {
+            const entry = Registry[key];
+            if (key === cell.cell_type) {
+                return (
+                    <DropdownItem key={`jmp${index}`} onClick={() => scrollTo(index)}>
+                        Go to #{index} [{entry.describe(cell.data)}]
+                    </DropdownItem>
+                );
+            }
+        }
+        return <></>;
+    });
+
     return (
         <UncontrolledDropdown nav>
             <DropdownToggle caret nav>
-                Add tool
+                Tools
             </DropdownToggle>
             <DropdownMenu md-end={"true"} color="dark" dark>
                 {items}
+                {jumpItems.length > 0 ? <DropdownItem key="divider" divider /> : <></>}
+                {jumpItems}
             </DropdownMenu>
         </UncontrolledDropdown>
     );
 };
 
-const WorkspaceHeader: React.FC = () => {
+const WorkspaceHeader: RefsFC = ({ refs }) => {
     const { state: workspaceState } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const [showRenameWorkspaceModal, setShowRenameWorkspaceModal] = React.useState(false);
     const [showDeleteWorkspaceModal, setShowDeleteWorkspaceModal] = React.useState(false);
@@ -218,7 +278,7 @@ const WorkspaceHeader: React.FC = () => {
                         <DropdownItem onClick={() => setShowDeleteWorkspaceModal(true)}>Delete</DropdownItem>
                     </DropdownMenu>
                 </UncontrolledDropdown>
-                <AddComponentMenu />
+                <ToolsMenu refs={refs} />
             </BaseHeader>
         </>
     );
@@ -227,6 +287,7 @@ const WorkspaceHeader: React.FC = () => {
 const WorkspaceView = () => {
     const { id } = useParams();
     const { state: userState } = React.useContext<IUserContext>(UserContext);
+    const refs = React.useRef<(HTMLDivElement | null)[]>([]);
 
     const local = !UserLoggedIn(userState);
 
@@ -243,9 +304,9 @@ const WorkspaceView = () => {
     return (
         <>
             <WorkspaceProvider id={id} local={local}>
-                <WorkspaceHeader />
+                <WorkspaceHeader refs={refs} />
                 <Container id="main" fluid="lg">
-                    <InnerWorkspaceView />
+                    <InnerWorkspaceView refs={refs} />
                 </Container>
             </WorkspaceProvider>
         </>

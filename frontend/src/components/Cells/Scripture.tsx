@@ -4,7 +4,7 @@ import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import { Button, ButtonGroup, Col, Row } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight, faTags } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faHighlighter, faTags } from "@fortawesome/free-solid-svg-icons";
 import { RegistryEntry } from "../../workspace/CellRegistry";
 import { ScriptureViewer } from "../ScriptureViewer";
 import { ScriptureEditor } from "../ScriptureEditor";
@@ -36,16 +36,20 @@ export const newScriptureCellParallel = (
     columns: ScriptureCellColumn[],
     hidemarkup: boolean
 ): ScriptureCellData => {
-    // if possible, we just clone the last cell
+    // we clone the last cell if it has the same number of columns as our target template
     for (let i = workspace.cells.length - 1; i >= 0; i--) {
         const cell = workspace.cells[i];
         if (cell.cell_type === ScriptureSlug) {
-            return { ...cell.data };
+            const cloneData = cell.data as ScriptureCellData;
+            if (cloneData.columns && cloneData.columns.length === columns.length) {
+                return { ...cell.data };
+            }
+            break;
         }
     }
     return {
-        hidemarkup: false,
-        columns: [],
+        hidemarkup: hidemarkup,
+        columns: columns,
     };
 };
 
@@ -170,23 +174,25 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     };
 
     const AddColumnButton: React.FC = () => {
-        if (data.columns.length >= 4) {
-            return <></>;
-        }
         return (
-            <Button onClick={() => addColumn()}>
+            <Button onClick={() => addColumn()} disabled={data.columns.length >= 4}>
                 <FontAwesomeIcon icon={faArrowRight} />
             </Button>
         );
     };
 
     const RemoveColumnButton: React.FC = () => {
-        if (data.columns.length <= 2) {
-            return <></>;
-        }
         return (
-            <Button onClick={() => removeLastColumn()}>
+            <Button onClick={() => removeLastColumn()} disabled={data.columns.length <= 1}>
                 <FontAwesomeIcon icon={faArrowLeft} />
+            </Button>
+        );
+    };
+
+    const AnnotateButton: React.FC = () => {
+        return (
+            <Button onClick={() => setEditing(!editing)} active={editing}>
+                <FontAwesomeIcon icon={faHighlighter} />
             </Button>
         );
     };
@@ -196,31 +202,33 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
             <CellHeader
                 functions={functions}
                 uuid={cell.uuid}
-                buttons={[<RemoveColumnButton key={1} />, <AddColumnButton key={2} />, <HideButton key={3} />]}
+                buttons={[
+                    <AnnotateButton key={0} />,
+                    <RemoveColumnButton key={1} />,
+                    <AddColumnButton key={2} />,
+                    <HideButton key={3} />,
+                ]}
             ></CellHeader>
             <CellBody>
                 <Row className="mb-2">{header}</Row>
                 <Row>{inner}</Row>
                 <Row>{footer}</Row>
             </CellBody>
-            <CellFooter>
-                <div className="text-end">
-                    <ButtonGroup className="float-end mb-1">
-                        <Button onClick={() => setEditing(!editing)}>
-                            {editing ? "Done" : "Structure and annotate"}
-                        </Button>
-                    </ButtonGroup>
-                </div>
-            </CellFooter>
+            <CellFooter></CellFooter>
         </Cell>
     );
 };
 
 export const ScriptureDefinition: RegistryEntry = {
+    describe: (data: ScriptureCellData) => {
+        const texts = data.columns.map((c) => c.verseref).join(", ");
+        const maxl = 20;
+        return texts.length > maxl ? texts.slice(0, maxl > 3 ? maxl - 3 : maxl) + "..." : texts;
+    },
     component: Scripture,
     launchers: [
         {
-            title: "Parallel texts",
+            title: "Scripture viewer",
             newData: (d) =>
                 newScriptureCellParallel(
                     d,
@@ -242,7 +250,17 @@ export const ScriptureDefinition: RegistryEntry = {
                     [
                         {
                             shortcode: "NET",
-                            verseref: "Matthew 6.26-34",
+                            verseref: "Matthew 3.13-17",
+                            annotation: [],
+                        },
+                        {
+                            shortcode: "NET",
+                            verseref: "Mark 1.9-11",
+                            annotation: [],
+                        },
+                        {
+                            shortcode: "NET",
+                            verseref: "Luke 3.21-22",
                             annotation: [],
                         },
                     ],
