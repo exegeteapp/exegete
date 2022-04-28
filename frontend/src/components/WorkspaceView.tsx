@@ -22,7 +22,6 @@ import useInput from "../util/useInput";
 import Registry from "../workspace/CellRegistry";
 import { makeNewCell } from "../workspace/Cell";
 import { Helmet } from "react-helmet-async";
-import { a } from "../scripture/ParserCache";
 
 type RefsFC = React.FC<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>;
 
