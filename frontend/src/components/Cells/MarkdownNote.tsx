@@ -12,12 +12,13 @@ export interface MarkdownNoteCellData {
 }
 
 export const MarkdownNoteSlug = "markdown-note";
+const placeholderText = "# New Note\n\nWrite your note here.";
 
 export const newMarkdownNoteCell: NewCellDataFn<MarkdownNoteCellData> = (
     workspace: WorkspaceData
 ): MarkdownNoteCellData => {
     return {
-        text: "# New Note\n\nWrite your note here.",
+        text: "",
     };
 };
 
@@ -30,7 +31,7 @@ const Editor: React.FC<{ value: string; setValue: (s: string) => void }> = ({ va
 };
 
 const Viewer: React.FC<{ text: string }> = ({ text }) => {
-    return <ReactMarkdown children={text} />;
+    return <ReactMarkdown children={text.length === 0 ? placeholderText : text} />;
 };
 
 export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell, functions }) => {
