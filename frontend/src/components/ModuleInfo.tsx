@@ -3,6 +3,7 @@ import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { Container, Table } from "reactstrap";
 import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
+import { Footer } from "./Footer";
 import Header from "./Header";
 
 const ModuleInfo: React.FC = () => {
@@ -71,6 +72,7 @@ const ModuleInfo: React.FC = () => {
                     </tbody>
                 </Table>
             </Container>
+            <Footer />
         </>
     );
 };

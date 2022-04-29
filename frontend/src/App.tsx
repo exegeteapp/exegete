@@ -13,6 +13,10 @@ import ForgotPassword from "./components/ForgotPassword";
 import ResetPassword from "./components/ResetPassword";
 import ModuleInfo from "./components/ModuleInfo";
 import NotFound from "./components/NotFound";
+import { Privacy } from "./components/Privacy";
+import { Disclaimer } from "./components/Disclaimer";
+import { About } from "./components/About";
+import ScrollToTop from "./components/ScrollToTop";
 
 function RouterComponent() {
     const { state } = React.useContext<IConfigContext>(ConfigContext);
@@ -23,8 +27,12 @@ function RouterComponent() {
 
     return (
         <Router>
+            <ScrollToTop />
             <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/about" element={<About />} />
+                <Route path="/privacy" element={<Privacy />} />
+                <Route path="/disclaimer" element={<Disclaimer />} />
                 <Route path="/workspace/:id" element={<Workspace />} />
                 <Route path="/module/:shortcode" element={<ModuleInfo />} />
                 <Route path="/register" element={<Register />} />

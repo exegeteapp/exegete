@@ -27,6 +27,10 @@ html {
     font-style: normal;
 }
 
+.footer-padding {
+    margin-top: 4rem;
+}
+
 .biblical-text-greek {
     font-family: "SBL Greek";
     font-size: 1.2rem;
@@ -71,4 +75,18 @@ html {
 .editor-para {
     border: 1px solid gray;
     margin: -1px;
+}
+
+.sponsors img {
+    width: 100%;
+}
+
+.team img {
+    max-height: 150px;
+    max-width: 150px;
+
+}
+
+.sponsors a {
+    text-decoration: none;
 }

@@ -5,6 +5,7 @@ import useInput from "../util/useInput";
 import { useParams } from "react-router";
 import Header from "./Header";
 import { Helmet } from "react-helmet-async";
+import { Footer } from "./Footer";
 
 function ResetPassword() {
     const params = useParams();
@@ -96,6 +97,7 @@ function ResetPassword() {
                     </Col>
                 </Row>
             </Container>
+            <Footer />
         </>
     );
 }

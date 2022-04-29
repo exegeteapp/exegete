@@ -4,6 +4,7 @@ import axios from "axios";
 import { useParams } from "react-router";
 import Header from "./Header";
 import { Helmet } from "react-helmet-async";
+import { Footer } from "./Footer";
 
 function Verify() {
     const { token } = useParams();
@@ -35,6 +36,7 @@ function Verify() {
                     </Col>
                 </Row>
             </Container>
+            <Footer />
         </>
     );
 }

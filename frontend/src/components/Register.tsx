@@ -7,6 +7,7 @@ import ReCAPTCHA from "react-google-recaptcha";
 import { IUserContext, UserContext, Register as RegisterD, Login as LoginD } from "../user/User";
 import Header from "./Header";
 import { Helmet } from "react-helmet-async";
+import { Footer } from "./Footer";
 
 function Register() {
     const navigate = useNavigate();
@@ -139,6 +140,7 @@ function Register() {
                     </Col>
                 </Row>
             </Container>
+            <Footer />
         </>
     );
 }

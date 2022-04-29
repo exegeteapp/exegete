@@ -22,6 +22,7 @@ import useInput from "../util/useInput";
 import Registry from "../workspace/CellRegistry";
 import { makeNewCell } from "../workspace/Cell";
 import { Helmet } from "react-helmet-async";
+import { Footer } from "./Footer";
 
 type RefsFC = React.FC<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>;
 
@@ -308,6 +309,7 @@ const WorkspaceView = () => {
                     <InnerWorkspaceView refs={refs} />
                 </Container>
             </WorkspaceProvider>
+            <Footer />
         </>
     );
 };

@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { Container } from "reactstrap";
+import { Footer } from "./Footer";
 import Header from "./Header";
 
 function NotFound() {
@@ -12,6 +13,7 @@ function NotFound() {
             <Container id="main">
                 <p>Page not found.</p>
             </Container>
+            <Footer />
         </>
     );
 }

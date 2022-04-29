@@ -4,6 +4,7 @@ import { Container, Row, Col, Input, Form, FormGroup, Label, Button, Alert } fro
 import useInput from "../util/useInput";
 import Header from "./Header";
 import { Helmet } from "react-helmet-async";
+import { Footer } from "./Footer";
 
 function ForgotPassword() {
     const email = useInput("");
@@ -60,6 +61,7 @@ function ForgotPassword() {
                     </Col>
                 </Row>
             </Container>
+            <Footer />
         </>
     );
 }

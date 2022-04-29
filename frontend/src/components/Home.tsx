@@ -3,6 +3,7 @@ import { IUserContext, UserContext, UserLoggedIn } from "../user/User";
 import UserHome from "./UserHome";
 import GuestHome from "./GuestHome";
 import Header from "./Header";
+import { Footer } from "./Footer";
 
 function Home() {
     const { state } = React.useContext<IUserContext>(UserContext);
@@ -12,6 +13,7 @@ function Home() {
             <>
                 <Header />
                 <UserHome></UserHome>
+                <Footer />
             </>
         );
     }
@@ -20,6 +22,7 @@ function Home() {
         <>
             <Header />
             <GuestHome></GuestHome>;
+            <Footer />
         </>
     );
 }
