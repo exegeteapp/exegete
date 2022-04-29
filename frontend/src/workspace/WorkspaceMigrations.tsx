@@ -6,7 +6,7 @@ import { WorkspaceData, WorkspaceMetadata } from "./Workspace";
 // migration function to handle the transition to the new format. the migrations
 // can then safely be chained.
 
-export const CurrentWorkspaceFormat = 2;
+export const CurrentWorkspaceFormat = 3;
 const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => WorkspaceData][] = [
     [
         2,
@@ -35,6 +35,27 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
                             },
                         ],
                     };
+                }
+            }
+            return workspace;
+        },
+    ],
+    [
+        3,
+        (workspace: WorkspaceData) => {
+            // shortcode was added to annotation specifications; we just assume
+            // NET was annotated against when migrating
+            for (const c of workspace.cells) {
+                // shortcode was added to annotation
+                if (c.cell_type === "scripture") {
+                    const data = c.data as any;
+                    for (const column of data.columns) {
+                        column.annotation = column.annotation.map((a: any) => {
+                            a[0] = { ...a[0], shortcode: "NET" };
+                            return a;
+                        });
+                    }
+                    continue;
                 }
             }
             return workspace;

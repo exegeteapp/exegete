@@ -152,6 +152,7 @@ const calculateInitialValue = async (
             for (let wi = 0; wi < obj.text.length; wi++) {
                 const word = obj.text[wi];
                 const position = {
+                    shortcode: shortcode,
                     book: book,
                     chapter: obj.chapter_start,
                     verse: obj.verse_start,

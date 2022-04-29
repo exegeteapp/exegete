@@ -1,4 +1,5 @@
 export interface WordPosition {
+    shortcode: string;
     book: string;
     chapter: number;
     verse: number;
@@ -19,5 +20,5 @@ export type ScriptureWordAnnotationFunctions = {
 };
 
 export const annoKey = (p: WordPosition) => {
-    return JSON.stringify([p.book, p.chapter, p.verse, p.index]);
+    return JSON.stringify([p.shortcode, p.book, p.chapter, p.verse, p.index]);
 };

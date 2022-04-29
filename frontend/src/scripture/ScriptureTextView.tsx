@@ -19,7 +19,7 @@ export const ScriptureTextView: React.FC<{
     last_scripture_object: ScriptureObject | null;
     last_book: string | null;
     markup: boolean;
-}> = ({ module, getAnno, scriptures, last_book, book, last_scripture_object, markup }) => {
+}> = ({ module, getAnno, scriptures, last_book, book, last_scripture_object, markup, shortcode }) => {
     if (!scriptures) {
         return <></>;
     }
@@ -78,6 +78,7 @@ export const ScriptureTextView: React.FC<{
         const d = scriptures[i];
 
         const startingPosition = {
+            shortcode: shortcode,
             book: book,
             chapter: d.chapter_start,
             verse: d.verse_start,
