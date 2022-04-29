@@ -2,7 +2,7 @@ import { CellFC, CellFunctions, WorkspaceCell, WorkspaceData } from "../../works
 import React from "react";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
-import { Button, ButtonGroup, Col, Row } from "reactstrap";
+import { Button, ButtonGroup, Col, Row, UncontrolledTooltip } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight, faHighlighter, faTags } from "@fortawesome/free-solid-svg-icons";
 import { RegistryEntry } from "../../workspace/CellRegistry";
@@ -149,9 +149,13 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     }
 
     const HideButton: React.FC = () => {
+        const id = `hide${cell.uuid}`;
         return (
-            <Button onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
+            <Button id={id} onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
                 <FontAwesomeIcon icon={faTags} />
+                <UncontrolledTooltip autohide placement="bottom" target={id}>
+                    {data.hidemarkup ? "Show markup" : "Hide markup"}
+                </UncontrolledTooltip>
             </Button>
         );
     };
@@ -174,25 +178,37 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     };
 
     const AddColumnButton: React.FC = () => {
+        const id = `add${cell.uuid}`;
         return (
-            <Button onClick={() => addColumn()} disabled={data.columns.length >= 4}>
+            <Button id={id} onClick={() => addColumn()} disabled={data.columns.length >= 4}>
                 <FontAwesomeIcon icon={faArrowRight} />
+                <UncontrolledTooltip autohide placement="bottom" target={id}>
+                    Add column
+                </UncontrolledTooltip>
             </Button>
         );
     };
 
     const RemoveColumnButton: React.FC = () => {
+        const id = `remove${cell.uuid}`;
         return (
-            <Button onClick={() => removeLastColumn()} disabled={data.columns.length <= 1}>
+            <Button id={id} onClick={() => removeLastColumn()} disabled={data.columns.length <= 1}>
                 <FontAwesomeIcon icon={faArrowLeft} />
+                <UncontrolledTooltip autohide placement="bottom" target={id}>
+                    Remove last column
+                </UncontrolledTooltip>
             </Button>
         );
     };
 
     const AnnotateButton: React.FC = () => {
+        const id = `annotate${cell.uuid}`;
         return (
-            <Button onClick={() => setEditing(!editing)} active={editing}>
+            <Button id={id} onClick={() => setEditing(!editing)} active={editing}>
                 <FontAwesomeIcon icon={faHighlighter} />
+                <UncontrolledTooltip autohide placement="bottom" target={id}>
+                    {editing ? "View text" : "Structure and annotate text"}
+                </UncontrolledTooltip>
             </Button>
         );
     };
