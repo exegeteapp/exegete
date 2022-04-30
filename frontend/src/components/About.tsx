@@ -40,7 +40,7 @@ const AboutText: React.FC = () => {
 const SponsorLogos: React.FC = () => {
     return (
         <>
-            <Col md={{ size: 2, offset: 2 }}>
+            <Col md={{ size: 2, offset: 2 }} className="text-center">
                 <h1>
                     <a className="text-muted" href="https://artfinc.org.au/" target="_blank" rel="noreferrer">
                         ARTFinc
