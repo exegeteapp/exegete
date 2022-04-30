@@ -73,6 +73,9 @@ const Bios: React.FC = () => {
                         Robert previously taught and researched full-time at the University of Auckland (2015-2016) and
                         Murdoch University (2017-2021).
                     </p>
+                    <Button href="https://www.robertjmyles.com/" target="_blank" rel="noreferrer">
+                        Robert's website
+                    </Button>
                 </Col>
                 <Col md={{ size: 6, offset: 0 }}>
                     <h3>Grahame Bowland</h3>
@@ -82,13 +85,6 @@ const Bios: React.FC = () => {
                         Grahame has a background as software engineer, and is also studying for a Master of Divinity
                         through Trinity College Theological School.
                     </p>
-                </Col>
-                <Col md={{ size: 6, offset: 0 }}>
-                    <Button href="https://www.robertjmyles.com/" target="_blank" rel="noreferrer">
-                        Robert's website
-                    </Button>
-                </Col>
-                <Col md={{ size: 6, offset: 0 }}>
                     <Button href="https://grahame.dev/" target="_blank" rel="noreferrer">
                         Grahame's website
                     </Button>
