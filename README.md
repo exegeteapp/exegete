@@ -2,6 +2,8 @@
 
 Under active development.
 
+See our [about page](https://exegete.app/about) for more information.
+
 ## Importing biblical data
 
 1. clone https://github.com/exegeteapp/exegete-data in `data/`
