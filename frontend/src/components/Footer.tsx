@@ -12,10 +12,6 @@ export const Footer: React.FC = ({ children }) => {
                     <h5>
                         <FontAwesomeIcon icon={faBookOpen} /> exegete.app
                     </h5>
-                    &copy; 2022{" "}
-                    <a className="text-muted" href="https://perth.anglican.org/" target="_blank" rel="noreferrer">
-                        Anglican Diocese of Perth
-                    </a>
                 </Col>
                 <Col sm={{ size: 3 }}>
                     <h5>About</h5>
