@@ -1,12 +1,13 @@
 import axios from "axios";
 
+// typescript version of `v1_object.json`
 export interface ScriptureWord {
     value: string;
-    "c-strongs": boolean;
+    "c-strongs": string[] | undefined;
+    "s-snowball": string | undefined;
     language: string;
 }
 
-// typescript version of `v1_object.json`
 export interface ScriptureObject {
     type: string;
     chapter_start: number;
@@ -15,6 +16,7 @@ export interface ScriptureObject {
     verse_end: number;
     text: ScriptureWord[];
 }
+// end of `v1_object.json`
 
 export interface ScriptureBookChapter {
     book: string;

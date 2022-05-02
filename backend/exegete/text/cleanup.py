@@ -1,10 +1,11 @@
 import re
-from pprint import pprint
+import string
+from nltk.stem import SnowballStemmer
 
 whitespace_re = re.compile("^\s*$")
 
 
-def clean_words(fragments_iter):
+def clean_words(fragments_iter, stem=False):
     # NOTE: exegete in its frontend stores annotation against (chapter, verse, word offset) targets.
     # if this function is changed and those offsets are affected, annotations in the frontend will break.
     # Update only with caution.
@@ -13,6 +14,9 @@ def clean_words(fragments_iter):
     # single words with attributes rolled up, and punctuation annealed into them. Then when the
     # frontend is annotating words, it doesn't have to worry about any tricky details, such as a fragment
     # sharing one strong's number comprising more than one English word.
+
+    # We also apply stemming here, as this is the place where we have the best picture of what our
+    # words actually are.
 
     words = []
     buf = []
@@ -46,5 +50,11 @@ def clean_words(fragments_iter):
 
     if len(buf) > 0:
         words.append(buf_to_word(buf))
+
+    if stem:
+        stemmer = SnowballStemmer("english")
+        trans = str.maketrans("", "", string.punctuation + "‘’“”\"'—,…")
+        for word in words:
+            word["s-snowball"] = stemmer.stem(word["value"].translate(trans))
 
     return words

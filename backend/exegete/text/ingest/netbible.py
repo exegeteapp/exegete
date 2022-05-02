@@ -139,7 +139,7 @@ You can download it at https://bible.org/downloads
                         else:
                             raise Exception(cls)
                 # insert some whitespace for the <p>
-                return [{"value": " "}] + recurse_process({})
+                return recurse_process({})
 
             if typ is etree._Element and node.tag == "span":
                 span_attrs = {}
@@ -198,7 +198,7 @@ You can download it at https://bible.org/downloads
 
             # exegete requires words to really be words, not multiple words, and not containing whitespace.
             # (we are focussed upon exegesis/analysis, not presentation)
-            words = clean_words(words)
+            words = clean_words(words, stem=True)
 
             yield {
                 "type": "verse",

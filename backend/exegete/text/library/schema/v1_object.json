@@ -1,58 +1,62 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://exegete.app/schema/v1_object.json",
-    "title": "Object within a Biblical text",
-    "description": "Each object is placed within an ordered linear stream of objects which represents an Biblical text",
-    "type": "object",
-    "properties": {
-        "type": {
-            "description": "the type of the object",
-            "type": "string",
-            "enum": [ "title", "verse", "footnote"]
-        },
-        "chapter_start": {
-            "description": "the starting chapter of the object",
-            "type": "integer"
-        },
-        "verse_start": {
-            "description": "the starting verse of the object",
-            "type": "integer"
-        },
-        "chapter_end": {
-            "description": "the ending chapter of the object",
-            "type": "integer"
-        },
-        "verse_end": {
-            "description": "the ending verse of the object",
-            "type": "integer"
-        },
-        "text": {
-            "description": "array of word objects",
-            "type": "array",
-            "items": { "$ref": "#/$defs/word" }
-        }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://exegete.app/schema/v1_object.json",
+  "title": "Object within a Biblical text",
+  "description": "Each object is placed within an ordered linear stream of objects which represents an Biblical text",
+  "type": "object",
+  "properties": {
+    "type": {
+      "description": "the type of the object",
+      "type": "string",
+      "enum": ["title", "verse", "footnote"]
     },
-    "$defs": {
-        "word": {
-            "type": "object",
-            "properties": {
-                "value": {
-                    "type": "string"
-                },
-                "c-strongs": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "language": {
-                    "type": "string",
-                    "enum": [ "hbo", "ecg", "eng" ]
-                }
-            },
-            "additionalProperties": false
-        }
+    "chapter_start": {
+      "description": "the starting chapter of the object",
+      "type": "integer"
     },
-    "additionalProperties": false,
-    "required": ["type"]
+    "verse_start": {
+      "description": "the starting verse of the object",
+      "type": "integer"
+    },
+    "chapter_end": {
+      "description": "the ending chapter of the object",
+      "type": "integer"
+    },
+    "verse_end": {
+      "description": "the ending verse of the object",
+      "type": "integer"
+    },
+    "text": {
+      "description": "array of word objects",
+      "type": "array",
+      "items": { "$ref": "#/$defs/word" }
+    }
+  },
+  "$defs": {
+    "word": {
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string"
+        },
+        "c-strongs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "s-snowball": {
+          "type": "string"
+        },
+        "language": {
+          "type": "string",
+          "enum": ["hbo", "ecg", "eng"]
+        }
+      },
+      "additionalProperties": false,
+      "required": ["value"]
+    }
+  },
+  "additionalProperties": false,
+  "required": ["type"]
 }
