@@ -9,6 +9,10 @@
             "description": "version of workspace format",
             "type": "integer"
         },
+        "global": {
+            "description": "global configuration of all cells",
+            "type": "object"
+        },
         "cells": {
             "description": "cells in the workspace",
             "type": "array",
