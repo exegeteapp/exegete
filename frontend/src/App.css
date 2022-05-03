@@ -20,6 +20,10 @@ html {
     font-style: normal;
 }
 
+.biblical-text-05 {
+    font-size: 6pt;
+}
+
 .biblical-text-hebrew {
     font-family: "SBL Hebrew";
     font-size: 1.2rem;

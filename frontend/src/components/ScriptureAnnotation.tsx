@@ -11,7 +11,7 @@ export interface ScriptureWordAnnotation {
     postText: string;
     source: string;
     paraSkip: number; // the number of blank paragraphs to insert prior to this word
-    hidden: boolean;
+    display: string;
 }
 
 export type ScriptureWordAnnotationFunctions = {

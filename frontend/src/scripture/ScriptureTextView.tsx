@@ -39,10 +39,6 @@ export const ScriptureTextView: React.FC<{
             };
             const anno = getAnno(position);
 
-            if (anno && anno.hidden) {
-                return <span key={"span" + i}></span>;
-            }
-
             if (anno && anno.paraSkip) {
                 for (let i = 0; i < anno.paraSkip; i++) {
                     elems.push(<br key={"br" + elems.length} />);
@@ -54,17 +50,16 @@ export const ScriptureTextView: React.FC<{
                 className = languageClass(text.language);
             }
             const sourceDefn = anno ? getSource("NT", anno.source) : undefined;
+            const style: React.CSSProperties = {
+                color: sourceDefn ? sourceDefn.colour : "black",
+                visibility: anno && anno.display === "hidden" ? "hidden" : "visible",
+                textDecoration: anno && anno.display === "strikethrough" ? "line-through" : "none",
+            };
             return (
                 <span key={"span" + i}>
                     {elems}
                     {anno ? anno.preText : ""}
-                    <span
-                        className={className}
-                        style={{
-                            color: sourceDefn ? sourceDefn.colour : "black",
-                        }}
-                        key={i}
-                    >
+                    <span className={className} style={style} key={i}>
                         {text.value}
                     </span>
                     {anno && anno.postText ? anno.postText : " "}

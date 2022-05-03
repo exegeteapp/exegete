@@ -31,9 +31,12 @@ export type CellFC<T> = React.FC<{
     functions: CellFunctions;
 }>;
 
+export type View = {};
+
 export interface WorkspaceData {
     workspace_format: number;
     cells: WorkspaceCell<any>[];
+    view: View;
 }
 
 export interface WorkspaceMetadata {

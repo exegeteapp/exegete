@@ -18,7 +18,7 @@ import {
 } from "./ScriptureAnnotation";
 import ReactDOM from "react-dom";
 import { Button, ButtonGroup, ButtonToolbar } from "reactstrap";
-import { faCheck, faStrikethrough, faWindowClose, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { faStrikethrough, faTrashCan, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getSource } from "../sources/Sources";
 import { languageClass } from "../scripture/ScriptureCatalog";
@@ -39,14 +39,17 @@ type ParaElement = {
     children: (CustomElement | CustomText)[];
 };
 
+type WordAnnotation = {
+    source: string;
+    display: string;
+};
+
 type WordElement = {
     type: "word";
     value: string;
     children: CustomText[];
     position: WordPosition;
-    source: string;
-    hidden: boolean;
-};
+} & WordAnnotation;
 
 type CustomText = {
     type: "text";
@@ -98,19 +101,17 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
         return <></>;
     }
     const sourceDefn = getSource("NT", element.source);
+    const style: React.CSSProperties = {
+        textDecoration: element.display === "strikethrough" ? "line-through" : "none",
+        opacity: element.display === "hidden" ? "25%" : "100%",
+        color: sourceDefn ? sourceDefn.colour : "black",
+        verticalAlign: "baseline",
+        display: "inline-block",
+        backgroundColor: "#eee",
+        boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
+    };
     return (
-        <span
-            {...attributes}
-            contentEditable={false}
-            style={{
-                textDecoration: element.hidden ? "line-through" : "none",
-                color: sourceDefn ? sourceDefn.colour : "black",
-                verticalAlign: "baseline",
-                display: "inline-block",
-                backgroundColor: "#eee",
-                boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
-            }}
-        >
+        <span {...attributes} contentEditable={false} style={style}>
             {element.value}
             {children}
         </span>
@@ -177,7 +178,7 @@ const calculateInitialValue = async (
                     value: word.value,
                     children: [{ type: "text", text: "" }],
                     source: wordAnno ? wordAnno.source : "",
-                    hidden: wordAnno ? wordAnno.hidden : false,
+                    display: wordAnno ? wordAnno.display : "",
                     position,
                 });
                 wordElem.push({
@@ -197,11 +198,24 @@ export const Portal: React.FC = ({ children }) => {
     return ReactDOM.createPortal(children, document.body);
 };
 
-const setOnSelection = (editor: Editor, props: any) => {
+const activeOnSelection = (editor: Editor, key: string, value: string): boolean => {
+    const [match] = Editor.nodes(editor, {
+        match: (node, path) => {
+            const word = node as WordElement;
+            if (word.type !== "word") {
+                return false;
+            }
+            return (word as any)[key] === value;
+        },
+    });
+    return !!match;
+};
+
+const toggleOnSelection = (editor: Editor, key: string, value: string) => {
+    const isSet = activeOnSelection(editor, key, value);
+    const props = isSet ? { [key]: "" } : { [key]: value };
     Transforms.setNodes(editor, props, {
         match: (node, path) => {
-            // FIXME: I can't work out how to do this properly with slate's typescript stuff
-            // (where is Element.isElement that the docs point to?).. so we hack around it.
             const word = node as WordElement;
             if (word.type !== "word") {
                 return false;
@@ -213,20 +227,15 @@ const setOnSelection = (editor: Editor, props: any) => {
     });
 };
 
-const HideButton: React.FC<{ value: boolean; icon: IconDefinition }> = ({ value, icon }) => {
+const ToggleAnnoButton: React.FC<{ attr: string; value: string; icon?: IconDefinition }> = ({ attr, value, icon }) => {
     const editor = useSlate();
     return (
-        <Button className="float-end" onClick={() => setOnSelection(editor, { hidden: value })}>
-            <FontAwesomeIcon icon={icon} />
-        </Button>
-    );
-};
-
-const SourceButton: React.FC<{ source: string; icon?: IconDefinition }> = ({ source, icon }) => {
-    const editor = useSlate();
-    return (
-        <Button className="float-end" onClick={() => setOnSelection(editor, { source: source })}>
-            {icon ? <FontAwesomeIcon icon={icon} /> : source}
+        <Button
+            active={activeOnSelection(editor, attr, value)}
+            className="float-end"
+            onClick={() => toggleOnSelection(editor, attr, value)}
+        >
+            {icon ? <FontAwesomeIcon icon={icon} /> : value}
         </Button>
     );
 };
@@ -242,16 +251,15 @@ const EditorMenu = React.forwardRef<HTMLDivElement>((props, ref) => {
             }}
         >
             <ButtonToolbar className="float-end mb-1">
-                <ButtonGroup>
-                    <SourceButton source="" icon={faWindowClose} />
-                    <SourceButton source="Q" />
-                    <SourceButton source="Mk" />
-                    <SourceButton source="M" />
-                    <SourceButton source="L" />
+                <ButtonGroup className="pe-1">
+                    <ToggleAnnoButton attr="source" value="Q" />
+                    <ToggleAnnoButton attr="source" value="Mk" />
+                    <ToggleAnnoButton attr="source" value="M" />
+                    <ToggleAnnoButton attr="source" value="L" />
                 </ButtonGroup>
                 <ButtonGroup>
-                    <HideButton value={true} icon={faStrikethrough} />
-                    <HideButton value={false} icon={faCheck} />
+                    <ToggleAnnoButton attr="display" value="strikethrough" icon={faStrikethrough} />
+                    <ToggleAnnoButton attr="display" value="hidden" icon={faTrashCan} />
                 </ButtonGroup>
             </ButtonToolbar>
         </div>
@@ -312,7 +320,7 @@ const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWord
             preText: "",
             source: "",
             paraSkip: 0,
-            hidden: false,
+            display: "",
         };
     };
 
@@ -333,12 +341,12 @@ const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWord
                 let key = annoKey(currentPos);
                 let anno = annoMap.get(key);
 
-                if (para_pending > 0 || child.source !== "" || child.hidden) {
+                if (para_pending > 0 || child.source !== "" || child.display) {
                     if (!anno) {
                         anno = newAnno();
                     }
                     anno.paraSkip = para_pending;
-                    anno.hidden = child.hidden;
+                    anno.display = child.display;
                     anno.source = child.source;
                     para_pending = 0;
                 }
