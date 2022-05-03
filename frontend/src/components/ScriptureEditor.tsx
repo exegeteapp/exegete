@@ -6,7 +6,7 @@ import React from "react";
 import { createEditor, Descendant } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 import useConstant from "use-constant";
-import { getScripture } from "../scripture/ScriptureAPI";
+import { getScripture, ScriptureBookChapter } from "../scripture/ScriptureAPI";
 import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { getModuleParser } from "../scripture/ParserCache";
 import parseReference, { ParseResultSuccess } from "../verseref/VerseRef";
@@ -20,8 +20,8 @@ import ReactDOM from "react-dom";
 import { Button, ButtonGroup, ButtonToolbar } from "reactstrap";
 import { faStrikethrough, faTrashCan, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { getSource } from "../sources/Sources";
-import { languageClass } from "../scripture/ScriptureCatalog";
+import { applicableGroups, getSource, SourceGroup } from "../sources/Sources";
+import { BookInfo, FindBook, languageClass, ModuleInfo } from "../scripture/ScriptureCatalog";
 
 const PermittedKeys = new Set<string>([
     " ",
@@ -100,7 +100,7 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
     if (element.type !== "word") {
         return <></>;
     }
-    const sourceDefn = getSource("NT", element.source);
+    const sourceDefn = getSource(element.source);
     const style: React.CSSProperties = {
         textDecoration: element.display === "strikethrough" ? "line-through" : "none",
         opacity: element.display === "hidden" ? "25%" : "100%",
@@ -240,7 +240,19 @@ const ToggleAnnoButton: React.FC<{ attr: string; value: string; icon?: IconDefin
     );
 };
 
-const EditorMenu = React.forwardRef<HTMLDivElement>((props, ref) => {
+const EditorMenu = React.forwardRef<HTMLDivElement, { groups: SourceGroup[] }>(({ groups }, ref) => {
+    // FIXME grahame tomorrow build the anno buttons dynamically...
+    const bgs: React.ReactElement[] = groups.map((group, index) => {
+        const btns = group.sources.map((source, index) => {
+            return <ToggleAnnoButton attr="source" value={source.code} key={index} />;
+        });
+        return (
+            <ButtonGroup className="pe-1" key={index}>
+                {btns}
+            </ButtonGroup>
+        );
+    });
+
     return (
         <div
             className="editor-popupmenu"
@@ -251,12 +263,7 @@ const EditorMenu = React.forwardRef<HTMLDivElement>((props, ref) => {
             }}
         >
             <ButtonToolbar className="float-end mb-1">
-                <ButtonGroup className="pe-1">
-                    <ToggleAnnoButton attr="source" value="Q" />
-                    <ToggleAnnoButton attr="source" value="Mk" />
-                    <ToggleAnnoButton attr="source" value="M" />
-                    <ToggleAnnoButton attr="source" value="L" />
-                </ButtonGroup>
+                {bgs}
                 <ButtonGroup>
                     <ToggleAnnoButton attr="display" value="strikethrough" icon={faStrikethrough} />
                     <ToggleAnnoButton attr="display" value="hidden" icon={faTrashCan} />
@@ -266,7 +273,7 @@ const EditorMenu = React.forwardRef<HTMLDivElement>((props, ref) => {
     );
 });
 
-const HoveringToolbar = () => {
+const HoveringToolbar: React.FC<{ groups: SourceGroup[] }> = ({ groups }) => {
     const ref = React.useRef<HTMLDivElement | null>(null);
     const editor = useSlate();
     const inFocus = useFocused();
@@ -302,7 +309,7 @@ const HoveringToolbar = () => {
 
     return (
         <Portal>
-            <EditorMenu ref={ref} />
+            <EditorMenu ref={ref} groups={groups} />
         </Portal>
     );
 };
@@ -470,12 +477,24 @@ export const ScriptureEditor: React.FC<{
             }
         };
 
+        const determineEligibleGroups = (module: ModuleInfo, sbcs: ScriptureBookChapter[]) => {
+            const books = new Set<BookInfo>();
+            for (const sbc of sbcs) {
+                const book = FindBook(module, sbc.book);
+                if (book) {
+                    books.add(book);
+                }
+            }
+            return applicableGroups(module, books);
+        };
+
         if (res.success) {
+            const eligibleGroups = determineEligibleGroups(module, res.sbcs);
             calculateInitialValue(shortcode, res, annotation).then((initialValue) => {
                 if (isSubscribed) {
                     setEditorElem(
                         <Slate editor={editor} value={initialValue} onChange={onChange}>
-                            <HoveringToolbar />
+                            <HoveringToolbar groups={eligibleGroups} />
                             <Editable
                                 className={languageClass(module.language)}
                                 renderElement={renderElement}

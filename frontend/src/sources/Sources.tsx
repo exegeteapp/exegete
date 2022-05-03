@@ -1,18 +1,55 @@
+import { BookInfo, ModuleInfo } from "../scripture/ScriptureCatalog";
+
 export interface SourceDefinition {
-    context: string;
-    code: string;
+    description: string;
+    code: string; // this must unique among all sources, despite the groupings
     colour: string;
 }
 
-export const Contexts = ["NT"];
+export interface SourceGroup {
+    applicable: (module: ModuleInfo, book: BookInfo) => boolean;
+    name: string;
+    sources: SourceDefinition[];
+}
 
-export const Sources = [
-    { context: "NT", code: "Mk", colour: "red" },
-    { context: "NT", code: "M", colour: "green" },
-    { context: "NT", code: "L", colour: "blue" },
-    { context: "NT", code: "Q", colour: "orange" },
+const groups: SourceGroup[] = [
+    {
+        applicable: (module, book) => {
+            return (
+                book.division === "NT" &&
+                (book.name === "Matthew" || book.name === "Luke" || book.name === "Mark" || book.name === "John")
+            );
+        },
+        name: "NT Gospel",
+        sources: [
+            { description: "Q", code: "Q", colour: "orange" },
+            { description: "Mark", code: "Mk", colour: "red" },
+            { description: "Matthew", code: "M", colour: "green" },
+            { description: "Luke", code: "L", colour: "blue" },
+        ],
+    },
 ];
 
-export const getSource = (context: string, code: string) => {
-    return Sources.find((source) => source.context === context && source.code === code);
+export const applicableGroups = (module: ModuleInfo, books: Set<BookInfo>): SourceGroup[] => {
+    const r = [];
+    for (const group of groups) {
+        let ok = false;
+        for (const book of books) {
+            ok = ok || group.applicable(module, book);
+        }
+        if (ok) {
+            r.push(group);
+        }
+    }
+    return r;
+};
+
+export const getSource = (code: string) => {
+    for (const group of groups) {
+        for (const source of group.sources) {
+            if (source.code === code) {
+                return source;
+            }
+        }
+    }
 };

@@ -49,7 +49,7 @@ export const ScriptureTextView: React.FC<{
             if (text.language && text.language !== module.language) {
                 className = languageClass(text.language);
             }
-            const sourceDefn = anno ? getSource("NT", anno.source) : undefined;
+            const sourceDefn = anno ? getSource(anno.source) : undefined;
             const style: React.CSSProperties = {
                 color: sourceDefn ? sourceDefn.colour : "black",
                 visibility: anno && anno.display === "hidden" ? "hidden" : "visible",
