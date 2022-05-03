@@ -28,6 +28,26 @@ const groups: SourceGroup[] = [
             { description: "Luke", code: "L", colour: "blue" },
         ],
     },
+    {
+        applicable: (module, book) => {
+            return (
+                book.division === "FT" &&
+                (book.name === "Genesis" ||
+                    book.name === "Exodus" ||
+                    book.name === "Leviticus" ||
+                    book.name === "Numbers" ||
+                    book.name === "Deuteronomy")
+            );
+        },
+        name: "Pentateuch",
+        sources: [
+            { description: "Jahwist", code: "J", colour: "red" },
+            { description: "Elohist", code: "E", colour: "green" },
+            { description: "Priestly", code: "P", colour: "orange" },
+            { description: "Deuteronomist", code: "D", colour: "blue" },
+            { description: "Non-P", code: "NP", colour: "#d35400" },
+        ],
+    },
 ];
 
 export const applicableGroups = (module: ModuleInfo, books: Set<BookInfo>): SourceGroup[] => {
