@@ -82,7 +82,7 @@ export const makeLanguage = (module: ModuleInfo) => {
         sep_refs: (r) =>
             P.seqMap(
                 P.alt(
-                    P.regex(/\s*-\s*/).result<ScriptureToken>({ type: "op", value: "-" }),
+                    P.regex(/\s*(-|–)\s*/).result<ScriptureToken>({ type: "op", value: "-" }),
                     P.regex(/\s*;\s*/).result<ScriptureToken>({ type: "op", value: ";" }),
                     P.regex(/\s*,\s*/).result<ScriptureToken>({ type: "op", value: "," })
                 ).desc("range"),

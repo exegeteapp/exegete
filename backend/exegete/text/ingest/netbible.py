@@ -88,6 +88,20 @@ You can download it at https://bible.org/downloads
         strongs_re = re.compile(r"^\d+[b]?$")
         parser = etree.HTMLParser()
 
+        def introduce_spaces(s):
+            pad = ["—"]
+            for c in pad:
+                s = s.replace(c, c + " ")
+            # we might have duplicated some spaces, so remove them
+            while True:
+                s_s = s.replace("  ", " ")
+                if s_s == s:
+                    break
+                s = s_s
+            emdash = "—"
+            s.replace(emdash, emdash + " ")
+            return s
+
         def process_node(node, attrs: dict, object_attrs: dict):
             typ = type(node)
 
@@ -102,7 +116,7 @@ You can download it at https://bible.org/downloads
 
             if typ is etree._ElementUnicodeResult or typ is str:
                 text = str(node)
-                text_attrs = {"value": text}
+                text_attrs = {"value": introduce_spaces(text)}
                 return [attrs | text_attrs]
 
             if typ is etree._Element and node.tag == "st":
