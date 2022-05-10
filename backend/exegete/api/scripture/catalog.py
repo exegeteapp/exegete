@@ -165,6 +165,28 @@ class ScriptureCatalog:
         ve = object.columns["verse_end"]
         li = object.columns["linear_id"]
 
+        # a bit fiddly, we have four cases:
+        #
+        # we're in the start chapter and in the end chapter, so we need to
+        # check both verse ranges...
+        verse_cs_ce = (
+            (cs == chapter_start)
+            & (cs == chapter_end)
+            & (vs >= verse_start)
+            & (vs <= verse_end)
+        )
+        # ... or we're in the start chapter and not in the end chapter, so
+        # we need to check the first verse range...
+        verse_cs_not_ce = (
+            (cs == chapter_start) & (cs < chapter_end) & (vs >= verse_start)
+        )
+        # ... or we're in the end chapter and not in the start chapter, so
+        # we need to check the last verse range...
+        verse_not_cs_ce = (cs > chapter_start) & (cs == chapter_end) & (vs <= verse_end)
+        # ... or we're between the start and end chapter, so no need to
+        # check verse ranges.
+        verse_not_cs_not_ce = (cs > chapter_start) & (cs < chapter_end)
+
         subq = (
             sqlalchemy.select(
                 object.columns["chapter_start"],
@@ -175,8 +197,14 @@ class ScriptureCatalog:
                 object.columns["text"],
             )
             .filter(bk == book_id)
-            .filter(sqlalchemy.and_(cs >= chapter_start, cs <= chapter_end))
-            .filter(sqlalchemy.and_(vs >= verse_start, vs <= verse_end))
+            .filter(
+                sqlalchemy.or_(
+                    verse_cs_ce,
+                    verse_cs_not_ce,
+                    verse_not_cs_ce,
+                    verse_not_cs_not_ce,
+                )
+            )
             .order_by(li)
         ).subquery()
 
