@@ -22,6 +22,9 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const [scripture, setScripture] = React.useState<JSX.Element[]>([]);
 
+    // if we directly use annotation within the useEffect, we'll get
+    // continual re-renders as it's a dynamically constructed object.
+    const anno_data = annotation.get();
     useEffect(() => {
         let isSubscribed = true;
         if (!scriptureState.valid || !scriptureState.catalog) {
@@ -29,7 +32,7 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
         }
 
         const annoMap = new Map<string, ScriptureWordAnnotation>();
-        for (const [pos, anno] of annotation.get()) {
+        for (const [pos, anno] of anno_data) {
             annoMap.set(annoKey(pos), anno);
         }
 
@@ -83,7 +86,7 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
         return () => {
             isSubscribed = false;
         };
-    }, [scriptureState.catalog, scriptureState.valid, shortcode, verseref, hidemarkup, annotation]);
+    }, [scriptureState.catalog, scriptureState.valid, shortcode, verseref, hidemarkup, anno_data]);
 
     if (!scriptureState.valid || !scriptureState.catalog) {
         return <div>Loading...</div>;
