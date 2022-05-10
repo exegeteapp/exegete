@@ -5,6 +5,19 @@ from nltk.stem import SnowballStemmer
 whitespace_re = re.compile("^\s*$")
 
 
+def introduce_spaces(s):
+    pad = ["—"]
+    for c in pad:
+        s = s.replace(c, c + " ")
+    # we might have duplicated some spaces, so remove them
+    while True:
+        s_s = s.replace("  ", " ")
+        if s_s == s:
+            break
+        s = s_s
+    return s
+
+
 def clean_words(fragments_iter, stem=False):
     # NOTE: exegete in its frontend stores annotation against (chapter, verse, word offset) targets.
     # if this function is changed and those offsets are affected, annotations in the frontend will break.

@@ -1,6 +1,6 @@
 from exegete.text.library.schema import v1
 from exegete.text.library import Manager
-from exegete.text.cleanup import clean_words
+from exegete.text.cleanup import clean_words, introduce_spaces
 from functools import reduce
 import argparse
 from glob import glob
@@ -87,20 +87,6 @@ You can download it at https://bible.org/downloads
         chapter = int(text[0]["chapter"])
         strongs_re = re.compile(r"^\d+[b]?$")
         parser = etree.HTMLParser()
-
-        def introduce_spaces(s):
-            pad = ["—"]
-            for c in pad:
-                s = s.replace(c, c + " ")
-            # we might have duplicated some spaces, so remove them
-            while True:
-                s_s = s.replace("  ", " ")
-                if s_s == s:
-                    break
-                s = s_s
-            emdash = "—"
-            s.replace(emdash, emdash + " ")
-            return s
 
         def process_node(node, attrs: dict, object_attrs: dict):
             typ = type(node)

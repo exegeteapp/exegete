@@ -3,7 +3,7 @@ import sys
 from exegete.text import one
 from io import StringIO
 
-from exegete.text.cleanup import clean_words
+from exegete.text.cleanup import clean_words, introduce_spaces
 from exegete.text.library import Manager
 from exegete.text.library.schema import v1
 from lxml import etree
@@ -15,6 +15,10 @@ import re
 
 footnote_re = re.compile(r"^-?[a-z]{1,2}-?$")
 expected_tags = set(["big", "br", "i", "small", "strong", "sup"])
+
+
+def process_textnode(node):
+    return introduce_spaces(str(node))
 
 
 def sefaria_parse(text):
@@ -35,7 +39,7 @@ def sefaria_parse(text):
         for node in elem.xpath("./child::node()"):
             typ = type(node)
             if typ is etree._ElementUnicodeResult or typ is str:
-                res.append(node)
+                res.append(process_textnode(node))
             else:
                 res += elem_to_text(node)
 
@@ -66,7 +70,7 @@ def sefaria_parse(text):
         typ = type(elem)
 
         if typ is etree._ElementUnicodeResult or typ is str:
-            verse_text += elem
+            verse_text += process_textnode(elem)
             continue
 
         assert elem.tag in expected_tags
