@@ -20,25 +20,14 @@ export interface ScriptureViewerData {
 
 export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidemarkup, shortcode, annotation }) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
-    const [scripture, setScripture] = React.useState<JSX.Element[]>([]);
+    const [scriptures, setScriptures] = React.useState<(ScriptureObject[] | null)[]>([]);
+    const [books, setBooks] = React.useState<string[]>([]);
 
-    // if we directly use annotation within the useEffect, we'll get
-    // continual re-renders as it's a dynamically constructed object.
-    const anno_data = annotation.get();
     useEffect(() => {
         let isSubscribed = true;
         if (!scriptureState.valid || !scriptureState.catalog) {
             return;
         }
-
-        const annoMap = new Map<string, ScriptureWordAnnotation>();
-        for (const [pos, anno] of anno_data) {
-            annoMap.set(annoKey(pos), anno);
-        }
-
-        const getAnno = (p: WordPosition) => {
-            return annoMap.get(annoKey(p));
-        };
 
         const module = scriptureState.catalog[shortcode];
         const parser = getModuleParser(module, shortcode);
@@ -50,47 +39,65 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
                 if (!isSubscribed) {
                     return;
                 }
-                const elems: JSX.Element[] = [];
-                for (let i = 0; i < scriptures.length; i++) {
-                    // backtrack looking for the previous scripture object displayed
-                    let last_scripture_object: ScriptureObject | null = null;
-                    for (let j = i - 1; j >= 0; j--) {
-                        const s = scriptures[j];
-                        if (s && s.length > 0) {
-                            last_scripture_object = s[s.length - 1];
-                            break;
-                        }
-                    }
-                    const last_book = i > 0 ? res.sbcs[i - 1].book : null;
-
-                    elems.push(
-                        <ScriptureTextView
-                            getAnno={getAnno}
-                            shortcode={shortcode}
-                            last_book={last_book}
-                            book={res.sbcs[i].book}
-                            key={i}
-                            module={module}
-                            last_scripture_object={last_scripture_object}
-                            scriptures={scriptures[i]}
-                            markup={!hidemarkup}
-                        />
-                    );
-                }
-                setScripture(elems);
+                setScriptures(scriptures);
             });
+            setBooks(res.sbcs.map((sbc) => sbc.book));
         } else {
-            setScripture([]);
+            setBooks([]);
+            setScriptures([]);
         }
 
         return () => {
             isSubscribed = false;
         };
-    }, [scriptureState.catalog, scriptureState.valid, shortcode, verseref, hidemarkup, anno_data]);
+    }, [scriptureState.catalog, scriptureState.valid, shortcode, verseref]);
+
+    // if we directly use annotation within the useEffect, we'll get
+    // continual re-renders as it's a dynamically constructed object.
+    const anno_data = annotation.get();
+    const annoMap = new Map<string, ScriptureWordAnnotation>();
+    for (const [pos, anno] of anno_data) {
+        annoMap.set(annoKey(pos), anno);
+    }
+
+    const getAnno = (p: WordPosition) => {
+        return annoMap.get(annoKey(p));
+    };
+
+    const elems: JSX.Element[] = [];
+    if (scriptureState.valid && scriptureState.catalog) {
+        const module = scriptureState.catalog[shortcode];
+        for (let i = 0; i < scriptures.length; i++) {
+            // backtrack looking for the previous scripture object displayed
+            let last_scripture_object: ScriptureObject | null = null;
+            for (let j = i - 1; j >= 0; j--) {
+                const s = scriptures[j];
+                if (s && s.length > 0) {
+                    last_scripture_object = s[s.length - 1];
+                    break;
+                }
+            }
+            const last_book = i > 0 ? books[i - 1] : null;
+
+            elems.push(
+                <ScriptureTextView
+                    getAnno={getAnno}
+                    shortcode={shortcode}
+                    last_book={last_book}
+                    book={books[i]}
+                    key={i}
+                    module={module}
+                    last_scripture_object={last_scripture_object}
+                    scriptures={scriptures[i]}
+                    markup={!hidemarkup}
+                />
+            );
+        }
+    }
 
     if (!scriptureState.valid || !scriptureState.catalog) {
         return <div>Loading...</div>;
     }
 
-    return <>{scripture}</>;
+    return <>{elems}</>;
 };
