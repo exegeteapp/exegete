@@ -16,5 +16,6 @@ See our [about page](https://exegete.app/about) for more information.
 docker compose exec backend bash
 python -m exegete.text.ingest.netbible /data/exegete-data/NET-bible/json/
 python -m exegete.text.ingest.sblgnt /data/exegete-data/SBLGNT/
+python -m exegete.text.ingest.njps /data/exegete-data/NJPS/
 ```
 

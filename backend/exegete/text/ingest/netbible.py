@@ -105,7 +105,7 @@ You can download it at https://bible.org/downloads
         def process_node(node, attrs: dict, object_attrs: dict):
             typ = type(node)
 
-            def recurse_process(extra):
+            def process_children_with_attrs(extra):
                 agg = []
                 for words in [
                     process_node(t, attrs | extra, object_attrs)
@@ -124,11 +124,11 @@ You can download it at https://bible.org/downloads
                 for code in node.get("data-num").strip().split(" "):
                     assert strongs_re.match(code)
                     codes.append("{}".format(code))
-                return recurse_process({"c-strongs": codes})
+                return process_children_with_attrs({"c-strongs": codes})
 
             # these are put in by LXML
             if typ is etree._Element and node.tag in ("html", "body"):
-                return recurse_process({})
+                return process_children_with_attrs({})
 
             if typ is etree._Element and node.tag == "p":
                 class_text = node.get("class")
@@ -153,7 +153,7 @@ You can download it at https://bible.org/downloads
                         else:
                             raise Exception(cls)
                 # insert some whitespace for the <p>
-                return recurse_process({})
+                return process_children_with_attrs({})
 
             if typ is etree._Element and node.tag == "span":
                 span_attrs = {}
@@ -167,16 +167,16 @@ You can download it at https://bible.org/downloads
                             pass
                         else:
                             raise Exception(cls)
-                return recurse_process(span_attrs)
+                return process_children_with_attrs(span_attrs)
 
             if typ is etree._Element and node.tag == "b":
-                return recurse_process({})
+                return process_children_with_attrs({})
 
             if typ is etree._Element and node.tag == "i":
-                return recurse_process({})
+                return process_children_with_attrs({})
 
             if typ is etree._Element and node.tag == "sup":
-                return recurse_process({})
+                return process_children_with_attrs({})
 
             if typ is etree._Element and node.tag == "n":
                 # skip footnotes, they are not included in the free version of the NET Bible

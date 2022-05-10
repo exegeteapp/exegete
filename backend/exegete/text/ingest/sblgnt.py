@@ -7,13 +7,9 @@ from collections import defaultdict
 from exegete.text.cleanup import clean_words
 from exegete.text.library import Manager
 from exegete.text.library.schema import v1
+from exegete.text import one
 from lxml import etree
 import argparse
-
-
-def one(l):
-    assert len(l) == 1
-    return l[0]
 
 
 def sblgnt_ingest(path):
