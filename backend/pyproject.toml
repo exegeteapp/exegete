@@ -18,6 +18,7 @@ aiohttp = "^3.8.1"
 alembic = "^1.7.7"
 aioredis = "^2.0.1"
 nltk = "^3.7"
+docx2python = "^2.0.4"
 
 [tool.poetry.dev-dependencies]
 black = "*"

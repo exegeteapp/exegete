@@ -255,6 +255,20 @@ trio = ["trio (>=0.14,<0.20)"]
 wmi = ["wmi (>=1.5.1,<2.0.0)"]
 
 [[package]]
+name = "docx2python"
+version = "2.0.4"
+description = "Extract content from docx files"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+lxml = "*"
+
+[package.extras]
+dev = ["pytest"]
+
+[[package]]
 name = "email-validator"
 version = "1.1.3"
 description = "A robust email syntax and deliverability validation library for Python 2.x/3.x."
@@ -286,7 +300,7 @@ test = ["pytest (>=6.2.4,<7.0.0)", "pytest-cov (>=2.12.0,<4.0.0)", "mypy (==0.91
 
 [[package]]
 name = "fastapi-users"
-version = "9.3.1"
+version = "9.3.2"
 description = "Ready-to-use and customizable users management for FastAPI"
 category = "main"
 optional = false
@@ -302,14 +316,14 @@ pyjwt = {version = "2.3.0", extras = ["crypto"]}
 python-multipart = "0.0.5"
 
 [package.extras]
-dev = ["flake8", "pytest", "requests", "isort", "pytest-asyncio", "flake8-docstrings", "mkdocs", "mkdocs-material", "mkdocs-mermaid2-plugin", "black", "mypy", "codecov", "pytest-cov", "pytest-mock", "flit", "markdown-include", "pygments", "pymdown-extensions", "bumpversion", "httpx-oauth", "httpx", "asgi-lifespan", "uvicorn"]
-mongodb = ["fastapi-users-db-mongodb (>=1.1.0)"]
+dev = ["flake8", "pytest", "requests", "isort", "pytest-asyncio", "flake8-docstrings", "mike", "mkdocs", "mkdocs-material", "mkdocs-mermaid2-plugin", "black", "mypy", "codecov", "pytest-cov", "pytest-mock", "flit", "markdown-include", "pygments", "pymdown-extensions", "bumpversion", "httpx-oauth", "httpx", "asgi-lifespan", "uvicorn"]
+mongodb = ["fastapi-users-db-mongodb (>=1.1.0,<2.0.0)"]
 oauth = ["httpx-oauth (>=0.4,<0.7)"]
-ormar = ["fastapi-users-db-ormar (>=1.0.0)"]
+ormar = ["fastapi-users-db-ormar (>=1.0.0,<2.0.0)"]
 redis = ["aioredis (>=2.0.1,<2.1.0)", "hiredis (>=2.0.0,<2.1.0)"]
 sqlalchemy = ["fastapi-users-db-sqlalchemy (>=1.1.0,<2.0.0)"]
-sqlalchemy2 = ["fastapi-users-db-sqlalchemy (>=2.0.0)"]
-tortoise-orm = ["fastapi-users-db-tortoise (>=1.1.0)"]
+sqlalchemy2 = ["fastapi-users-db-sqlalchemy (>=2.0.0,<4.0.0)"]
+tortoise-orm = ["fastapi-users-db-tortoise (>=1.1.0,<2.0.0)"]
 
 [[package]]
 name = "fastapi-users-db-sqlalchemy"
@@ -774,7 +788,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "86019a92c586b874817a5391ec503ea65277f8d5511e79080bcc79746ec7b070"
+content-hash = "2848a1c9385ed08b1c6c68f4f146929102e2f3e3fd3906948ef067015823f81b"
 
 [metadata.files]
 aiohttp = [
@@ -1037,6 +1051,10 @@ dnspython = [
     {file = "dnspython-2.2.1-py3-none-any.whl", hash = "sha256:a851e51367fb93e9e1361732c1d60dab63eff98712e503ea7d92e6eccb109b4f"},
     {file = "dnspython-2.2.1.tar.gz", hash = "sha256:0f7569a4a6ff151958b64304071d370daa3243d15941a7beedf0c9fe5105603e"},
 ]
+docx2python = [
+    {file = "docx2python-2.0.4-py3-none-any.whl", hash = "sha256:7989a5908f56bfb628dba072f6aa781fe3358900d7015be6c6eeb18d3ad91ee3"},
+    {file = "docx2python-2.0.4.tar.gz", hash = "sha256:57b94bcf27870aa760397cf2cf1c52871fe5c62f5e72c30691af907c7909f895"},
+]
 email-validator = [
     {file = "email_validator-1.1.3-py2.py3-none-any.whl", hash = "sha256:5675c8ceb7106a37e40e2698a57c056756bf3f272cfa8682a4f87ebd95d8440b"},
     {file = "email_validator-1.1.3.tar.gz", hash = "sha256:aa237a65f6f4da067119b7df3f13e89c25c051327b2b5b66dc075f33d62480d7"},
@@ -1046,8 +1064,8 @@ fastapi = [
     {file = "fastapi-0.75.2.tar.gz", hash = "sha256:b5dac161ee19d33346040d3f44d8b7a9ac09b37df9efff95891f5e7641fa482f"},
 ]
 fastapi-users = [
-    {file = "fastapi-users-9.3.1.tar.gz", hash = "sha256:f2b31bcbb3e8a45ecc71a0f5ed844d04c1cabbc52c9fa00c8539a886bee5f77e"},
-    {file = "fastapi_users-9.3.1-py3-none-any.whl", hash = "sha256:1b98051e641c8cbc16049d181df90a1d8591915c76bf543fef1e10ed32f6176f"},
+    {file = "fastapi-users-9.3.2.tar.gz", hash = "sha256:57b4bb1abc43d710c375f3e2bac3a13b69a266300f3bb9623a336f758b4c0931"},
+    {file = "fastapi_users-9.3.2-py3-none-any.whl", hash = "sha256:00394b1e7d869750c6105c9962d9765f91a151be952e375498fbea38601ccec7"},
 ]
 fastapi-users-db-sqlalchemy = [
     {file = "fastapi-users-db-sqlalchemy-1.1.0.tar.gz", hash = "sha256:6cfc9f396ed51c5c660c9ac1168279bfb2af5fb5b814d0c4065849333c4fbd45"},
