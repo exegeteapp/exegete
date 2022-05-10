@@ -1,4 +1,5 @@
 import os
+import sys
 from exegete.text import one
 from io import StringIO
 
@@ -13,6 +14,7 @@ import re
 
 
 footnote_re = re.compile(r"^-?[a-z]{1,2}-?$")
+expected_tags = set(["big", "br", "i", "small", "strong", "sup"])
 
 
 def sefaria_parse(text):
@@ -22,7 +24,22 @@ def sefaria_parse(text):
     """
 
     def elem_to_text(elem):
-        return "".join(elem.xpath(".//text()"))
+        assert elem.tag in expected_tags
+        res = []
+
+        # we don't want line breaks, but we do need spacing as Sefaria
+        # sometimes has a <br> with no other spacing between two words.
+        if elem.tag == "br":
+            res.append(" ")
+
+        for node in elem.xpath("./child::node()"):
+            typ = type(node)
+            if typ is etree._ElementUnicodeResult or typ is str:
+                res.append(node)
+            else:
+                res += elem_to_text(node)
+
+        return "".join(res)
 
     verse_text = ""
     footnotes = []
@@ -35,7 +52,6 @@ def sefaria_parse(text):
         return None, []
 
     body = one(et.xpath("/html/body"))
-    in_footnote = False
 
     # HTMLParser might stick in a <p> tag, which we want to skip through
     children = body.xpath("./child::node()")
@@ -48,9 +64,12 @@ def sefaria_parse(text):
 
     for elem in body.xpath("./child::node()"):
         typ = type(elem)
+
         if typ is etree._ElementUnicodeResult or typ is str:
             verse_text += elem
             continue
+
+        assert elem.tag in expected_tags
 
         # we don't want to have to deal with nested footnotes, let's just assert
         # that there aren't any
@@ -63,17 +82,18 @@ def sefaria_parse(text):
                 raise Exception("not a footnote: {}".format(sup_text))
             continue
 
+        # handle <i> tags that are footnotes
         if elem.tag == "i":
             cls = elem.get("class")
             if cls == "endFootnote":
                 # we can totally ignore this, it's just a hint to the sefaria frontend
                 # with no content
                 continue
-
-            if cls == "footnote":
+            elif cls == "footnote":
                 footnotes.append(elem_to_text(elem))
                 continue
 
+        # any other tag (including non-footnote <i>) - turn it into text
         verse_text += elem_to_text(elem)
 
     return verse_text, footnotes
