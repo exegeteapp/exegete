@@ -34,6 +34,7 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
         const res = parseReference(module, parser, verseref);
 
         if (res.success) {
+            setBooks(res.sbcs.map((sbc) => sbc.book));
             const scripturePromises = res.sbcs.map((sbc) => getScripture({ ...sbc, shortcode: shortcode }));
             Promise.all(scripturePromises).then((scriptures) => {
                 if (!isSubscribed) {
@@ -41,7 +42,6 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
                 }
                 setScriptures(scriptures);
             });
-            setBooks(res.sbcs.map((sbc) => sbc.book));
         } else {
             setBooks([]);
             setScriptures([]);
