@@ -220,9 +220,9 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
                 uuid={cell.uuid}
                 buttons={[
                     <AnnotateButton key={0} />,
+                    <HideButton key={3} />,
                     <RemoveColumnButton key={1} />,
                     <AddColumnButton key={2} />,
-                    <HideButton key={3} />,
                 ]}
             ></CellHeader>
             <CellBody>
