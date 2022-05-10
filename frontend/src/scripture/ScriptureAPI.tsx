@@ -30,7 +30,8 @@ export interface ScriptureParams extends ScriptureBookChapter {
     shortcode: string;
 }
 
-const CACHE_SIZE = 10;
+// scripture is small (kilobytes), and complicated exegesis might do lots of queries
+const CACHE_SIZE = 1024;
 let scriptureCache: [string, ScriptureObject[]][] = [];
 
 const cache_key = (params: ScriptureParams): string => {
