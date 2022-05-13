@@ -1,7 +1,15 @@
 import { useState } from "react";
-import { CellFC, NewCellDataFn, WorkspaceData } from "../../workspace/Workspace";
+import {
+    CellFC,
+    IWorkspaceContext,
+    NewCellDataFn,
+    workspaceCellSet,
+    WorkspaceContext,
+    WorkspaceData,
+} from "../../workspace/Workspace";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import ReactMarkdown from "react-markdown";
+import React from "react";
 import { Button } from "reactstrap";
 import { RegistryEntry } from "../../workspace/CellRegistry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -34,12 +42,13 @@ const Viewer: React.FC<{ text: string }> = ({ text }) => {
     return <ReactMarkdown children={text.length === 0 ? placeholderText : text} />;
 };
 
-export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell, functions }) => {
+export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell }) => {
     const data = cell.data;
     const [editing, setEditing] = useState(false);
+    const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     const setText = (text: string) => {
-        functions.set({
+        workspaceCellSet(dispatch, cell.uuid, {
             ...cell.data,
             text,
         });
@@ -57,7 +66,7 @@ export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell, functions }) 
 
     return (
         <Cell>
-            <CellHeader functions={functions} buttons={[<EditButton key={0} />]} uuid={cell.uuid}></CellHeader>
+            <CellHeader buttons={[<EditButton key={0} />]} uuid={cell.uuid}></CellHeader>
             <CellBody>{inner}</CellBody>
             <CellFooter>
                 <div>

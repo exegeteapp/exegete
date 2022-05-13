@@ -12,13 +12,14 @@ import { getModuleParser } from "../scripture/ParserCache";
 import parseReference, { ParseResultSuccess } from "../verseref/VerseRef";
 import {
     annoKey,
+    AnnotationColours,
     ScriptureWordAnnotation,
     ScriptureWordAnnotationFunctions,
     WordPosition,
 } from "./ScriptureAnnotation";
 import ReactDOM from "react-dom";
-import { Button, ButtonGroup, ButtonToolbar } from "reactstrap";
-import { faStrikethrough, faTrashCan, IconDefinition } from "@fortawesome/free-solid-svg-icons";
+import { Button, ButtonGroup, ButtonToolbar, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
+import { faBrush, faStrikethrough, faTrashCan, IconDefinition } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { applicableGroups, getSource, SourceGroup } from "../sources/Sources";
 import { BookInfo, FindBook, languageClass, ModuleInfo } from "../scripture/ScriptureCatalog";
@@ -42,6 +43,7 @@ type ParaElement = {
 type WordAnnotation = {
     source: string;
     display: string;
+    highlight: string;
 };
 
 type WordElement = {
@@ -101,14 +103,26 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
         return <></>;
     }
     const sourceDefn = getSource(element.source);
+
+    let td = "none";
+    if (element.display === "strikethrough" && element.highlight) {
+        td = "underline strikethrough";
+    } else if (element.display === "strikethrough") {
+        td = "strikethrough";
+    } else if (element.highlight) {
+        td = "underline";
+    }
+
     const style: React.CSSProperties = {
-        textDecoration: element.display === "strikethrough" ? "line-through" : "none",
+        textDecoration: td,
         opacity: element.display === "hidden" ? "25%" : "100%",
         color: sourceDefn ? sourceDefn.colour : "black",
         verticalAlign: "baseline",
         display: "inline-block",
         backgroundColor: "#eee",
         boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
+        textDecorationColor: element.highlight ? element.highlight : "",
+        textDecorationThickness: element.highlight ? "5px" : "",
     };
     return (
         <span {...attributes} contentEditable={false} style={style}>
@@ -177,6 +191,7 @@ const calculateInitialValue = async (
                     type: "word",
                     value: word.value,
                     children: [{ type: "text", text: "" }],
+                    highlight: wordAnno ? wordAnno.highlight : "",
                     source: wordAnno ? wordAnno.source : "",
                     display: wordAnno ? wordAnno.display : "",
                     position,
@@ -241,6 +256,8 @@ const ToggleAnnoButton: React.FC<{ attr: string; value: string; icon?: IconDefin
 };
 
 const EditorMenu = React.forwardRef<HTMLDivElement, { groups: SourceGroup[] }>(({ groups }, ref) => {
+    const editor = useSlate();
+
     // FIXME grahame tomorrow build the anno buttons dynamically...
     const bgs: React.ReactElement[] = groups.map((group, index) => {
         const btns = group.sources.map((source, index) => {
@@ -250,6 +267,17 @@ const EditorMenu = React.forwardRef<HTMLDivElement, { groups: SourceGroup[] }>((
             <ButtonGroup className="pe-1" key={index}>
                 {btns}
             </ButtonGroup>
+        );
+    });
+
+    const colours = AnnotationColours.map((c, i) => {
+        return (
+            <Button
+                active={activeOnSelection(editor, "highlight", c)}
+                key={i}
+                onClick={() => toggleOnSelection(editor, "highlight", c)}
+                style={{ backgroundColor: c }}
+            />
         );
     });
 
@@ -265,6 +293,15 @@ const EditorMenu = React.forwardRef<HTMLDivElement, { groups: SourceGroup[] }>((
             <ButtonToolbar className="float-end mb-1">
                 {bgs}
                 <ButtonGroup>
+                    <UncontrolledDropdown nav className="toolbar-dropdown">
+                        <DropdownToggle caret nav>
+                            <FontAwesomeIcon icon={faBrush} />
+                        </DropdownToggle>
+                        <DropdownMenu color="dark" dark>
+                            {colours}
+                        </DropdownMenu>
+                    </UncontrolledDropdown>
+
                     <ToggleAnnoButton attr="display" value="strikethrough" icon={faStrikethrough} />
                     <ToggleAnnoButton attr="display" value="hidden" icon={faTrashCan} />
                 </ButtonGroup>
@@ -328,6 +365,7 @@ const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWord
             source: "",
             paraSkip: 0,
             display: "",
+            highlight: "",
         };
     };
 
@@ -348,13 +386,14 @@ const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWord
                 let key = annoKey(currentPos);
                 let anno = annoMap.get(key);
 
-                if (para_pending > 0 || child.source !== "" || child.display) {
+                if (para_pending > 0 || child.source !== "" || child.display || child.highlight) {
                     if (!anno) {
                         anno = newAnno();
                     }
                     anno.paraSkip = para_pending;
                     anno.display = child.display;
                     anno.source = child.source;
+                    anno.highlight = child.highlight;
                     para_pending = 0;
                 }
 

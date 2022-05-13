@@ -1,4 +1,11 @@
-import { CellFC, CellFunctions, WorkspaceCell, WorkspaceData } from "../../workspace/Workspace";
+import {
+    CellFC,
+    IWorkspaceContext,
+    WorkspaceCell,
+    workspaceCellSet,
+    WorkspaceContext,
+    WorkspaceData,
+} from "../../workspace/Workspace";
 import React from "react";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
@@ -56,15 +63,15 @@ export const newScriptureCellParallel = (
 const ScriptureColumn: React.FC<{
     index: number;
     cell: WorkspaceCell<ScriptureCellData>;
-    functions: CellFunctions;
     editing: boolean;
-}> = ({ index, cell, functions, editing }) => {
+}> = ({ index, cell, editing }) => {
     const data = cell.data.columns[index];
+    const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     const setAnnotation = (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
         const new_columns = [...cell.data.columns];
         new_columns[index].annotation = new_annotation;
-        functions.set({
+        workspaceCellSet(dispatch, cell.uuid, {
             ...cell.data,
             columns: new_columns,
         });
@@ -89,12 +96,13 @@ const ScriptureColumn: React.FC<{
     return inner;
 };
 
-export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
+export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
     const data = cell.data;
     const [editing, setEditing] = React.useState(false);
+    const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     const setHideMarkup = (hidemarkup: boolean) => {
-        functions.set({
+        workspaceCellSet(dispatch, cell.uuid, {
             ...cell.data,
             hidemarkup,
         });
@@ -103,7 +111,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     const updateVR = (index: number, vr: SCVerseRef) => {
         const new_columns = [...cell.data.columns];
         new_columns[index] = { ...cell.data.columns[index], ...vr };
-        functions.set({
+        workspaceCellSet(dispatch, cell.uuid, {
             ...cell.data,
             columns: new_columns,
         });
@@ -136,7 +144,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
         }
         inner.push(
             <Col xs={{ size: cw, offset: 0 }} key={i}>
-                <ScriptureColumn key={i} index={i} cell={cell} functions={functions} editing={editing} />
+                <ScriptureColumn key={i} index={i} cell={cell} editing={editing} />
             </Col>
         );
         footer.push(
@@ -163,7 +171,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     const addColumn = () => {
         const new_column = { ...data.columns[data.columns.length - 1] };
         const new_columns = [...data.columns, new_column];
-        functions.set({
+        workspaceCellSet(dispatch, cell.uuid, {
             ...cell.data,
             columns: new_columns,
         });
@@ -171,7 +179,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
 
     const removeLastColumn = () => {
         const new_columns = data.columns.slice(0, -1);
-        functions.set({
+        workspaceCellSet(dispatch, cell.uuid, {
             ...cell.data,
             columns: new_columns,
         });
@@ -216,7 +224,6 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell, functions }) => {
     return (
         <Cell>
             <CellHeader
-                functions={functions}
                 uuid={cell.uuid}
                 buttons={[
                     <AnnotateButton key={0} />,

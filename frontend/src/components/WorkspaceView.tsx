@@ -31,40 +31,24 @@ const ScrollWrapper = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivEl
 });
 
 const InnerWorkspaceView: RefsFC = ({ refs }) => {
-    const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const { state: workspaceState } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     if (!workspaceState.valid || !workspaceState.workspace) {
         return <p>Loading workspace...</p>;
     }
 
     const cells = workspaceState.workspace.data.cells.map((cell, index) => {
-        const functions = {
-            set: (data: any) => {
-                dispatch({ type: "workspace_cell_set", uuid: cell.uuid, data: data });
-            },
-            delete: () => {
-                dispatch({ type: "workspace_cell_delete", uuid: cell.uuid });
-            },
-            moveUp: () => {
-                dispatch({ type: "workspace_cell_move", uuid: cell.uuid, offset: -1 });
-            },
-            moveDown: () => {
-                dispatch({ type: "workspace_cell_move", uuid: cell.uuid, offset: 1 });
-            },
-        };
-
         const inner = () => {
             for (var key in Registry) {
                 if (key === cell.cell_type) {
                     return React.createElement(Registry[key].component, {
                         key: cell.uuid,
                         cell: cell,
-                        functions: functions,
                     });
                 }
             }
 
-            return <Error key={cell.uuid} cell={cell} functions={functions} />;
+            return <Error key={cell.uuid} cell={cell} />;
         };
 
         return (

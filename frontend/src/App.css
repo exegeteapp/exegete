@@ -90,6 +90,14 @@ html {
     max-width: 150px;
 }
 
+.toolbar-dropdown {
+    background-color: rgb(108, 117, 125);
+}
+
+.toolbar-dropdown > a {
+    color: white;
+}
+
 .sponsors a {
     text-decoration: none;
 }

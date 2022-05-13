@@ -19,16 +19,8 @@ export interface WorkspaceCell<T> {
     data: T;
 }
 
-export type CellFunctions = {
-    set: (data: any) => void;
-    delete: () => void;
-    moveUp: () => void;
-    moveDown: () => void;
-};
-
 export type CellFC<T> = React.FC<{
     cell: WorkspaceCell<T>;
-    functions: CellFunctions;
 }>;
 
 export type View = {};
@@ -275,4 +267,16 @@ export const deleteWorkspace = (id: string, local: boolean) => {
     } else {
         deleteWorkspaceAPI(id);
     }
+};
+
+export const workspaceCellSet = (dispatch: React.Dispatch<WorkspaceAction>, uuid: string, data: any) => {
+    dispatch({ type: "workspace_cell_set", uuid: uuid, data: data });
+};
+
+export const workspaceCellDelete = (dispatch: React.Dispatch<WorkspaceAction>, uuid: string) => {
+    dispatch({ type: "workspace_cell_delete", uuid: uuid });
+};
+
+export const workspaceCellMove = (dispatch: React.Dispatch<WorkspaceAction>, uuid: string, offset: number) => {
+    dispatch({ type: "workspace_cell_move", uuid: uuid, offset: offset });
 };

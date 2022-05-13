@@ -50,10 +50,25 @@ export const ScriptureTextView: React.FC<{
                 className = languageClass(text.language);
             }
             const sourceDefn = anno ? getSource(anno.source) : undefined;
+            if (anno) {
+                console.log(anno);
+            }
+            let td = "none";
+            if (anno) {
+                if (anno.display === "strikethrough" && anno.highlight) {
+                    td = "underline strikethrough";
+                } else if (anno.display === "strikethrough") {
+                    td = "strikethrough";
+                } else if (anno.highlight) {
+                    td = "underline";
+                }
+            }
             const style: React.CSSProperties = {
                 color: sourceDefn ? sourceDefn.colour : "black",
                 visibility: anno && anno.display === "hidden" ? "hidden" : "visible",
-                textDecoration: anno && anno.display === "strikethrough" ? "line-through" : "none",
+                textDecoration: td,
+                textDecorationColor: anno && anno.highlight ? anno.highlight : "",
+                textDecorationThickness: anno && anno.highlight ? "5px" : "",
             };
             return (
                 <span key={"span" + i}>
