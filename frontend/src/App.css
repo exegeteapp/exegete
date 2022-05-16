@@ -92,6 +92,8 @@ html {
 
 .toolbar-dropdown {
     background-color: rgb(108, 117, 125);
+    list-style: none;
+    margin-left: 0;
 }
 
 .toolbar-dropdown > a {
