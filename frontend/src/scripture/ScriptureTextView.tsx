@@ -66,6 +66,7 @@ export const ScriptureTextView: React.FC<{
                 textDecoration: td,
                 textDecorationColor: anno && anno.highlight ? anno.highlight : "",
                 textDecorationThickness: anno && anno.highlight ? "5px" : "",
+                textDecorationSkipInk: "none",
             };
             return (
                 <span key={"span" + i}>

@@ -167,10 +167,10 @@ export const calculateSnowballHighlights = (shortcode_sbcs: [string, ScriptureBo
         const sorted = Array.from(snowballCount.entries()).sort((a, b) => b[1] - a[1]);
         const snowballHighlight = new Map<string, string>();
 
-        for (let i = 0; i < AnnotationColours.length; i++) {
+        for (let i = 0; i < sorted.length; i++) {
             const [snowball, count] = sorted[i];
             if (count > 1) {
-                snowballHighlight.set(snowball, AnnotationColours[i]);
+                snowballHighlight.set(snowball, AnnotationColours[i % AnnotationColours.length]);
             }
         }
 

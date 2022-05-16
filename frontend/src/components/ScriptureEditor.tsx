@@ -124,6 +124,7 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
         boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
         textDecorationColor: element.highlight ? element.highlight : "",
         textDecorationThickness: element.highlight ? "5px" : "",
+        textDecorationSkipInk: "none",
     };
     return (
         <span {...attributes} contentEditable={false} style={style}>
