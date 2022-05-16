@@ -15,6 +15,17 @@ export interface ScriptureWordAnnotation {
     highlight: string;
 }
 
+export const newScriptureWordAnnotation = (): ScriptureWordAnnotation => {
+    return {
+        postText: "",
+        preText: "",
+        source: "",
+        paraSkip: 0,
+        display: "",
+        highlight: "",
+    };
+};
+
 export const AnnotationColours = [
     "#a6cee3",
     "#1f78b4",

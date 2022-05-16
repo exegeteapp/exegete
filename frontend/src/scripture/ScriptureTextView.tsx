@@ -50,9 +50,6 @@ export const ScriptureTextView: React.FC<{
                 className = languageClass(text.language);
             }
             const sourceDefn = anno ? getSource(anno.source) : undefined;
-            if (anno) {
-                console.log(anno);
-            }
             let td = "none";
             if (anno) {
                 if (anno.display === "strikethrough" && anno.highlight) {

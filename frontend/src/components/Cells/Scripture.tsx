@@ -1,6 +1,7 @@
 import {
     CellFC,
     IWorkspaceContext,
+    WorkspaceAction,
     WorkspaceCell,
     workspaceCellSet,
     WorkspaceContext,
@@ -17,10 +18,11 @@ import { ScriptureViewer } from "../ScriptureViewer";
 import { ScriptureEditor } from "../ScriptureEditor";
 import { ScriptureWordAnnotation, ScriptureWordAnnotationFunctions, WordPosition } from "../ScriptureAnnotation";
 import { ModuleButton } from "../ModuleButton";
+import { HighlightRepititionButton } from "../HighlightRepitition";
 
 export const ScriptureSlug = "scripture";
 
-interface ScriptureCellColumn {
+export interface ScriptureCellColumn {
     shortcode: string;
     verseref: string;
     annotation: [WordPosition, ScriptureWordAnnotation][];
@@ -60,6 +62,17 @@ export const newScriptureCellParallel = (
     };
 };
 
+const makeSetAnnotation = (cell: WorkspaceCell<ScriptureCellData>, dispatch: React.Dispatch<WorkspaceAction>) => {
+    return (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
+        const new_columns = [...cell.data.columns];
+        new_columns[index].annotation = new_annotation;
+        workspaceCellSet(dispatch, cell.uuid, {
+            ...cell.data,
+            columns: new_columns,
+        });
+    };
+};
+
 const ScriptureColumn: React.FC<{
     index: number;
     cell: WorkspaceCell<ScriptureCellData>;
@@ -68,18 +81,12 @@ const ScriptureColumn: React.FC<{
     const data = cell.data.columns[index];
     const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
-    const setAnnotation = (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
-        const new_columns = [...cell.data.columns];
-        new_columns[index].annotation = new_annotation;
-        workspaceCellSet(dispatch, cell.uuid, {
-            ...cell.data,
-            columns: new_columns,
-        });
-    };
-
+    const sa = makeSetAnnotation(cell, dispatch);
     const annotation_functions: ScriptureWordAnnotationFunctions = {
         get: () => cell.data.columns[index].annotation,
-        set: setAnnotation,
+        set: (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
+            sa(index, new_annotation);
+        },
     };
 
     const inner: JSX.Element = editing ? (
@@ -159,7 +166,12 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
     const HideButton: React.FC = () => {
         const id = `hide${cell.uuid}`;
         return (
-            <Button id={id} onClick={() => setHideMarkup(!data.hidemarkup)} active={!data.hidemarkup}>
+            <Button
+                id={id}
+                onClick={() => setHideMarkup(!data.hidemarkup)}
+                active={!data.hidemarkup}
+                disabled={editing}
+            >
                 <FontAwesomeIcon icon={faTags} />
                 <UncontrolledTooltip autohide placement="bottom" target={id}>
                     {data.hidemarkup ? "Show markup" : "Hide markup"}
@@ -227,9 +239,16 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
                 uuid={cell.uuid}
                 buttons={[
                     <AnnotateButton key={0} />,
-                    <HideButton key={3} />,
-                    <RemoveColumnButton key={1} />,
-                    <AddColumnButton key={2} />,
+                    <HighlightRepititionButton
+                        key={1}
+                        editing={editing}
+                        cell={cell}
+                        columns={data.columns}
+                        setAnno={makeSetAnnotation(cell, dispatch)}
+                    />,
+                    <HideButton key={2} />,
+                    <RemoveColumnButton key={3} />,
+                    <AddColumnButton key={4} />,
                 ]}
             ></CellHeader>
             <CellBody>

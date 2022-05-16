@@ -13,6 +13,7 @@ import parseReference, { ParseResultSuccess } from "../verseref/VerseRef";
 import {
     annoKey,
     AnnotationColours,
+    newScriptureWordAnnotation,
     ScriptureWordAnnotation,
     ScriptureWordAnnotationFunctions,
     WordPosition,
@@ -358,17 +359,6 @@ const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWord
     const annoMap = new Map<string, ScriptureWordAnnotation>();
     const annotated = new Set<WordPosition>();
 
-    const newAnno = (): ScriptureWordAnnotation => {
-        return {
-            postText: "",
-            preText: "",
-            source: "",
-            paraSkip: 0,
-            display: "",
-            highlight: "",
-        };
-    };
-
     // iterate through top level paragraphs
     let para_pending = 0;
     for (const child of value) {
@@ -388,7 +378,7 @@ const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWord
 
                 if (para_pending > 0 || child.source !== "" || child.display || child.highlight) {
                     if (!anno) {
-                        anno = newAnno();
+                        anno = newScriptureWordAnnotation();
                     }
                     anno.paraSkip = para_pending;
                     anno.display = child.display;
@@ -435,7 +425,7 @@ const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWord
 
                 if (text) {
                     if (!anno) {
-                        anno = newAnno();
+                        anno = newScriptureWordAnnotation();
                     }
                     if (forward) {
                         anno.preText = text;

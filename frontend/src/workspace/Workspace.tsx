@@ -62,7 +62,7 @@ interface WorkspaceState {
     local: boolean;
 }
 
-type WorkspaceAction =
+export type WorkspaceAction =
     | { type: "workspace_start" }
     | { type: "workspace_loaded"; workspace: WorkspaceMetadata }
     | { type: "workspace_cell_set"; uuid: string; data: any }
