@@ -37,7 +37,7 @@ export const AnnotationColours = [
     "#ff7f00",
     "#cab2d6",
     "#6a3d9a",
-    "#ffff99",
+    "#000000",
     "#b15928",
 ];
 
