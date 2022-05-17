@@ -376,8 +376,25 @@ const HoveringToolbar: React.FC<{ groups: SourceGroup[] }> = ({ groups }) => {
             return;
         }
 
+        const showMenu = () => {
+            if (!selection || !inFocus) {
+                return false;
+            }
+            // we have a word to annotate if there's at least one word in the selection
+            const [match] = Editor.nodes(editor, {
+                match: (node, path) => {
+                    const word = node as WordElement;
+                    if (word.type !== "word") {
+                        return false;
+                    }
+                    return true;
+                },
+            });
+            return !!match;
+        };
+
         // we have a word to annotate if there is a void, or there is a string selected
-        if (!selection || !inFocus || (!Editor.void(editor) && Editor.string(editor, selection) === "")) {
+        if (!showMenu()) {
             el.removeAttribute("style");
             return;
         }
