@@ -15,10 +15,17 @@ export interface ScriptureViewerData {
     shortcode: string;
     verseref: string;
     hidemarkup: boolean;
+    separateverses: boolean;
     annotation: ScriptureWordAnnotationFunctions;
 }
 
-export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidemarkup, shortcode, annotation }) => {
+export const ScriptureViewer: React.FC<ScriptureViewerData> = ({
+    verseref,
+    hidemarkup,
+    shortcode,
+    annotation,
+    separateverses,
+}) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const [scriptures, setScriptures] = React.useState<(ScriptureObject[] | null)[]>([]);
     const [books, setBooks] = React.useState<string[]>([]);
@@ -90,6 +97,7 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({ verseref, hidem
                     last_scripture_object={last_scripture_object}
                     scriptures={scriptures[i]}
                     markup={!hidemarkup}
+                    separateverses={separateverses}
                 />
             );
         }

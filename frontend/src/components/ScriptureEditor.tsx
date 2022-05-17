@@ -47,9 +47,16 @@ type WordAnnotation = {
     highlight: string;
 };
 
+type VerseRefElement = {
+    type: "verseref";
+    value: string;
+    children: CustomText[];
+};
+
 type WordElement = {
     type: "word";
     value: string;
+    start_of_verse: boolean;
     children: CustomText[];
     position: WordPosition;
 } & WordAnnotation;
@@ -59,7 +66,7 @@ type CustomText = {
     text: string;
 };
 
-type CustomElement = ParaElement | WordElement;
+type CustomElement = ParaElement | WordElement | VerseRefElement;
 
 declare module "slate" {
     interface CustomTypes {
@@ -73,11 +80,11 @@ const withWords = (editor: Editor) => {
     const { isInline, isVoid } = editor;
 
     editor.isInline = (element: CustomElement) => {
-        return element.type === "word" ? true : isInline(element);
+        return element.type === "word" || element.type === "verseref" ? true : isInline(element);
     };
 
     editor.isVoid = (element: CustomElement) => {
-        return element.type === "word" ? true : isVoid(element);
+        return element.type === "word" || element.type === "verseref" ? true : isVoid(element);
     };
 
     return editor;
@@ -88,6 +95,8 @@ const EditorElement: React.FC<RenderElementProps> = (props) => {
     switch (element.type) {
         case "word":
             return <Word {...props} />;
+        case "verseref":
+            return <VerseRef {...props} />;
         default:
             return (
                 <p className="editor-para" {...attributes}>
@@ -95,6 +104,33 @@ const EditorElement: React.FC<RenderElementProps> = (props) => {
                 </p>
             );
     }
+};
+
+const NonEditableStyle = (selected: boolean, focused: boolean) => {
+    return {
+        verticalAlign: "baseline",
+        display: "inline-block",
+        backgroundColor: "#eee",
+        boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
+    };
+};
+
+const VerseRef: React.FC<RenderElementProps> = ({ attributes, children, element }) => {
+    const selected = useSelected();
+    const focused = useFocused();
+    if (element.type !== "verseref") {
+        return <></>;
+    }
+    const style = {
+        ...NonEditableStyle(selected, focused),
+        fontWeight: "bold",
+    };
+    return (
+        <span {...attributes} contentEditable={false} style={style}>
+            {element.value}
+            {children}
+        </span>
+    );
 };
 
 const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) => {
@@ -115,13 +151,10 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
     }
 
     const style: React.CSSProperties = {
+        ...NonEditableStyle(selected, focused),
         textDecoration: td,
         opacity: element.display === "hidden" ? "25%" : "100%",
         color: sourceDefn ? sourceDefn.colour : "black",
-        verticalAlign: "baseline",
-        display: "inline-block",
-        backgroundColor: "#eee",
-        boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
         textDecorationColor: element.highlight ? element.highlight : "",
         textDecorationThickness: element.highlight ? "5px" : "",
         textDecorationSkipInk: "none",
@@ -137,7 +170,9 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
 const calculateInitialValue = async (
     shortcode: string,
     res: ParseResultSuccess,
-    annotation: ScriptureWordAnnotationFunctions
+    annotation: ScriptureWordAnnotationFunctions,
+    separateverses: boolean,
+    hidemarkup: boolean
 ): Promise<Descendant[]> => {
     const scripturePromises = res.sbcs.map((sbc) => getScripture({ ...sbc, shortcode: shortcode }));
     const scriptures = await Promise.all(scripturePromises);
@@ -165,6 +200,17 @@ const calculateInitialValue = async (
         for (const obj of objs) {
             if (obj.type !== "verse") {
                 continue; // we don't want to annotate footnotes or titles...
+            }
+            if (!hidemarkup) {
+                wordElem.push({
+                    type: "verseref",
+                    value: `${obj.chapter_start}:${obj.verse_start}`,
+                    children: [{ type: "text", text: "" }],
+                });
+                wordElem.push({
+                    type: "text",
+                    text: " ",
+                });
             }
             for (let wi = 0; wi < obj.text.length; wi++) {
                 const word = obj.text[wi];
@@ -195,6 +241,7 @@ const calculateInitialValue = async (
                     children: [{ type: "text", text: "" }],
                     highlight: wordAnno ? wordAnno.highlight : "",
                     source: wordAnno ? wordAnno.source : "",
+                    start_of_verse: wi === 0,
                     display: wordAnno ? wordAnno.display : "",
                     position,
                 });
@@ -202,6 +249,10 @@ const calculateInitialValue = async (
                     type: "text",
                     text: wordAnno && wordAnno.postText ? wordAnno.postText : " ",
                 });
+            }
+            if (separateverses) {
+                initialValue.push(make_para(wordElem));
+                wordElem = [];
             }
         }
     }
@@ -353,10 +404,12 @@ const HoveringToolbar: React.FC<{ groups: SourceGroup[] }> = ({ groups }) => {
     );
 };
 
-const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWordAnnotation][] => {
+const calculateAnnotations = (
+    value: Descendant[],
+    separateverses: boolean
+): [WordPosition, ScriptureWordAnnotation][] => {
     // build a fast lookup table for annotations by position
     // we don't need to keep existing annotations, we're rebuilding them
-    // all from the state of slate
     const annoMap = new Map<string, ScriptureWordAnnotation>();
     const annotated = new Set<WordPosition>();
 
@@ -376,6 +429,12 @@ const calculateAnnotations = (value: Descendant[]): [WordPosition, ScriptureWord
                 currentPos = child.position;
                 let key = annoKey(currentPos);
                 let anno = annoMap.get(key);
+
+                // bit of a hack: if we're in the separate verses mode, chop one of para_pending when we hit a
+                // new verse
+                if (child.start_of_verse && para_pending > 0 && separateverses) {
+                    para_pending -= 1;
+                }
 
                 if (para_pending > 0 || child.source !== "" || child.display || child.highlight) {
                     if (!anno) {
@@ -454,7 +513,9 @@ export const ScriptureEditor: React.FC<{
     shortcode: string;
     verseref: string;
     annotation: ScriptureWordAnnotationFunctions;
-}> = ({ shortcode, verseref, annotation }) => {
+    separateverses: boolean;
+    hidemarkup: boolean;
+}> = ({ shortcode, verseref, annotation, separateverses, hidemarkup }) => {
     const editor = useConstant(() => withReact(withWords(withHistory(createEditor()))));
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const [editorElem, setEditorElem] = React.useState<JSX.Element>(<></>);
@@ -482,7 +543,7 @@ export const ScriptureEditor: React.FC<{
         const res = parseReference(module, parser, verseref);
 
         const onChange = (value: Descendant[]) => {
-            annotation.set(calculateAnnotations(value));
+            annotation.set(calculateAnnotations(value, separateverses));
         };
 
         const setError = () => {
@@ -520,7 +581,7 @@ export const ScriptureEditor: React.FC<{
 
         if (res.success) {
             const eligibleGroups = determineEligibleGroups(module, res.sbcs);
-            calculateInitialValue(shortcode, res, annotation).then((initialValue) => {
+            calculateInitialValue(shortcode, res, annotation, separateverses, hidemarkup).then((initialValue) => {
                 if (isSubscribed) {
                     setEditorElem(
                         <Slate editor={editor} value={initialValue} onChange={onChange}>
@@ -551,6 +612,8 @@ export const ScriptureEditor: React.FC<{
         renderElement,
         annotation,
         haveInitialValue,
+        separateverses,
+        hidemarkup,
     ]);
 
     return editorElem;

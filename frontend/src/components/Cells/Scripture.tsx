@@ -12,7 +12,7 @@ import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import { Button, ButtonGroup, Col, Row, UncontrolledTooltip } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight, faHighlighter, faTags } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faHighlighter, faList, faTags } from "@fortawesome/free-solid-svg-icons";
 import { RegistryEntry } from "../../workspace/CellRegistry";
 import { ScriptureViewer } from "../ScriptureViewer";
 import { ScriptureEditor } from "../ScriptureEditor";
@@ -31,6 +31,7 @@ export interface ScriptureCellColumn {
 export interface ScriptureCellData {
     columns: ScriptureCellColumn[];
     hidemarkup: boolean;
+    separateverses: boolean;
 }
 
 const columnWidth: { [key: number]: number } = {
@@ -59,6 +60,7 @@ export const newScriptureCellParallel = (
     return {
         hidemarkup: hidemarkup,
         columns: columns,
+        separateverses: false,
     };
 };
 
@@ -90,13 +92,20 @@ const ScriptureColumn: React.FC<{
     };
 
     const inner: JSX.Element = editing ? (
-        <ScriptureEditor shortcode={data.shortcode} verseref={data.verseref} annotation={annotation_functions} />
+        <ScriptureEditor
+            shortcode={data.shortcode}
+            verseref={data.verseref}
+            annotation={annotation_functions}
+            separateverses={cell.data.separateverses}
+            hidemarkup={cell.data.hidemarkup}
+        />
     ) : (
         <ScriptureViewer
             shortcode={data.shortcode}
             verseref={data.verseref}
             hidemarkup={cell.data.hidemarkup}
             annotation={annotation_functions}
+            separateverses={cell.data.separateverses}
         />
     );
 
@@ -112,6 +121,13 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
         workspaceCellSet(dispatch, cell.uuid, {
             ...cell.data,
             hidemarkup,
+        });
+    };
+
+    const setSeparateVerses = (separateverses: boolean) => {
+        workspaceCellSet(dispatch, cell.uuid, {
+            ...cell.data,
+            separateverses,
         });
     };
 
@@ -175,6 +191,23 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
                 <FontAwesomeIcon icon={faTags} />
                 <UncontrolledTooltip autohide placement="bottom" target={id}>
                     {data.hidemarkup ? "Show markup" : "Hide markup"}
+                </UncontrolledTooltip>
+            </Button>
+        );
+    };
+
+    const SeparateVersesButton: React.FC = () => {
+        const id = `separate${cell.uuid}`;
+        return (
+            <Button
+                id={id}
+                onClick={() => setSeparateVerses(!data.separateverses)}
+                active={data.separateverses}
+                disabled={editing}
+            >
+                <FontAwesomeIcon icon={faList} />
+                <UncontrolledTooltip autohide placement="bottom" target={id}>
+                    {data.separateverses ? "Combine verses" : "Separate verses"}
                 </UncontrolledTooltip>
             </Button>
         );
@@ -247,8 +280,9 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
                         setAnno={makeSetAnnotation(cell, dispatch)}
                     />,
                     <HideMarkupButton key={2} />,
-                    <RemoveColumnButton key={3} />,
-                    <AddColumnButton key={4} />,
+                    <SeparateVersesButton key={3} />,
+                    <RemoveColumnButton key={4} />,
+                    <AddColumnButton key={5} />,
                 ]}
             ></CellHeader>
             <CellBody>

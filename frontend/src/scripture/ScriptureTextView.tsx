@@ -19,7 +19,8 @@ export const ScriptureTextView: React.FC<{
     last_scripture_object: ScriptureObject | null;
     last_book: string | null;
     markup: boolean;
-}> = ({ module, getAnno, scriptures, last_book, book, last_scripture_object, markup, shortcode }) => {
+    separateverses: boolean;
+}> = ({ module, getAnno, scriptures, last_book, book, last_scripture_object, markup, shortcode, separateverses }) => {
     if (!scriptures) {
         return <></>;
     }
@@ -121,12 +122,21 @@ export const ScriptureTextView: React.FC<{
                 }
             }
 
-            elems.push(
-                <span key={elems.length}>
-                    {verse_elems}
-                    {renderText(d.text, startingPosition)}
-                </span>
-            );
+            if (separateverses) {
+                elems.push(
+                    <div key={elems.length}>
+                        {verse_elems}
+                        {renderText(d.text, startingPosition)}
+                    </div>
+                );
+            } else {
+                elems.push(
+                    <span key={elems.length}>
+                        {verse_elems}
+                        {renderText(d.text, startingPosition)}
+                    </span>
+                );
+            }
         }
 
         state.book = book;

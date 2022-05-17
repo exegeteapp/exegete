@@ -68,8 +68,20 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
             return workspace;
         },
     ],
+    [
+        5,
+        (workspace: WorkspaceData) => {
+            for (const c of workspace.cells) {
+                // parallel became the scripture cell type
+                if (c.cell_type === "scripture") {
+                    c.data["separateverses"] = false;
+                }
+            }
+            return workspace;
+        },
+    ],
 ];
-export const CurrentWorkspaceFormat = 4;
+export const CurrentWorkspaceFormat = 5;
 
 export const MigrateWorkspace = (w: WorkspaceMetadata | null): WorkspaceMetadata | null => {
     if (!w) {
