@@ -7,7 +7,7 @@ import { getModuleParser } from "../scripture/ParserCache";
 import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { ScriptureBookChapter } from "../scripture/ScriptureAPI";
 import parseReference from "../verseref/VerseRef";
-import { WorkspaceCell } from "../workspace/Workspace";
+import { IWorkspaceContext, WorkspaceCell, workspaceCellSet, WorkspaceContext } from "../workspace/Workspace";
 import { ScriptureCellColumn, ScriptureCellData } from "./Cells/Scripture";
 import { annoKey, newScriptureWordAnnotation, ScriptureWordAnnotation, WordPosition } from "./ScriptureAnnotation";
 
@@ -15,13 +15,24 @@ export const HighlightRepititionButton: React.FC<{
     columns: ScriptureCellColumn[];
     editing: boolean;
     cell: WorkspaceCell<ScriptureCellData>;
-    setAnno: (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => void;
-}> = ({ cell, editing, columns, setAnno }) => {
+}> = ({ cell, editing, columns }) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
+    const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+
     const HighlightRepitition = () => {
         if (!scriptureState.valid || !scriptureState.catalog) {
             return;
         }
+
+        const setAnnotation = (new_annotations: [WordPosition, ScriptureWordAnnotation][][]) => {
+            const new_columns = cell.data.columns.map((column, i) => {
+                return { ...column, annotation: new_annotations[i] };
+            });
+            workspaceCellSet(dispatch, cell.uuid, {
+                ...cell.data,
+                columns: new_columns,
+            });
+        };
 
         // we want to have consistent colouring between the columns, so we do our
         // repitition analysis on all of the columns smooshed together, and then
@@ -41,40 +52,43 @@ export const HighlightRepititionButton: React.FC<{
         }
 
         calculateSnowballHighlights(column_sbcs).then((snowballHighlight) => {
-            const newAnnotation = [];
+            const promises = [];
             for (let index = 0; index < columns.length; index++) {
                 const column = columns[index];
-                calculateSnowballAnnotations(column.shortcode, column_sbcs[index][1], snowballHighlight).then(
-                    (highlights) => {
-                        const anno = column.annotation;
-                        const annoMap = new Map<string, ScriptureWordAnnotation>();
-                        const annotated = new Set<WordPosition>();
-                        for (const [position, a] of anno) {
-                            annotated.add(position);
-                            annoMap.set(annoKey(position), a);
-                        }
-                        for (const [position, highlight] of highlights) {
-                            const wordAnno = annoMap.get(annoKey(position));
-                            annotated.add(position);
-                            if (wordAnno) {
-                                annoMap.set(annoKey(position), { ...wordAnno, highlight: highlight });
-                            } else {
-                                annoMap.set(annoKey(position), {
-                                    ...newScriptureWordAnnotation(),
-                                    highlight: highlight,
-                                });
+                promises.push(
+                    calculateSnowballAnnotations(column.shortcode, column_sbcs[index][1], snowballHighlight).then(
+                        (highlights) => {
+                            const anno = column.annotation;
+                            const annoMap = new Map<string, ScriptureWordAnnotation>();
+                            const annotated = new Set<WordPosition>();
+                            for (const [position, a] of anno) {
+                                annotated.add(position);
+                                annoMap.set(annoKey(position), a);
                             }
-                        }
-                        newAnnotation.push(
-                            Array.from(annotated).map((pos) => {
+                            for (const [position, highlight] of highlights) {
+                                const wordAnno = annoMap.get(annoKey(position));
+                                annotated.add(position);
+                                if (wordAnno) {
+                                    annoMap.set(annoKey(position), { ...wordAnno, highlight: highlight });
+                                } else {
+                                    annoMap.set(annoKey(position), {
+                                        ...newScriptureWordAnnotation(),
+                                        highlight: highlight,
+                                    });
+                                }
+                            }
+                            // FIXME: this cast seems unnecessary, but something is confusing typescript
+                            return Array.from(annotated).map((pos) => {
                                 const key = annoKey(pos);
                                 return [pos, annoMap.get(key)!];
-                            })
-                        );
-                    }
+                            }) as [WordPosition, ScriptureWordAnnotation][];
+                        }
+                    )
                 );
             }
-            setAnno(newAnnotation);
+            Promise.all(promises).then((newAnnotation) => {
+                setAnnotation(newAnnotation);
+            });
         });
     };
 

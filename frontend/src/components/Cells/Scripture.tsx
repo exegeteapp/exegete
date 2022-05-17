@@ -1,7 +1,6 @@
 import {
     CellFC,
     IWorkspaceContext,
-    WorkspaceAction,
     WorkspaceCell,
     workspaceCellSet,
     WorkspaceContext,
@@ -66,17 +65,6 @@ export const newScriptureCellParallel = (
     };
 };
 
-const makeSetAnnotation = (cell: WorkspaceCell<ScriptureCellData>, dispatch: React.Dispatch<WorkspaceAction>) => {
-    return (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
-        const new_columns = [...cell.data.columns];
-        new_columns[index] = { ...new_columns[index], annotation: new_annotation };
-        workspaceCellSet(dispatch, cell.uuid, {
-            ...cell.data,
-            columns: new_columns,
-        });
-    };
-};
-
 const ScriptureColumn: React.FC<{
     index: number;
     cell: WorkspaceCell<ScriptureCellData>;
@@ -85,12 +73,18 @@ const ScriptureColumn: React.FC<{
     const data = cell.data.columns[index];
     const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
-    const sa = makeSetAnnotation(cell, dispatch);
+    const setAnnotation = (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
+        const new_columns = [...cell.data.columns];
+        new_columns[index] = { ...new_columns[index], annotation: new_annotation };
+        workspaceCellSet(dispatch, cell.uuid, {
+            ...cell.data,
+            columns: new_columns,
+        });
+    };
+
     const annotation_functions: ScriptureWordAnnotationFunctions = {
         get: () => cell.data.columns[index].annotation,
-        set: (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
-            sa(index, new_annotation);
-        },
+        set: setAnnotation,
     };
 
     const inner: JSX.Element = editing ? (
@@ -274,13 +268,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
                 uuid={cell.uuid}
                 buttons={[
                     <AnnotateButton key={0} />,
-                    <HighlightRepititionButton
-                        key={1}
-                        editing={editing}
-                        cell={cell}
-                        columns={data.columns}
-                        setAnno={makeSetAnnotation(cell, dispatch)}
-                    />,
+                    <HighlightRepititionButton key={1} editing={editing} cell={cell} columns={data.columns} />,
                     <HideMarkupButton key={2} />,
                     <SeparateVersesButton key={3} />,
                     <RemoveColumnButton key={4} />,
