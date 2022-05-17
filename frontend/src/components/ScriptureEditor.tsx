@@ -143,9 +143,9 @@ const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) =
 
     let td = "none";
     if (element.display === "strikethrough" && element.highlight) {
-        td = "underline strikethrough";
+        td = "underline line-through";
     } else if (element.display === "strikethrough") {
-        td = "strikethrough";
+        td = "line-through";
     } else if (element.highlight) {
         td = "underline";
     }

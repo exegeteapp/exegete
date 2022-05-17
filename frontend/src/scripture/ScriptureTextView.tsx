@@ -54,9 +54,9 @@ export const ScriptureTextView: React.FC<{
             let td = "none";
             if (anno) {
                 if (anno.display === "strikethrough" && anno.highlight) {
-                    td = "underline strikethrough";
+                    td = "underline line-through";
                 } else if (anno.display === "strikethrough") {
-                    td = "strikethrough";
+                    td = "line-through";
                 } else if (anno.highlight) {
                     td = "underline";
                 }
