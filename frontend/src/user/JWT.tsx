@@ -1,8 +1,8 @@
 import { AxiosRequestConfig } from "axios";
 
 export interface IJwt {
-    access_token: string;
-    token_type: string;
+    readonly access_token: string;
+    readonly token_type: string;
 }
 
 export const storeJwt = (jwt: IJwt) => {

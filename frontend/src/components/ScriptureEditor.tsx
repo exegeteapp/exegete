@@ -457,10 +457,13 @@ const calculateAnnotations = (
                     if (!anno) {
                         anno = newScriptureWordAnnotation();
                     }
-                    anno.paraSkip = para_pending;
-                    anno.display = child.display;
-                    anno.source = child.source;
-                    anno.highlight = child.highlight;
+                    anno = {
+                        ...anno,
+                        paraSkip: para_pending,
+                        display: child.display,
+                        source: child.source,
+                        highlight: child.highlight,
+                    };
                     para_pending = 0;
                 }
 
@@ -505,9 +508,9 @@ const calculateAnnotations = (
                         anno = newScriptureWordAnnotation();
                     }
                     if (forward) {
-                        anno.preText = text;
+                        anno = { ...anno, preText: text };
                     } else {
-                        anno.postText = text;
+                        anno = { ...anno, postText: text };
                     }
                     if (anno) {
                         annoMap.set(key, anno);

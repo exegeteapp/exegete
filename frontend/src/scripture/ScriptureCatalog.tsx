@@ -1,30 +1,30 @@
 export interface VerseInfo {
-    first: number;
-    last: number;
-    gaps: number[];
+    readonly first: number;
+    readonly last: number;
+    readonly gaps: ReadonlyArray<number>;
 }
 
 export interface ChapterInfo {
-    chapter: number;
-    verses: VerseInfo;
+    readonly chapter: number;
+    readonly verses: VerseInfo;
 }
 
 export interface BookInfo {
-    division: string;
-    name: string;
-    chapters: ChapterInfo[];
+    readonly division: string;
+    readonly name: string;
+    readonly chapters: ReadonlyArray<ChapterInfo>;
 }
 
 export interface ModuleInfo {
-    type: string;
-    language: string;
-    date_created: string;
-    name: string;
-    license_text: string;
-    license_url: string;
-    url: string;
-    description: string;
-    books: BookInfo[];
+    readonly type: string;
+    readonly language: string;
+    readonly date_created: string;
+    readonly name: string;
+    readonly license_text: string;
+    readonly license_url: string;
+    readonly url: string;
+    readonly description: string;
+    readonly books: ReadonlyArray<BookInfo>;
 }
 
 export const FindBook = (module: ModuleInfo, name: string): BookInfo | undefined => {
@@ -63,5 +63,5 @@ export const languageClass = (language: string) => {
 };
 
 export interface ScriptureCatalog {
-    [index: string]: ModuleInfo;
+    readonly [index: string]: ModuleInfo;
 }

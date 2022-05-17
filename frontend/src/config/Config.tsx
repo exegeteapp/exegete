@@ -6,16 +6,16 @@ interface Config {
 }
 
 interface ConfigState {
-    valid: boolean;
-    error: string | undefined;
-    config: Config | undefined;
+    readonly valid: boolean;
+    readonly error: string | undefined;
+    readonly config: Config | undefined;
 }
 
 const initialConfigState = {
     valid: false,
     error: undefined,
     config: undefined,
-};
+} as const;
 
 type ConfigAction =
     | { type: "config_start" }

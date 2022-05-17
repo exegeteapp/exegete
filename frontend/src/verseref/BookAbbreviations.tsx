@@ -1,6 +1,6 @@
 import { ModuleInfo } from "../scripture/ScriptureCatalog";
 
-const extra_abbrevations: { [index: string]: string[] } = {
+const extra_abbrevations: { [index: string]: ReadonlyArray<string> } = {
     Ecclesiastes: ["Qoheleth", "Qoh"],
     Habakkuk: ["Hah"],
     Judith: ["Jdt"],

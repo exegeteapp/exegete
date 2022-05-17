@@ -368,13 +368,13 @@ const applyGrammar = (module: ModuleInfo, params: ScriptureToken[]): ParseResult
 };
 
 export interface ModuleParser {
-    lang: Parsimmon.Language;
+    readonly lang: Parsimmon.Language;
 }
 
 export const makeModuleParser = (module: ModuleInfo): ModuleParser => {
     return {
         lang: makeLanguage(module),
-    };
+    } as const;
 };
 
 export const parseReference = (module: ModuleInfo, parser: ModuleParser, defn: string): ParseResult => {

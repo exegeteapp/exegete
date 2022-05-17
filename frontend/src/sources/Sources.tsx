@@ -1,18 +1,18 @@
 import { BookInfo, ModuleInfo } from "../scripture/ScriptureCatalog";
 
 export interface SourceDefinition {
-    description: string;
-    code: string; // this must unique among all sources, despite the groupings
-    colour: string;
+    readonly description: string;
+    readonly code: string; // this must unique among all sources, despite the groupings
+    readonly colour: string;
 }
 
 export interface SourceGroup {
-    applicable: (module: ModuleInfo, book: BookInfo) => boolean;
-    name: string;
-    sources: SourceDefinition[];
+    readonly applicable: (module: ModuleInfo, book: BookInfo) => boolean;
+    readonly name: string;
+    readonly sources: ReadonlyArray<SourceDefinition>;
 }
 
-const groups: SourceGroup[] = [
+const groups: ReadonlyArray<SourceGroup> = [
     {
         applicable: (module, book) => {
             return (

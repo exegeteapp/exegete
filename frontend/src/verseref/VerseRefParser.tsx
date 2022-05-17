@@ -20,8 +20,8 @@ const makeBookLookup = (module: ModuleInfo) => {
 };
 
 interface RefNumber {
-    n: number;
-    opts: string;
+    readonly n: number;
+    readonly opts: string;
 }
 
 export type AbsoluteScriptureRef =
@@ -61,7 +61,7 @@ export const makeLanguage = (module: ModuleInfo) => {
 
     let lang = P.createLanguage<{
         value: ScriptureToken[];
-        eof_sep_refs: ScriptureToken[] | undefined;
+        eof_sep_refs: ReadonlyArray<ScriptureToken> | undefined;
         sep_refs: ScriptureToken[];
         book_ref_value: ScriptureToken;
         ref_value: ScriptureToken;

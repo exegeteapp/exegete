@@ -27,7 +27,7 @@ export const ScriptureViewer: React.FC<ScriptureViewerData> = ({
     separateverses,
 }) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
-    const [scriptures, setScriptures] = React.useState<(ScriptureObject[] | null)[]>([]);
+    const [scriptures, setScriptures] = React.useState<(ReadonlyArray<ScriptureObject> | null)[]>([]);
     const [books, setBooks] = React.useState<string[]>([]);
 
     useEffect(() => {

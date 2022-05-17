@@ -5,9 +5,9 @@ import { ScriptureObject, ScriptureWord } from "./ScriptureAPI";
 import { languageClass, ModuleInfo } from "./ScriptureCatalog";
 
 interface RenderState {
-    book: string | null;
-    chapter: number | null;
-    verse: number | null;
+    readonly book: string | null;
+    readonly chapter: number | null;
+    readonly verse: number | null;
 }
 
 export const ScriptureTextView: React.FC<{
@@ -15,7 +15,7 @@ export const ScriptureTextView: React.FC<{
     module: ModuleInfo;
     book: string;
     shortcode: string;
-    scriptures: ScriptureObject[] | null;
+    scriptures: ReadonlyArray<ScriptureObject> | null;
     last_scripture_object: ScriptureObject | null;
     last_book: string | null;
     markup: boolean;
@@ -30,7 +30,7 @@ export const ScriptureTextView: React.FC<{
         verse: last_scripture_object ? last_scripture_object.verse_end : null,
     };
 
-    const renderText = (words: ScriptureWord[], startingPosition: WordPosition) => {
+    const renderText = (words: ReadonlyArray<ScriptureWord>, startingPosition: WordPosition) => {
         return words.map((text, i) => {
             const elems: JSX.Element[] = [];
 
@@ -139,9 +139,12 @@ export const ScriptureTextView: React.FC<{
             }
         }
 
-        state.book = book;
-        state.chapter = d.chapter_end;
-        state.verse = d.verse_end;
+        state = {
+            ...state,
+            book: book,
+            chapter: d.chapter_end,
+            verse: d.verse_end,
+        };
     }
 
     return <div className={"scripture-text " + languageClass(module.language)}>{elems}</div>;

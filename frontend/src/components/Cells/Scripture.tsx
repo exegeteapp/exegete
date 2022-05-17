@@ -22,16 +22,18 @@ import { HighlightRepititionButton } from "../HighlightRepitition";
 
 export const ScriptureSlug = "scripture";
 
+export type AnnotationArray = ReadonlyArray<readonly [WordPosition, ScriptureWordAnnotation]>;
+
 export interface ScriptureCellColumn {
-    shortcode: string;
-    verseref: string;
-    annotation: [WordPosition, ScriptureWordAnnotation][];
+    readonly shortcode: string;
+    readonly verseref: string;
+    readonly annotation: AnnotationArray;
 }
 
 export interface ScriptureCellData {
-    columns: ScriptureCellColumn[];
-    hidemarkup: boolean;
-    separateverses: boolean;
+    readonly columns: ScriptureCellColumn[];
+    readonly hidemarkup: boolean;
+    readonly separateverses: boolean;
 }
 
 const columnWidth: { [key: number]: number } = {
@@ -67,7 +69,7 @@ export const newScriptureCellParallel = (
 const makeSetAnnotation = (cell: WorkspaceCell<ScriptureCellData>, dispatch: React.Dispatch<WorkspaceAction>) => {
     return (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
         const new_columns = [...cell.data.columns];
-        new_columns[index].annotation = new_annotation;
+        new_columns[index] = { ...new_columns[index], annotation: new_annotation };
         workspaceCellSet(dispatch, cell.uuid, {
             ...cell.data,
             columns: new_columns,

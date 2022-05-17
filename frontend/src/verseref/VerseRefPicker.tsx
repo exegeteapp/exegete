@@ -27,8 +27,8 @@ const ShortCodeInput: React.FC<{
 };
 
 export interface SCVerseRef {
-    shortcode: string;
-    verseref: string;
+    readonly shortcode: string;
+    readonly verseref: string;
 }
 
 export const VerseRefPicker: React.FC<{

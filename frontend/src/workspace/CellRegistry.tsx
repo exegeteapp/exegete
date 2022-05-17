@@ -14,12 +14,12 @@ export type RegistryEntry = {
 };
 
 interface CellRegistry {
-    [key: string]: RegistryEntry;
+    readonly [key: string]: RegistryEntry;
 }
 
 const Registry: CellRegistry = {
     [ScriptureSlug]: ScriptureDefinition,
     [MarkdownNoteSlug]: MarkdownNoteDefinition,
-};
+} as const;
 
 export default Registry;

@@ -43,7 +43,7 @@ export type Global = {
 
 export interface WorkspaceData {
     readonly workspace_format: number;
-    cells: ReadonlyArray<WorkspaceCell<any>>;
+    readonly cells: ReadonlyArray<WorkspaceCell<any>>;
     readonly global: Global;
 }
 
@@ -234,8 +234,8 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
 };
 
 export interface IWorkspaceContext {
-    state: WorkspaceState;
-    dispatch: React.Dispatch<WorkspaceAction>;
+    readonly state: WorkspaceState;
+    readonly dispatch: React.Dispatch<WorkspaceAction>;
 }
 
 // avoid default context value

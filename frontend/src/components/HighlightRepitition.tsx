@@ -56,11 +56,12 @@ export const HighlightRepititionButton: React.FC<{
                             const wordAnno = annoMap.get(annoKey(position));
                             annotated.add(position);
                             if (wordAnno) {
-                                wordAnno.highlight = highlight;
+                                annoMap.set(annoKey(position), { ...wordAnno, highlight: highlight });
                             } else {
-                                const newAnno = newScriptureWordAnnotation();
-                                newAnno.highlight = highlight;
-                                annoMap.set(annoKey(position), newAnno);
+                                annoMap.set(annoKey(position), {
+                                    ...newScriptureWordAnnotation(),
+                                    highlight: highlight,
+                                });
                             }
                         }
                         setAnno(

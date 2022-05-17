@@ -3,16 +3,16 @@ import axios from "axios";
 import { ScriptureCatalog } from "./ScriptureCatalog";
 
 interface ScriptureState {
-    valid: boolean;
-    catalog: ScriptureCatalog | undefined;
-    shortcodes: string[];
+    readonly valid: boolean;
+    readonly catalog: ScriptureCatalog | undefined;
+    readonly shortcodes: ReadonlyArray<string>;
 }
 
 const initialScriptureState = {
     valid: false,
     catalog: undefined,
     shortcodes: [],
-};
+} as const;
 
 type ScriptureAction = { type: "scripture_invalid" } | { type: "scripture_set_catalog"; catalog: ScriptureCatalog };
 

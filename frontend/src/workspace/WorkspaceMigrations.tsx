@@ -10,7 +10,7 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
     [
         2,
         (workspace: WorkspaceData) => {
-            workspace.cells = workspace.cells.map((c) => {
+            const newCells = workspace.cells.map((c) => {
                 const newCell = { ...c };
                 // parallel became the scripture cell type
                 if (newCell.cell_type === "parallel") {
@@ -38,7 +38,7 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
                 }
                 return newCell;
             });
-            return workspace;
+            return { ...workspace, cells: newCells };
         },
     ],
     [

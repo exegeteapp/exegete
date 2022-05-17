@@ -6,11 +6,11 @@ export const getWorkspaces = async (): Promise<WorkspaceMetadata[]> => {
     // we want to convert the JSON object described below into
     // an object with JS data types
     interface RawWorkspaceMetadata {
-        id: string;
-        title: string;
-        data: WorkspaceData;
-        created: string;
-        updated: string | null;
+        readonly id: string;
+        readonly title: string;
+        readonly data: WorkspaceData;
+        readonly created: string;
+        readonly updated: string | null;
     }
 
     const date_n = (d: string | null) => {

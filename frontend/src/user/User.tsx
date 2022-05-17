@@ -3,27 +3,27 @@ import axios from "axios";
 import { IJwt, storeJwt, ApiAxiosRequestConfig, deleteJWT } from "./JWT";
 
 interface User {
-    email: string;
-    is_active?: boolean;
-    is_superuser?: boolean;
-    is_verified?: boolean;
-    password?: string;
-    name: string;
-    affiliation?: string;
-    captcha?: string;
+    readonly email: string;
+    readonly is_active?: boolean;
+    readonly is_superuser?: boolean;
+    readonly is_verified?: boolean;
+    readonly password?: string;
+    readonly name: string;
+    readonly affiliation?: string;
+    readonly captcha?: string;
 }
 
 interface UserState {
     // have we bootstrapped the user process?
-    valid: boolean;
+    readonly valid: boolean;
     // was there an error obtaining the state?
-    user_error: string | undefined;
+    readonly user_error: string | undefined;
     // was there an error logging in?
-    login_error: string | undefined;
+    readonly login_error: string | undefined;
     // was there an error registering?
-    registration_error: string | undefined;
+    readonly registration_error: string | undefined;
     // if the user is undefined, we are not logged in
-    user: User | undefined;
+    readonly user: User | undefined;
 }
 
 const initialUserState = {
@@ -32,7 +32,7 @@ const initialUserState = {
     login_error: undefined,
     registration_error: undefined,
     user: undefined,
-};
+} as const;
 
 type UserAction =
     | { type: "user_start" }
