@@ -41,6 +41,7 @@ export const HighlightRepititionButton: React.FC<{
         }
 
         calculateSnowballHighlights(column_sbcs).then((snowballHighlight) => {
+            const newAnnotation = [];
             for (let index = 0; index < columns.length; index++) {
                 const column = columns[index];
                 calculateSnowballAnnotations(column.shortcode, column_sbcs[index][1], snowballHighlight).then(
@@ -64,8 +65,7 @@ export const HighlightRepititionButton: React.FC<{
                                 });
                             }
                         }
-                        setAnno(
-                            index,
+                        newAnnotation.push(
                             Array.from(annotated).map((pos) => {
                                 const key = annoKey(pos);
                                 return [pos, annoMap.get(key)!];
@@ -74,6 +74,7 @@ export const HighlightRepititionButton: React.FC<{
                     }
                 );
             }
+            setAnno(newAnnotation);
         });
     };
 
