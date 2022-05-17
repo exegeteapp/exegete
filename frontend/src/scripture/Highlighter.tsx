@@ -1,4 +1,5 @@
-import { AnnotationColours, WordPosition } from "../components/ScriptureAnnotation";
+import { DistinguishableColours } from "../colours/distinguishable";
+import { WordPosition } from "../components/ScriptureAnnotation";
 import { getScripture, ScriptureBookChapter } from "./ScriptureAPI";
 
 // from postgresql: https://github.com/postgres/postgres/blob/master/src/backend/snowball/stopwords/english.stop
@@ -170,7 +171,7 @@ export const calculateSnowballHighlights = (shortcode_sbcs: [string, ScriptureBo
         for (let i = 0; i < sorted.length; i++) {
             const [snowball, count] = sorted[i];
             if (count > 1) {
-                snowballHighlight.set(snowball, AnnotationColours[i % AnnotationColours.length]);
+                snowballHighlight.set(snowball, DistinguishableColours[i % DistinguishableColours.length]);
             }
         }
 

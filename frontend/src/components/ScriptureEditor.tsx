@@ -12,7 +12,6 @@ import { getModuleParser } from "../scripture/ParserCache";
 import parseReference, { ParseResultSuccess } from "../verseref/VerseRef";
 import {
     annoKey,
-    AnnotationColours,
     newScriptureWordAnnotation,
     ScriptureWordAnnotation,
     ScriptureWordAnnotationFunctions,
@@ -24,6 +23,7 @@ import { faBrush, faStrikethrough, faTrashCan, IconDefinition } from "@fortaweso
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { applicableGroups, getSource, SourceGroup } from "../sources/Sources";
 import { BookInfo, FindBook, languageClass, ModuleInfo } from "../scripture/ScriptureCatalog";
+import { DistinguishableColours } from "../colours/distinguishable";
 
 const PermittedKeys = new Set<string>([
     " ",
@@ -323,7 +323,7 @@ const EditorMenu = React.forwardRef<HTMLDivElement, { groups: SourceGroup[] }>((
         );
     });
 
-    const colours = AnnotationColours.map((c, i) => {
+    const colours = DistinguishableColours.map((c, i) => {
         return (
             <Button
                 active={activeOnSelection(editor, "highlight", c)}
