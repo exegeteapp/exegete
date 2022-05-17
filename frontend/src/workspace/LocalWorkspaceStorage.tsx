@@ -26,9 +26,13 @@ export const saveWorkspaceLocal = (workspace: WorkspaceMetadata): boolean => {
     if (!uuidValidate(workspace.id)) {
         return false;
     }
-    workspace.updated = new Date();
-    const encoded = LZString.compress(JSON.stringify(workspace));
-    const key = idToKey(workspace.id);
+    // if we went through the full update cycle, we'd loop
+    const saveWorkspace: WorkspaceMetadata = {
+        ...workspace,
+        updated: new Date(),
+    };
+    const encoded = LZString.compress(JSON.stringify(saveWorkspace));
+    const key = idToKey(saveWorkspace.id);
     localStorage.setItem(key, encoded);
     return true;
 };

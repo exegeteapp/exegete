@@ -10,21 +10,22 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
     [
         2,
         (workspace: WorkspaceData) => {
-            for (const c of workspace.cells) {
+            workspace.cells = workspace.cells.map((c) => {
+                const newCell = { ...c };
                 // parallel became the scripture cell type
-                if (c.cell_type === "parallel") {
-                    c.cell_type = "scripture";
+                if (newCell.cell_type === "parallel") {
+                    newCell.cell_type = "scripture";
                 }
                 // scripture-viewer became scripture; we merged the two
-                if (c.cell_type === "scripture-viewer") {
+                if (newCell.cell_type === "scripture-viewer") {
                     const old_data = c.data as {
                         shortcode: any;
                         verseref: any;
                         hidemarkup: any;
                         annotation: any;
                     };
-                    c.cell_type = "scripture";
-                    c.data = {
+                    newCell.cell_type = "scripture";
+                    newCell.data = {
                         hidemarkup: old_data.hidemarkup,
                         columns: [
                             {
@@ -35,7 +36,8 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
                         ],
                     };
                 }
-            }
+                return newCell;
+            });
             return workspace;
         },
     ],
@@ -92,12 +94,12 @@ export const MigrateWorkspace = (w: WorkspaceMetadata | null): WorkspaceMetadata
     }
 
     // run migrations in sequence
+    let newWorkspace: WorkspaceMetadata = { ...w };
     for (const [toVersion, migration] of migrations) {
         if (toVersion <= w.data.workspace_format) {
             continue;
         }
-        w.data = migration(w.data);
-        w.data.workspace_format = toVersion;
+        newWorkspace = { ...newWorkspace, data: { ...migration(newWorkspace.data), workspace_format: toVersion } };
     }
 
     return w;

@@ -14,13 +14,13 @@ import { MigrateWorkspace } from "./WorkspaceMigrations";
 export type NewCellDataFn<T> = (workspace: WorkspaceData) => T;
 
 export interface WorkspaceCell<T> {
-    cell_type: string;
-    uuid: string;
-    data: T;
+    readonly cell_type: string;
+    readonly uuid: string;
+    readonly data: T;
 }
 
 export type CellFC<T> = React.FC<{
-    cell: WorkspaceCell<T>;
+    readonly cell: WorkspaceCell<T>;
 }>;
 
 export enum TextSize {
@@ -42,43 +42,43 @@ export type Global = {
 };
 
 export interface WorkspaceData {
-    workspace_format: number;
-    cells: WorkspaceCell<any>[];
-    global: Global;
+    readonly workspace_format: number;
+    cells: ReadonlyArray<WorkspaceCell<any>>;
+    readonly global: Global;
 }
 
 export interface WorkspaceMetadata {
-    id: string;
-    title: string;
-    data: WorkspaceData;
-    created: Date;
-    updated: Date | null;
+    readonly id: string;
+    readonly title: string;
+    readonly data: WorkspaceData;
+    readonly created: Date;
+    readonly updated: Date | null;
 }
 
 // minimal set of metadata set on the frontend
 // before the backend or local storage set the rest
 export interface NewWorkspaceData {
-    id: string;
-    title: string;
-    data: WorkspaceData;
+    readonly id: string;
+    readonly title: string;
+    readonly data: WorkspaceData;
 }
 
 interface WorkspaceState {
-    id: string;
+    readonly id: string;
     // have we gone through the bootstrap process?
-    valid: boolean;
-    workspace: WorkspaceMetadata | undefined;
+    readonly valid: boolean;
+    readonly workspace: WorkspaceMetadata | undefined;
     // does this workspace have unsaved changes?
-    dirty: boolean;
+    readonly dirty: boolean;
     // workspace is local-only
-    local: boolean;
+    readonly local: boolean;
 }
 
 const defaultDocument: WorkspaceData = {
     workspace_format: CurrentWorkspaceFormat,
     cells: [],
     global: { view: { textSize: TextSize.MEDIUM } },
-};
+} as const;
 
 export type WorkspaceAction =
     | { type: "workspace_start" }
@@ -92,22 +92,9 @@ export type WorkspaceAction =
     | { type: "workspace_deleted" }
     | { type: "workspace_saved" };
 
-const cloneWorkspaceData = (data: WorkspaceData): WorkspaceData => {
-    // `data` must be JSON serialisable anyway, so this is seems
-    // a reasonable way to achieve a deep clone
-    return JSON.parse(JSON.stringify(data));
-};
-
-const cloneWorkspace = (ws: WorkspaceMetadata): WorkspaceMetadata => {
-    return {
-        ...ws,
-        data: cloneWorkspaceData(ws.data),
-    };
-};
-
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {
-    const cellIndex = (ws: WorkspaceMetadata, uuid: string) => {
-        return ws.data.cells.findIndex((c) => c.uuid === uuid);
+    const cellIndex = (cells: ReadonlyArray<WorkspaceCell<any>>, uuid: string) => {
+        return cells.findIndex((c) => c.uuid === uuid);
     };
 
     switch (action.type) {
@@ -139,14 +126,20 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             if (!state.workspace) {
                 return state;
             }
-            const clone = cloneWorkspace(state.workspace);
-            const idx = cellIndex(clone, action.uuid);
+            const newCells = [...state.workspace.data.cells];
+            const idx = cellIndex(newCells, action.uuid);
             if (idx !== -1) {
-                clone.data.cells[idx].data = action.data;
+                newCells[idx] = { ...newCells[idx], data: action.data };
             }
             return {
                 ...state,
-                workspace: clone,
+                workspace: {
+                    ...state.workspace,
+                    data: {
+                        ...state.workspace.data,
+                        cells: newCells,
+                    },
+                },
                 dirty: true,
             };
         }
@@ -154,14 +147,16 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             if (!state.workspace) {
                 return state;
             }
-            const clone = cloneWorkspace(state.workspace);
-            const idx = cellIndex(clone, action.uuid);
-            if (idx !== -1) {
-                clone.data.cells.splice(idx, 1);
-            }
+            const newCells = state.workspace.data.cells.filter((c) => c.uuid !== action.uuid);
             return {
                 ...state,
-                workspace: clone,
+                workspace: {
+                    ...state.workspace,
+                    data: {
+                        ...state.workspace.data,
+                        cells: newCells,
+                    },
+                },
                 dirty: true,
             };
         }
@@ -169,14 +164,21 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             if (!state.workspace) {
                 return state;
             }
-            const clone = cloneWorkspace(state.workspace);
-            const idx = cellIndex(clone, action.uuid);
+
+            const newCells = [...state.workspace.data.cells];
+            const idx = cellIndex(newCells, action.uuid);
             if (idx !== -1) {
-                arrayMoveMutable(clone.data.cells, idx, (idx + action.offset) % clone.data.cells.length);
+                arrayMoveMutable(newCells, idx, (idx + action.offset) % newCells.length);
             }
             return {
                 ...state,
-                workspace: clone,
+                workspace: {
+                    ...state.workspace,
+                    data: {
+                        ...state.workspace.data,
+                        cells: newCells,
+                    },
+                },
                 dirty: true,
             };
         }
@@ -184,11 +186,15 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             if (!state.workspace) {
                 return state;
             }
-            const clone = cloneWorkspace(state.workspace);
-            clone.data!.cells = [...clone.data.cells, action.cell];
             return {
                 ...state,
-                workspace: clone,
+                workspace: {
+                    ...state.workspace,
+                    data: {
+                        ...state.workspace.data,
+                        cells: [...state.workspace.data.cells, action.cell],
+                    },
+                },
                 dirty: true,
             };
         }
@@ -196,11 +202,9 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             if (!state.workspace) {
                 return state;
             }
-            const clone = cloneWorkspace(state.workspace);
-            clone.title = action.title;
             return {
                 ...state,
-                workspace: clone,
+                workspace: { ...state.workspace, title: action.title },
                 dirty: true,
             };
         }
@@ -208,11 +212,21 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             if (!state.workspace) {
                 return state;
             }
-            const clone = cloneWorkspace(state.workspace);
-            clone.data.global.view.textSize = action.text_size;
             return {
                 ...state,
-                workspace: clone,
+                workspace: {
+                    ...state.workspace,
+                    data: {
+                        ...state.workspace.data,
+                        global: {
+                            ...state.workspace.data.global,
+                            view: {
+                                ...state.workspace.data.global.view,
+                                textSize: action.text_size,
+                            },
+                        },
+                    },
+                },
                 dirty: true,
             };
         }
@@ -269,15 +283,16 @@ export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ ch
 };
 
 export const createWorkspace = async (local: boolean) => {
-    const data = cloneWorkspaceData(defaultDocument);
-
+    const newSlug = "scripture";
+    const data = {
+        ...defaultDocument,
+        cells: [makeNewCell(defaultDocument, newSlug, Registry[newSlug], Registry[newSlug].launchers[0])],
+    };
     const newData: NewWorkspaceData = {
         id: v4(),
         title: "Untitled",
         data: data,
-    };
-    const newSlug = "scripture";
-    newData.data.cells.push(makeNewCell(data, newSlug, Registry[newSlug], Registry[newSlug].launchers[0]));
+    } as const;
 
     if (local) {
         createWorkspaceLocal(newData);

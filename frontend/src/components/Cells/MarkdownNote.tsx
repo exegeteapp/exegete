@@ -16,7 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 
 export interface MarkdownNoteCellData {
-    text: string;
+    readonly text: string;
 }
 
 export const MarkdownNoteSlug = "markdown-note";

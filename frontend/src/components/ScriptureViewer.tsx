@@ -12,11 +12,11 @@ import {
 } from "./ScriptureAnnotation";
 
 export interface ScriptureViewerData {
-    shortcode: string;
-    verseref: string;
-    hidemarkup: boolean;
-    separateverses: boolean;
-    annotation: ScriptureWordAnnotationFunctions;
+    readonly shortcode: string;
+    readonly verseref: string;
+    readonly hidemarkup: boolean;
+    readonly separateverses: boolean;
+    readonly annotation: ScriptureWordAnnotationFunctions;
 }
 
 export const ScriptureViewer: React.FC<ScriptureViewerData> = ({
