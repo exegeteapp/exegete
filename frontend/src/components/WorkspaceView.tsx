@@ -15,7 +15,13 @@ import {
 } from "reactstrap";
 import { IUserContext, UserContext, UserLoggedIn } from "../user/User";
 import { validate as uuidValidate } from "uuid";
-import { WorkspaceContext, IWorkspaceContext, WorkspaceProvider, deleteWorkspace } from "../workspace/Workspace";
+import {
+    WorkspaceContext,
+    IWorkspaceContext,
+    WorkspaceProvider,
+    deleteWorkspace,
+    TextSize,
+} from "../workspace/Workspace";
 import Error from "./Cells/Error";
 import { BaseHeader } from "./Header";
 import useInput from "../util/useInput";
@@ -137,6 +143,83 @@ const DeleteWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => v
     );
 };
 
+const WorkspaceMenu: React.FC<{
+    title: string;
+    setShowRenameWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
+    setShowDeleteWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ title, setShowRenameWorkspaceModal, setShowDeleteWorkspaceModal }) => {
+    return (
+        <UncontrolledDropdown nav>
+            <DropdownToggle caret nav>
+                Workspace: {title}
+            </DropdownToggle>
+            <DropdownMenu md-end={"true"} color="dark" dark>
+                <DropdownItem onClick={() => setShowRenameWorkspaceModal(true)}>Rename</DropdownItem>
+                <DropdownItem onClick={() => setShowDeleteWorkspaceModal(true)}>Delete</DropdownItem>
+            </DropdownMenu>
+        </UncontrolledDropdown>
+    );
+};
+
+const DisplayMenu: React.FC = () => {
+    const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+
+    const canZoom = (offset: number) => {
+        if (!state.valid || !state.workspace) {
+            return;
+        }
+        const levels = Object.values(TextSize);
+        const toLevel = levels.indexOf(state.workspace.data.global.view.textSize) + offset;
+        if (toLevel < 0 || toLevel >= levels.length) {
+            return false;
+        }
+        return true;
+    };
+
+    const zoom = (offset: number) => {
+        if (!state.valid || !state.workspace) {
+            return;
+        }
+
+        const levels = Object.values(TextSize);
+        const currentLevel = state.workspace.data.global.view.textSize;
+        const currentIndex = levels.indexOf(currentLevel);
+        if (currentIndex === -1) {
+            return;
+        }
+        const targetIndex = currentIndex + offset;
+
+        if (targetIndex >= 0 && targetIndex < levels.length) {
+            const newLevel = levels[targetIndex];
+            dispatch({ type: "workspace_set_text_size", text_size: newLevel });
+        }
+    };
+
+    const reset = () => {
+        if (!state.valid || !state.workspace) {
+            return;
+        }
+        dispatch({ type: "workspace_set_text_size", text_size: TextSize.MEDIUM });
+    };
+
+    return (
+        <UncontrolledDropdown nav>
+            <DropdownToggle caret nav>
+                Display
+            </DropdownToggle>
+            <DropdownMenu md-end={"true"} color="dark" dark>
+                <DropdownItem disabled={!canZoom(1)} onClick={() => zoom(1)}>
+                    Zoom In
+                </DropdownItem>
+                <DropdownItem disabled={!canZoom(-1)} onClick={() => zoom(-1)}>
+                    Zoom Out
+                </DropdownItem>
+                <DropdownItem onClick={() => reset()}>Reset</DropdownItem>
+            </DropdownMenu>
+        </UncontrolledDropdown>
+    );
+};
+
 const ToolsMenu: RefsFC = ({ refs }) => {
     const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const cells = state.workspace ? state.workspace.data.cells : [];
@@ -253,15 +336,12 @@ const WorkspaceHeader: RefsFC = ({ refs }) => {
         <>
             {modals}
             <BaseHeader>
-                <UncontrolledDropdown nav>
-                    <DropdownToggle caret nav>
-                        Workspace: {title}
-                    </DropdownToggle>
-                    <DropdownMenu md-end={"true"} color="dark" dark>
-                        <DropdownItem onClick={() => setShowRenameWorkspaceModal(true)}>Rename</DropdownItem>
-                        <DropdownItem onClick={() => setShowDeleteWorkspaceModal(true)}>Delete</DropdownItem>
-                    </DropdownMenu>
-                </UncontrolledDropdown>
+                <WorkspaceMenu
+                    title={title}
+                    setShowDeleteWorkspaceModal={setShowDeleteWorkspaceModal}
+                    setShowRenameWorkspaceModal={setShowRenameWorkspaceModal}
+                />
+                <DisplayMenu />
                 <ToolsMenu refs={refs} />
             </BaseHeader>
         </>

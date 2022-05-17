@@ -20,13 +20,36 @@ html {
     font-style: normal;
 }
 
-.biblical-text-05 {
-    font-size: 6pt;
+.text-xx-small {
+    font-size: 0.6rem;
+}
+
+.text-x-small {
+    font-size: 0.8rem;
+}
+
+.text-small {
+    font-size: 1.0rem;
+}
+
+.text-medium {
+    font-size: 1.2rem;
+}
+
+.text-large {
+    font-size: 1.4rem;
+}
+
+.text-x-large {
+    font-size: 1.6rem;
+}
+
+.text-xx-large {
+    font-size: 1.8rem;
 }
 
 .biblical-text-hebrew {
     font-family: "SBL Hebrew";
-    font-size: 1.2rem;
     font-weight: normal;
     font-style: normal;
 }
@@ -37,14 +60,12 @@ html {
 
 .biblical-text-greek {
     font-family: "SBL Greek";
-    font-size: 1.2rem;
     font-weight: normal;
     font-style: normal;
 }
 
 .biblical-text-english {
     font-family: "Times";
-    font-size: 1.2rem;
     font-weight: normal;
     font-style: normal;
 }

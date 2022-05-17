@@ -6,7 +6,6 @@ import { WorkspaceData, WorkspaceMetadata } from "./Workspace";
 // migration function to handle the transition to the new format. the migrations
 // can then safely be chained.
 
-export const CurrentWorkspaceFormat = 3;
 const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => WorkspaceData][] = [
     [
         2,
@@ -61,7 +60,16 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
             return workspace;
         },
     ],
+    [
+        4,
+        (workspace: WorkspaceData) => {
+            // add global section to workspace
+            (workspace as any)["global"] = { view: { textSize: "medium" } };
+            return workspace;
+        },
+    ],
 ];
+export const CurrentWorkspaceFormat = 4;
 
 export const MigrateWorkspace = (w: WorkspaceMetadata | null): WorkspaceMetadata | null => {
     if (!w) {

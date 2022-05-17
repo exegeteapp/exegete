@@ -13,10 +13,26 @@ import {
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp, faWindowClose } from "@fortawesome/free-solid-svg-icons";
-import { IWorkspaceContext, workspaceCellDelete, workspaceCellMove, WorkspaceContext } from "../workspace/Workspace";
+import {
+    IWorkspaceContext,
+    TextSize,
+    workspaceCellDelete,
+    workspaceCellMove,
+    WorkspaceContext,
+} from "../workspace/Workspace";
 
 export const Cell: React.FC = ({ children }) => {
-    return <Card className="mb-4">{children}</Card>;
+    const { state } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+
+    let textSize = TextSize.MEDIUM;
+    // paranoia: cross-validate that the level is one in the enum, as we're writing a class into the DOM
+    if (state.valid && state.workspace) {
+        textSize = state.workspace.data.global.view.textSize;
+    }
+    const levels = Object.values(TextSize);
+    const currentIndex = levels.indexOf(textSize);
+    const fontClass = currentIndex !== -1 ? `text-${textSize}` : "text-medium";
+    return <Card className={"mb-4 " + fontClass}>{children}</Card>;
 };
 
 export const CellBody: React.FC = ({ children }) => {

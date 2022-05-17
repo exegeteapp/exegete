@@ -1,11 +1,11 @@
 import React from "react";
+import { CurrentWorkspaceFormat } from "./WorkspaceMigrations";
 import { deleteWorkspaceLocal, loadWorkspaceLocal } from "./LocalWorkspaceStorage";
 import { deleteWorkspaceAPI, loadWorkspaceAPI } from "./APIWorkspaceStorage";
 import { arrayMoveMutable } from "array-move";
 import { createWorkspaceAPI } from "../workspace/APIWorkspaceStorage";
 import { createWorkspaceLocal } from "../workspace/LocalWorkspaceStorage";
 import { v4 } from "uuid";
-import defaultDocument from "../workspace/New";
 import { makeNewCell } from "./Cell";
 import Registry from "./CellRegistry";
 import { WorkspaceAutoSave } from "./Autosave";
@@ -23,7 +23,19 @@ export type CellFC<T> = React.FC<{
     cell: WorkspaceCell<T>;
 }>;
 
-export type View = {};
+export enum TextSize {
+    XXSMALL = "xx-small",
+    XSMALL = "x-small",
+    SMALL = "small",
+    MEDIUM = "medium",
+    LARGE = "large",
+    XLARGE = "x-large",
+    XXLARGE = "xx-large",
+}
+
+export type View = {
+    textSize: TextSize;
+};
 
 export type Global = {
     view: View;
@@ -32,7 +44,7 @@ export type Global = {
 export interface WorkspaceData {
     workspace_format: number;
     cells: WorkspaceCell<any>[];
-    global: View;
+    global: Global;
 }
 
 export interface WorkspaceMetadata {
@@ -62,6 +74,12 @@ interface WorkspaceState {
     local: boolean;
 }
 
+const defaultDocument: WorkspaceData = {
+    workspace_format: CurrentWorkspaceFormat,
+    cells: [],
+    global: { view: { textSize: TextSize.MEDIUM } },
+};
+
 export type WorkspaceAction =
     | { type: "workspace_start" }
     | { type: "workspace_loaded"; workspace: WorkspaceMetadata }
@@ -70,6 +88,7 @@ export type WorkspaceAction =
     | { type: "workspace_cell_move"; uuid: string; offset: number }
     | { type: "workspace_cell_add"; cell: WorkspaceCell<any> }
     | { type: "workspace_set_title"; title: string }
+    | { type: "workspace_set_text_size"; text_size: TextSize }
     | { type: "workspace_deleted" }
     | { type: "workspace_saved" };
 
@@ -128,7 +147,6 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             return {
                 ...state,
                 workspace: clone,
-                valid: true,
                 dirty: true,
             };
         }
@@ -144,7 +162,6 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             return {
                 ...state,
                 workspace: clone,
-                valid: true,
                 dirty: true,
             };
         }
@@ -160,7 +177,6 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             return {
                 ...state,
                 workspace: clone,
-                valid: true,
                 dirty: true,
             };
         }
@@ -173,7 +189,6 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             return {
                 ...state,
                 workspace: clone,
-                valid: true,
                 dirty: true,
             };
         }
@@ -186,7 +201,18 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             return {
                 ...state,
                 workspace: clone,
-                valid: true,
+                dirty: true,
+            };
+        }
+        case "workspace_set_text_size": {
+            if (!state.workspace) {
+                return state;
+            }
+            const clone = cloneWorkspace(state.workspace);
+            clone.data.global.view.textSize = action.text_size;
+            return {
+                ...state,
+                workspace: clone,
                 dirty: true,
             };
         }
