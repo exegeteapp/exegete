@@ -163,7 +163,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
         );
     }
 
-    const HideButton: React.FC = () => {
+    const HideMarkupButton: React.FC = () => {
         const id = `hide${cell.uuid}`;
         return (
             <Button
@@ -246,7 +246,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
                         columns={data.columns}
                         setAnno={makeSetAnnotation(cell, dispatch)}
                     />,
-                    <HideButton key={2} />,
+                    <HideMarkupButton key={2} />,
                     <RemoveColumnButton key={3} />,
                     <AddColumnButton key={4} />,
                 ]}
