@@ -1,7 +1,6 @@
 import {
     CellFC,
     IWorkspaceContext,
-    WorkspaceCell,
     workspaceCellSet,
     WorkspaceContext,
     WorkspaceData,
@@ -67,24 +66,15 @@ export const newScriptureCellParallel = (
 
 const ScriptureColumn: React.FC<{
     index: number;
-    cell: WorkspaceCell<ScriptureCellData>;
+    data: ScriptureCellColumn;
     editing: boolean;
-}> = ({ index, cell, editing }) => {
-    const data = cell.data.columns[index];
-    const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
-
-    const setAnnotation = (new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
-        const new_columns = [...cell.data.columns];
-        new_columns[index] = { ...new_columns[index], annotation: new_annotation };
-        workspaceCellSet(dispatch, cell.uuid, {
-            ...cell.data,
-            columns: new_columns,
-        });
-    };
-
+    hidemarkup: boolean;
+    separateverses: boolean;
+    setAnnotation: (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => void;
+}> = ({ index, data, editing, hidemarkup, separateverses, setAnnotation }) => {
     const annotation_functions: ScriptureWordAnnotationFunctions = {
-        get: () => cell.data.columns[index].annotation,
-        set: setAnnotation,
+        get: () => data.annotation,
+        set: (data) => setAnnotation(index, data),
     };
 
     const inner: JSX.Element = editing ? (
@@ -92,16 +82,16 @@ const ScriptureColumn: React.FC<{
             shortcode={data.shortcode}
             verseref={data.verseref}
             annotation={annotation_functions}
-            separateverses={cell.data.separateverses}
-            hidemarkup={cell.data.hidemarkup}
+            separateverses={separateverses}
+            hidemarkup={hidemarkup}
         />
     ) : (
         <ScriptureViewer
             shortcode={data.shortcode}
             verseref={data.verseref}
-            hidemarkup={cell.data.hidemarkup}
+            hidemarkup={hidemarkup}
             annotation={annotation_functions}
-            separateverses={cell.data.separateverses}
+            separateverses={separateverses}
         />
     );
 
@@ -136,6 +126,15 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
         });
     };
 
+    const setAnnotation = (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
+        const new_columns = [...cell.data.columns];
+        new_columns[index] = { ...new_columns[index], annotation: new_annotation };
+        workspaceCellSet(dispatch, cell.uuid, {
+            ...cell.data,
+            columns: new_columns,
+        });
+    };
+
     const cw = columnWidth[cell.data.columns.length] || 3;
     const header: JSX.Element[] = [];
     const inner: JSX.Element[] = [];
@@ -163,7 +162,15 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
         }
         inner.push(
             <Col xs={{ size: cw, offset: 0 }} key={i}>
-                <ScriptureColumn key={i} index={i} cell={cell} editing={editing} />
+                <ScriptureColumn
+                    setAnnotation={setAnnotation}
+                    key={i}
+                    index={i}
+                    data={data.columns[i]}
+                    hidemarkup={data.hidemarkup}
+                    separateverses={data.separateverses}
+                    editing={editing}
+                />
             </Col>
         );
         footer.push(

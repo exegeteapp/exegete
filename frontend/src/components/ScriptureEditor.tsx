@@ -539,19 +539,11 @@ export const ScriptureEditor: React.FC<{
     const editor = useConstant(() => withReact(withWords(withHistory(createEditor()))));
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const [editorElem, setEditorElem] = React.useState<JSX.Element>(<></>);
-    const [haveInitialValue, setHaveInitialValue] = React.useState(false);
-
     const renderElement = React.useCallback((props: RenderElementProps) => <EditorElement {...props} />, []);
 
     React.useEffect(() => {
         let isSubscribed = true;
         if (!scriptureState.valid || !scriptureState.catalog) {
-            return;
-        }
-
-        // awful hack: slate keeps complex internal state, so for now we never rebuild the initial value
-        // without a total unmount / remount of this component.
-        if (haveInitialValue) {
             return;
         }
 
@@ -613,7 +605,6 @@ export const ScriptureEditor: React.FC<{
                             />
                         </Slate>
                     );
-                    setHaveInitialValue(true);
                 }
             });
         } else {
@@ -631,7 +622,6 @@ export const ScriptureEditor: React.FC<{
         verseref,
         renderElement,
         annotation,
-        haveInitialValue,
         separateverses,
         hidemarkup,
     ]);
