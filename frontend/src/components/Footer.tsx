@@ -22,6 +22,16 @@ export const Footer: React.FC = ({ children }) => {
                             </Link>
                         </li>
                         <li>
+                            <a
+                                className="text-muted"
+                                target="_blank"
+                                rel="noreferrer"
+                                href="https://forms.gle/dkxWrAh9m1rw3rbq8"
+                            >
+                                Provide feedback
+                            </a>
+                        </li>
+                        <li>
                             <Link className="text-muted" to="/privacy">
                                 Privacy
                             </Link>
