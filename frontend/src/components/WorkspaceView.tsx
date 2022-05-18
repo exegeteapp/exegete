@@ -29,6 +29,7 @@ import Registry from "../workspace/CellRegistry";
 import { makeNewCell } from "../workspace/Cell";
 import { Helmet } from "react-helmet-async";
 import { Footer } from "./Footer";
+import { WorkspaceRedo, WorkspaceUndo } from "../workspace/History";
 
 type RefsFC = React.FC<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>;
 
@@ -161,6 +162,41 @@ const WorkspaceMenu: React.FC<{
     );
 };
 
+const EditMenu: React.FC = () => {
+    const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+
+    if (!state.valid || !state.workspace) {
+        return <></>;
+    }
+    const undo = () => {
+        if (!state.workspace) {
+            return;
+        }
+        WorkspaceUndo(dispatch, state.workspace.data);
+    };
+    const redo = () => {
+        if (!state.workspace) {
+            return;
+        }
+        WorkspaceRedo(dispatch, state.workspace.data);
+    };
+
+    return (
+        <UncontrolledDropdown nav>
+            <DropdownToggle caret nav>
+                Edit
+            </DropdownToggle>
+            <DropdownMenu md-end={"true"} color="dark" dark>
+                <DropdownItem disabled={state.workspace.data.history.undo.length === 0} onClick={() => undo()}>
+                    Undo
+                </DropdownItem>
+                <DropdownItem disabled={state.workspace.data.history.redo.length === 0} onClick={() => redo()}>
+                    Redo
+                </DropdownItem>
+            </DropdownMenu>
+        </UncontrolledDropdown>
+    );
+};
 const DisplayMenu: React.FC = () => {
     const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
@@ -341,6 +377,7 @@ const WorkspaceHeader: RefsFC = ({ refs }) => {
                     setShowDeleteWorkspaceModal={setShowDeleteWorkspaceModal}
                     setShowRenameWorkspaceModal={setShowRenameWorkspaceModal}
                 />
+                <EditMenu />
                 <DisplayMenu />
                 <ToolsMenu refs={refs} />
             </BaseHeader>

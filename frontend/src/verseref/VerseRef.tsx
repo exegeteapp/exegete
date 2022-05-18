@@ -15,9 +15,10 @@ enum ParserLevel {
     VERSE,
 }
 
+export type ScriptureBookChapters = ScriptureBookChapter[];
 export type ParseResultSuccess = {
     success: true;
-    sbcs: ScriptureBookChapter[];
+    sbcs: ScriptureBookChapters;
 };
 export type ParseResultFailure = { success: false; error: string };
 export type ParseResult = ParseResultSuccess | ParseResultFailure;
@@ -253,7 +254,7 @@ const applyGrammar = (module: ModuleInfo, params: ScriptureToken[]): ParseResult
     }
 
     // our grammar's state
-    const sbcs: ScriptureBookChapter[] = [];
+    const sbcs: ScriptureBookChapters = [];
     let level = first.level;
     let pending_sbc: ScriptureBookChapter | undefined = first.sbc;
     let context_sbc: ScriptureBookChapter | undefined = pending_sbc;

@@ -10,6 +10,7 @@ import { makeNewCell } from "./Cell";
 import Registry from "./CellRegistry";
 import { WorkspaceAutoSave } from "./Autosave";
 import { MigrateWorkspace } from "./WorkspaceMigrations";
+import { Delta } from "jsondiffpatch";
 
 export type NewCellDataFn<T> = (workspace: WorkspaceData) => T;
 
@@ -41,10 +42,16 @@ export type Global = {
     view: View;
 };
 
+export type History = {
+    readonly undo: ReadonlyArray<Delta>;
+    readonly redo: ReadonlyArray<Delta>;
+};
+
 export interface WorkspaceData {
     readonly workspace_format: number;
     readonly cells: ReadonlyArray<WorkspaceCell<any>>;
     readonly global: Global;
+    readonly history: History;
 }
 
 export interface WorkspaceMetadata {
@@ -63,19 +70,30 @@ export interface NewWorkspaceData {
     readonly data: WorkspaceData;
 }
 
+export enum DirtyState {
+    CLEAN,
+    PUSH,
+    MAKE_DELTA,
+}
+
 interface WorkspaceState {
     readonly id: string;
     // have we gone through the bootstrap process?
     readonly valid: boolean;
+    // the working workspace data
     readonly workspace: WorkspaceMetadata | undefined;
+    // the last version of the workspace which we know is on the server
+    // used to calculate undo and to avoid unnecessary saves
+    readonly last_workspace: WorkspaceMetadata | undefined;
     // does this workspace have unsaved changes?
-    readonly dirty: boolean;
+    readonly dirty: DirtyState;
     // workspace is local-only
     readonly local: boolean;
 }
 
 const defaultDocument: WorkspaceData = {
     workspace_format: CurrentWorkspaceFormat,
+    history: { undo: [], redo: [] },
     cells: [],
     global: { view: { textSize: TextSize.MEDIUM } },
 } as const;
@@ -90,7 +108,8 @@ export type WorkspaceAction =
     | { type: "workspace_set_title"; title: string }
     | { type: "workspace_set_text_size"; text_size: TextSize }
     | { type: "workspace_deleted" }
-    | { type: "workspace_saved" };
+    | { type: "workspace_set_from_history"; data: WorkspaceData }
+    | { type: "workspace_saved"; workspace: WorkspaceMetadata };
 
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {
     const cellIndex = (cells: ReadonlyArray<WorkspaceCell<any>>, uuid: string) => {
@@ -107,20 +126,37 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             return {
                 ...state,
                 workspace: action.workspace,
+                last_workspace: action.workspace,
                 valid: true,
-                dirty: false,
+                dirty: DirtyState.CLEAN,
             };
         case "workspace_saved":
             return {
                 ...state,
-                dirty: false,
+                last_workspace: action.workspace,
+                workspace: action.workspace,
+                dirty: DirtyState.CLEAN,
             };
         case "workspace_deleted":
             return {
                 ...state,
                 workspace: undefined,
                 valid: false,
-                dirty: false,
+                dirty: DirtyState.CLEAN,
+            };
+        case "workspace_set_from_history":
+            if (!state.workspace) {
+                return state;
+            }
+            // 'dirty' is not set here, if it was we'd push the new data
+            // and then we'd generate undo history of unwinding undo history!
+            return {
+                ...state,
+                workspace: {
+                    ...state.workspace,
+                    data: action.data,
+                },
+                dirty: DirtyState.PUSH,
             };
         case "workspace_cell_set": {
             if (!state.workspace) {
@@ -140,7 +176,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                         cells: newCells,
                     },
                 },
-                dirty: true,
+                dirty: DirtyState.MAKE_DELTA,
             };
         }
         case "workspace_cell_delete": {
@@ -157,7 +193,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                         cells: newCells,
                     },
                 },
-                dirty: true,
+                dirty: DirtyState.MAKE_DELTA,
             };
         }
         case "workspace_cell_move": {
@@ -179,7 +215,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                         cells: newCells,
                     },
                 },
-                dirty: true,
+                dirty: DirtyState.MAKE_DELTA,
             };
         }
         case "workspace_cell_add": {
@@ -195,7 +231,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                         cells: [...state.workspace.data.cells, action.cell],
                     },
                 },
-                dirty: true,
+                dirty: DirtyState.MAKE_DELTA,
             };
         }
         case "workspace_set_title": {
@@ -205,7 +241,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             return {
                 ...state,
                 workspace: { ...state.workspace, title: action.title },
-                dirty: true,
+                dirty: DirtyState.PUSH,
             };
         }
         case "workspace_set_text_size": {
@@ -227,7 +263,7 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                         },
                     },
                 },
-                dirty: true,
+                dirty: DirtyState.MAKE_DELTA,
             };
         }
     }
@@ -246,8 +282,9 @@ export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ ch
     const initialState: WorkspaceState = {
         id: id,
         valid: false,
-        dirty: false,
+        dirty: DirtyState.CLEAN,
         workspace: undefined,
+        last_workspace: undefined,
         local: local,
     };
     const [state, dispatch] = React.useReducer(workspace_reducer, initialState);

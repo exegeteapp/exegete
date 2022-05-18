@@ -82,8 +82,15 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
             return workspace;
         },
     ],
+    [
+        6,
+        (workspace: WorkspaceData) => {
+            (workspace as any).history = { undo: [], redo: [] };
+            return workspace;
+        },
+    ],
 ];
-export const CurrentWorkspaceFormat = 5;
+export const CurrentWorkspaceFormat = 6;
 
 export const MigrateWorkspace = (w: WorkspaceMetadata | null): WorkspaceMetadata | null => {
     if (!w) {

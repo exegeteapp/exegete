@@ -38,7 +38,7 @@ const cache_key = (params: ScriptureParams): string => {
     return `${params.shortcode}_${params.book}_${params.chapter_start}_${params.verse_start}_${params.chapter_end}_${params.verse_end}`;
 };
 
-export const getScripture = async (params: ScriptureParams): Promise<ReadonlyArray<ScriptureObject> | null> => {
+export const getScripture = async (params: ScriptureParams): Promise<ReadonlyArray<ScriptureObject>> => {
     const key = cache_key(params);
     const match = scriptureCache.find(([k]) => key === k);
     if (match) {
@@ -52,6 +52,15 @@ export const getScripture = async (params: ScriptureParams): Promise<ReadonlyArr
         scriptureCache = scriptureCache.slice(-CACHE_SIZE);
         return resp.data;
     } catch (error: any) {
-        return null;
+        return [
+            {
+                type: "error",
+                chapter_start: 0,
+                chapter_end: 0,
+                verse_start: 0,
+                verse_end: 0,
+                text: [],
+            },
+        ];
     }
 };

@@ -1,6 +1,7 @@
 import { ApiAxiosRequestConfig } from "../user/JWT";
 import axios from "axios";
 import { WorkspaceData, WorkspaceMetadata } from "./Workspace";
+import { Delta } from "jsondiffpatch";
 
 export const getWorkspaces = async (): Promise<WorkspaceMetadata[]> => {
     // we want to convert the JSON object described below into
@@ -9,6 +10,7 @@ export const getWorkspaces = async (): Promise<WorkspaceMetadata[]> => {
         readonly id: string;
         readonly title: string;
         readonly data: WorkspaceData;
+        readonly history: Delta[];
         readonly created: string;
         readonly updated: string | null;
     }

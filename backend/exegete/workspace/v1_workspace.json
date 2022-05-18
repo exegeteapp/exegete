@@ -1,43 +1,62 @@
 {
-    "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://exegete.app/schema/v1_object.json",
-    "title": "exegete.app workspace definition",
-    "description": "a workspace defines an exegete environment",
-    "type": "object",
-    "properties": {
-        "workspace_format": {
-            "description": "version of workspace format",
-            "type": "integer"
-        },
-        "global": {
-            "description": "global configuration of all cells",
-            "type": "object"
-        },
-        "cells": {
-            "description": "cells in the workspace",
-            "type": "array",
-            "items": { "$ref": "#/$defs/cell" }
-        }
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://exegete.app/schema/v1_object.json",
+  "title": "exegete.app workspace definition",
+  "description": "a workspace defines an exegete environment",
+  "type": "object",
+  "properties": {
+    "workspace_format": {
+      "description": "version of workspace format",
+      "type": "integer"
     },
-    "$defs": {
-        "cell": {
-            "type": "object",
-            "properties": {
-                "uuid": {
-                    "type": "string",
-                    "format": "uuid"
-                },
-                "cell_type": {
-                    "type": "string"
-                },
-                "data": {
-                    "type": "object"
-                }
-            },
-            "required": ["cell_type", "data", "uuid"],
-            "additionalProperties": false
+    "global": {
+      "description": "global configuration of all ells",
+      "type": "object",
+      "properties": {
+        "view": {
+          "type": "object"
         }
+      },
+      "additionalProperties": false
     },
-    "additionalProperties": false,
-    "required": ["workspace_format", "cells"]
+    "cells": {
+      "description": "cells in the workspace",
+      "type": "array",
+      "items": { "$ref": "#/$defs/cell" }
+    },
+    "history": {
+      "description": "jsondiffpatch deltas",
+      "type": "object",
+      "properties": {
+        "undo": {
+          "type": "array"
+        },
+        "redo": {
+          "type": "array"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "cell": {
+      "type": "object",
+      "properties": {
+        "uuid": {
+          "type": "string",
+          "format": "uuid"
+        },
+        "cell_type": {
+          "type": "string"
+        },
+        "data": {
+          "type": "object"
+        }
+      },
+      "required": ["cell_type", "data", "uuid"],
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "required": ["workspace_format", "cells"]
 }

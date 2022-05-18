@@ -6,10 +6,10 @@ import React from "react";
 import { createEditor, Descendant } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 import useConstant from "use-constant";
-import { getScripture, ScriptureBookChapter } from "../scripture/ScriptureAPI";
+import { getScripture } from "../scripture/ScriptureAPI";
 import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { getModuleParser } from "../scripture/ParserCache";
-import parseReference, { ParseResultSuccess } from "../verseref/VerseRef";
+import parseReference, { ParseResultSuccess, ScriptureBookChapters } from "../verseref/VerseRef";
 import {
     annoKey,
     newScriptureWordAnnotation,
@@ -311,7 +311,6 @@ const ToggleAnnoButton: React.FC<{ attr: string; value: string; icon?: IconDefin
 const EditorMenu = React.forwardRef<HTMLDivElement, { groups: SourceGroup[] }>(({ groups }, ref) => {
     const editor = useSlate();
 
-    // FIXME grahame tomorrow build the anno buttons dynamically...
     const bgs: React.ReactElement[] = groups.map((group, index) => {
         const btns = group.sources.map((source, index) => {
             return <ToggleAnnoButton attr="source" value={source.code} key={index} />;
@@ -427,8 +426,7 @@ const calculateAnnotations = (
 ): [WordPosition, ScriptureWordAnnotation][] => {
     // build a fast lookup table for annotations by position
     // we don't need to keep existing annotations, we're rebuilding them
-    const annoMap = new Map<string, ScriptureWordAnnotation>();
-    const annotated = new Set<WordPosition>();
+    const annoMap = new Map<string, [WordPosition, ScriptureWordAnnotation]>();
 
     // iterate through top level paragraphs
     let para_pending = 0;
@@ -445,7 +443,8 @@ const calculateAnnotations = (
             if (child.type === "word") {
                 currentPos = child.position;
                 let key = annoKey(currentPos);
-                let anno = annoMap.get(key);
+                const entry = annoMap.get(key);
+                let anno = entry ? entry[1] : undefined;
 
                 // bit of a hack: if we're in the separate verses mode, chop one of para_pending when we hit a
                 // new verse
@@ -468,8 +467,7 @@ const calculateAnnotations = (
                 }
 
                 if (anno) {
-                    annoMap.set(key, anno);
-                    annotated.add(currentPos);
+                    annoMap.set(key, [currentPos, anno]);
                 }
 
                 continue;
@@ -501,7 +499,8 @@ const calculateAnnotations = (
                 }
 
                 const key = annoKey(pos);
-                let anno = annoMap.get(key);
+                const entry = annoMap.get(key);
+                let anno = entry ? entry[1] : undefined;
 
                 if (text) {
                     if (!anno) {
@@ -513,8 +512,7 @@ const calculateAnnotations = (
                         anno = { ...anno, postText: text };
                     }
                     if (anno) {
-                        annoMap.set(key, anno);
-                        annotated.add(pos);
+                        annoMap.set(key, [pos, anno]);
                     }
                 }
             }
@@ -523,9 +521,8 @@ const calculateAnnotations = (
         para_pending += 1;
     }
 
-    return Array.from(annotated).map((pos) => {
-        const key = annoKey(pos);
-        return [pos, annoMap.get(key)!];
+    return Array.from(annoMap).map(([key, [position, annotation]]) => {
+        return [position, annotation];
     });
 };
 
@@ -580,7 +577,7 @@ export const ScriptureEditor: React.FC<{
             }
         };
 
-        const determineEligibleGroups = (module: ModuleInfo, sbcs: ScriptureBookChapter[]) => {
+        const determineEligibleGroups = (module: ModuleInfo, sbcs: ScriptureBookChapters) => {
             const books = new Set<BookInfo>();
             for (const sbc of sbcs) {
                 const book = FindBook(module, sbc.book);

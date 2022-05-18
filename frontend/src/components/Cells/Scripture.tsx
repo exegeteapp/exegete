@@ -275,7 +275,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
                 uuid={cell.uuid}
                 buttons={[
                     <AnnotateButton key={0} />,
-                    <HighlightRepititionButton key={1} editing={editing} cell={cell} columns={data.columns} />,
+                    <HighlightRepititionButton key={1} editing={editing} cell={cell} />,
                     <HideMarkupButton key={2} />,
                     <SeparateVersesButton key={3} />,
                     <RemoveColumnButton key={4} />,

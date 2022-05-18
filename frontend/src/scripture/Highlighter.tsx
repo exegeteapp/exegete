@@ -1,6 +1,7 @@
 import { DistinguishableColours } from "../colours/distinguishable";
 import { WordPosition } from "../components/ScriptureAnnotation";
-import { getScripture, ScriptureBookChapter } from "./ScriptureAPI";
+import { ScriptureBookChapters } from "../verseref/VerseRef";
+import { ScriptureObject } from "./ScriptureAPI";
 
 // from postgresql: https://github.com/postgres/postgres/blob/master/src/backend/snowball/stopwords/english.stop
 const stopWords = new Set([
@@ -131,25 +132,32 @@ const stopWords = new Set([
     "don",
     "should",
     "now",
+    // additions to Postgres list for common scriptural words
+    "said",
+    "say",
+    "speak",
+    "know",
+    "speak",
+    "becaus",
+    "doe",
+    "us",
+    "may",
+    "let",
+    "also",
+    "call",
+    "sinc",
+    "come",
+    "came",
+    "like",
+    "yet",
+    "one",
 ]);
 
-export const calculateSnowballHighlights = (shortcode_sbcs: [string, ScriptureBookChapter[]][]) => {
-    const scripturePromises = [];
+export const calculateSnowballHighlights = (column_scriptures: (readonly ScriptureObject[])[][]) => {
+    const snowballCount = new Map<string, number>();
 
-    for (const [shortcode, sbcs] of shortcode_sbcs) {
-        for (const sbc of sbcs) {
-            scripturePromises.push(getScripture({ ...sbc, shortcode }));
-        }
-    }
-
-    return Promise.all(scripturePromises).then((scriptures) => {
-        const snowballCount = new Map<string, number>();
-
-        for (let i = 0; i < scriptures.length; i++) {
-            const objs = scriptures[i];
-            if (!objs) {
-                continue;
-            }
+    for (const column of column_scriptures) {
+        for (const objs of column) {
             for (const obj of objs) {
                 if (obj.type !== "verse") {
                     continue; // we don't want to annotate footnotes or titles...
@@ -164,60 +172,61 @@ export const calculateSnowballHighlights = (shortcode_sbcs: [string, ScriptureBo
                 }
             }
         }
+    }
 
-        const sorted = Array.from(snowballCount.entries()).sort((a, b) => b[1] - a[1]);
-        const snowballHighlight = new Map<string, string>();
+    const sorted = Array.from(snowballCount.entries()).sort((a, b) => b[1] - a[1]);
+    const snowballHighlight = new Map<string, string>();
 
-        for (let i = 0; i < sorted.length; i++) {
-            const [snowball, count] = sorted[i];
-            if (count > 1) {
-                snowballHighlight.set(snowball, DistinguishableColours[i % DistinguishableColours.length]);
-            }
+    for (let i = 0; i < sorted.length; i++) {
+        if (i >= DistinguishableColours.length) {
+            break;
         }
+        const [snowball, count] = sorted[i];
+        if (count > 1) {
+            snowballHighlight.set(snowball, DistinguishableColours[i]);
+        }
+    }
 
-        return snowballHighlight;
-    });
+    return snowballHighlight;
 };
 
 export const calculateSnowballAnnotations = (
     shortcode: string,
-    sbcs: ScriptureBookChapter[],
+    sbcs: ScriptureBookChapters,
+    scriptures: (readonly ScriptureObject[])[],
     snowballHighlight: Map<string, string>
 ) => {
-    const scripturePromises = sbcs.map((sbc) => getScripture({ ...sbc, shortcode: shortcode }));
-    return Promise.all(scripturePromises).then((scriptures) => {
-        const result: Array<[WordPosition, string]> = [];
-        for (let i = 0; i < scriptures.length; i++) {
-            const book = sbcs[i].book;
-            const objs = scriptures[i];
-            if (!objs) {
-                continue;
+    const result: Array<[WordPosition, string]> = [];
+    for (let i = 0; i < scriptures.length; i++) {
+        const book = sbcs[i].book;
+        const objs = scriptures[i];
+        if (!objs) {
+            continue;
+        }
+        for (const obj of objs) {
+            if (obj.type !== "verse") {
+                continue; // we don't want to annotate footnotes or titles...
             }
-            for (const obj of objs) {
-                if (obj.type !== "verse") {
-                    continue; // we don't want to annotate footnotes or titles...
-                }
-                for (let wi = 0; wi < obj.text.length; wi++) {
-                    const word = obj.text[wi];
-                    const snowball = word["s-snowball"];
-                    if (snowball) {
-                        const highlight = snowballHighlight.get(snowball);
-                        if (highlight) {
-                            result.push([
-                                {
-                                    shortcode: shortcode,
-                                    book: book,
-                                    chapter: obj.chapter_start,
-                                    verse: obj.verse_start,
-                                    index: wi,
-                                },
-                                highlight,
-                            ]);
-                        }
+            for (let wi = 0; wi < obj.text.length; wi++) {
+                const word = obj.text[wi];
+                const snowball = word["s-snowball"];
+                if (snowball) {
+                    const highlight = snowballHighlight.get(snowball);
+                    if (highlight) {
+                        result.push([
+                            {
+                                shortcode: shortcode,
+                                book: book,
+                                chapter: obj.chapter_start,
+                                verse: obj.verse_start,
+                                index: wi,
+                            },
+                            highlight,
+                        ]);
                     }
                 }
             }
         }
-        return result;
-    });
+    }
+    return result;
 };
