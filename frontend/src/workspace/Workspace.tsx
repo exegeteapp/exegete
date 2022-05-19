@@ -89,6 +89,8 @@ interface WorkspaceState {
     readonly dirty: DirtyState;
     // workspace is local-only
     readonly local: boolean;
+    // can undo/redo functionality operate?
+    readonly can_apply_history: boolean;
 }
 
 const defaultDocument: WorkspaceData = {
@@ -109,7 +111,8 @@ export type WorkspaceAction =
     | { type: "workspace_set_text_size"; text_size: TextSize }
     | { type: "workspace_deleted" }
     | { type: "workspace_set_from_history"; data: WorkspaceData }
-    | { type: "workspace_saved"; workspace: WorkspaceMetadata };
+    | { type: "workspace_saved"; workspace: WorkspaceMetadata }
+    | { type: "workspace_can_apply_history"; value: boolean };
 
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {
     const cellIndex = (cells: ReadonlyArray<WorkspaceCell<any>>, uuid: string) => {
@@ -194,6 +197,12 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                     },
                 },
                 dirty: DirtyState.MAKE_DELTA,
+            };
+        }
+        case "workspace_can_apply_history": {
+            return {
+                ...state,
+                can_apply_history: action.value,
             };
         }
         case "workspace_cell_move": {
@@ -286,6 +295,7 @@ export const WorkspaceProvider: React.FC<{ id: string; local: boolean }> = ({ ch
         workspace: undefined,
         last_workspace: undefined,
         local: local,
+        can_apply_history: true,
     };
     const [state, dispatch] = React.useReducer(workspace_reducer, initialState);
 

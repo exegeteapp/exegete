@@ -103,6 +103,12 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
     const [editing, setEditing] = React.useState(false);
     const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
+    const toggleEditor = () => {
+        // we don't want our global undo/redo function to be active while in the slate editor
+        dispatch({ type: "workspace_can_apply_history", value: editing });
+        setEditing(!editing);
+    };
+
     const setHideMarkup = (hidemarkup: boolean) => {
         workspaceCellSet(dispatch, cell.uuid, {
             ...cell.data,
@@ -260,7 +266,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
     const AnnotateButton: React.FC = () => {
         const id = `annotate${cell.uuid}`;
         return (
-            <Button id={id} onClick={() => setEditing(!editing)} active={editing}>
+            <Button id={id} onClick={() => toggleEditor()} active={editing}>
                 <FontAwesomeIcon icon={faHighlighter} />
                 <UncontrolledTooltip autohide placement="bottom" target={id}>
                     {editing ? "View text" : "Structure and annotate text"}

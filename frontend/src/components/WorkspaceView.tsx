@@ -132,7 +132,7 @@ const DeleteWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => v
         <>
             <Modal toggle={() => setShow(!show)} isOpen={true}>
                 <ModalHeader toggle={() => setShow(!show)}>Delete Workspace?</ModalHeader>
-                <ModalBody>Do you really want to delete this workspace?</ModalBody>
+                <ModalBody>Do you really want to delete this workspace? This cannot be undone.</ModalBody>
                 <ModalFooter>
                     <Button color="danger" onClick={apply}>
                         Delete
@@ -181,16 +181,24 @@ const EditMenu: React.FC = () => {
         WorkspaceRedo(dispatch, state.workspace.data);
     };
 
+    const cannotUndo = () => {
+        return !state.can_apply_history || !state.workspace || state.workspace.data.history.undo.length === 0;
+    };
+
+    const cannotRedo = () => {
+        return !state.can_apply_history || !state.workspace || state.workspace.data.history.redo.length === 0;
+    };
+
     return (
         <UncontrolledDropdown nav>
             <DropdownToggle caret nav>
                 Edit
             </DropdownToggle>
             <DropdownMenu md-end={"true"} color="dark" dark>
-                <DropdownItem disabled={state.workspace.data.history.undo.length === 0} onClick={() => undo()}>
+                <DropdownItem disabled={cannotUndo()} onClick={() => undo()}>
                     Undo
                 </DropdownItem>
-                <DropdownItem disabled={state.workspace.data.history.redo.length === 0} onClick={() => redo()}>
+                <DropdownItem disabled={cannotRedo()} onClick={() => redo()}>
                     Redo
                 </DropdownItem>
             </DropdownMenu>
