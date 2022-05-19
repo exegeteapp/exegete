@@ -41,7 +41,7 @@ const columnWidth: { [key: number]: number } = {
     1: 12,
 };
 
-export const newScriptureCellParallel = (
+export const newScriptureCell = (
     workspace: WorkspaceData,
     columns: ScriptureCellColumn[],
     hidemarkup: boolean
@@ -60,7 +60,7 @@ export const newScriptureCellParallel = (
     return {
         hidemarkup: hidemarkup,
         columns: columns,
-        separateverses: false,
+        separateverses: true,
     };
 };
 
@@ -303,7 +303,7 @@ export const ScriptureDefinition: RegistryEntry = {
         {
             title: "Scripture viewer",
             newData: (d) =>
-                newScriptureCellParallel(
+                newScriptureCell(
                     d,
                     [
                         {
@@ -318,7 +318,7 @@ export const ScriptureDefinition: RegistryEntry = {
         {
             title: "Parallel texts",
             newData: (d) =>
-                newScriptureCellParallel(
+                newScriptureCell(
                     d,
                     [
                         {
