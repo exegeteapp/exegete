@@ -53,10 +53,10 @@ export const WorkspaceAutoSave: React.FC = ({ children }) => {
             }
             if (state.local) {
                 saveWorkspaceLocal(workspace);
-                dispatch({ type: "workspace_saved", history: workspace.data.history });
+                dispatch({ type: "workspace_saved", workspace: workspace });
             } else {
                 saveWorkspaceAPI(workspace).then(() => {
-                    dispatch({ type: "workspace_saved", history: workspace.data.history });
+                    dispatch({ type: "workspace_saved", workspace: workspace });
                 });
             }
         }, 1000);
