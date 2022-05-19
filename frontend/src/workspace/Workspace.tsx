@@ -111,7 +111,7 @@ export type WorkspaceAction =
     | { type: "workspace_set_text_size"; text_size: TextSize }
     | { type: "workspace_deleted" }
     | { type: "workspace_set_from_history"; data: WorkspaceData }
-    | { type: "workspace_saved"; workspace: WorkspaceMetadata }
+    | { type: "workspace_saved"; history: History }
     | { type: "workspace_can_apply_history"; value: boolean };
 
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {
@@ -134,10 +134,20 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
                 dirty: DirtyState.CLEAN,
             };
         case "workspace_saved":
+            if (!state.workspace) {
+                return state;
+            }
+            const merged = {
+                ...state.workspace,
+                data: {
+                    ...state.workspace.data,
+                    history: action.history,
+                },
+            };
             return {
                 ...state,
-                last_workspace: action.workspace,
-                workspace: action.workspace,
+                last_workspace: merged,
+                workspace: merged,
                 dirty: DirtyState.CLEAN,
             };
         case "workspace_deleted":
