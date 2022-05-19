@@ -24,6 +24,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { applicableGroups, getSource, SourceGroup } from "../sources/Sources";
 import { BookInfo, FindBook, languageClass, ModuleInfo } from "../scripture/ScriptureCatalog";
 import { DistinguishableColours } from "../colours/distinguishable";
+import { IWorkspaceContext, WorkspaceContext } from "../workspace/Workspace";
 
 const PermittedKeys = new Set<string>([
     " ",
@@ -535,8 +536,18 @@ export const ScriptureEditor: React.FC<{
 }> = ({ shortcode, verseref, annotation, separateverses, hidemarkup }) => {
     const editor = useConstant(() => withReact(withWords(withHistory(createEditor()))));
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
+    const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const [editorElem, setEditorElem] = React.useState<JSX.Element>(<></>);
     const renderElement = React.useCallback((props: RenderElementProps) => <EditorElement {...props} />, []);
+
+    React.useEffect(() => {
+        // we don't want our global undo/redo function to be active while in the slate editor
+        // this is an annoying issue caused by slatejs being an uncontrolled react component
+        dispatch({ type: "workspace_can_apply_history", value: false });
+        return () => {
+            dispatch({ type: "workspace_can_apply_history", value: true });
+        };
+    }, [dispatch, workspaceState.can_apply_history]);
 
     React.useEffect(() => {
         let isSubscribed = true;

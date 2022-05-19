@@ -104,8 +104,6 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
     const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     const toggleEditor = () => {
-        // we don't want our global undo/redo function to be active while in the slate editor
-        dispatch({ type: "workspace_can_apply_history", value: editing });
         setEditing(!editing);
     };
 
