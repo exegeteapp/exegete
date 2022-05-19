@@ -109,5 +109,5 @@ export const MigrateWorkspace = (w: WorkspaceMetadata | null): WorkspaceMetadata
         newWorkspace = { ...newWorkspace, data: { ...migration(newWorkspace.data), workspace_format: toVersion } };
     }
 
-    return w;
+    return newWorkspace;
 };
