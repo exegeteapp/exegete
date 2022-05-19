@@ -111,7 +111,7 @@ export type WorkspaceAction =
     | { type: "workspace_set_text_size"; text_size: TextSize }
     | { type: "workspace_deleted" }
     | { type: "workspace_set_from_history"; data: WorkspaceData }
-    | { type: "workspace_saved"; workspace: WorkspaceMetadata }
+    | { type: "workspace_saved"; workspace: WorkspaceMetadata; set_history: boolean }
     | { type: "workspace_can_apply_history"; value: boolean };
 
 const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): WorkspaceState => {
@@ -142,19 +142,27 @@ const workspace_reducer = (state: WorkspaceState, action: WorkspaceAction): Work
             // we update the history on the current workspace object, but
             // leave the rest of the state intact, as there may have been edits
             // made by the user while the save operation was occurring
-            const merged: WorkspaceMetadata = {
-                ...state.workspace,
-                data: {
-                    ...state.workspace.data,
-                    history: action.workspace.data.history,
-                },
-            };
-            return {
-                ...state,
-                last_workspace: action.workspace,
-                workspace: merged,
-                dirty: DirtyState.CLEAN,
-            };
+            if (action.set_history) {
+                const merged: WorkspaceMetadata = {
+                    ...state.workspace,
+                    data: {
+                        ...state.workspace.data,
+                        history: action.workspace.data.history,
+                    },
+                };
+                return {
+                    ...state,
+                    last_workspace: action.workspace,
+                    workspace: merged,
+                    dirty: DirtyState.CLEAN,
+                };
+            } else {
+                return {
+                    ...state,
+                    last_workspace: action.workspace,
+                    dirty: DirtyState.CLEAN,
+                };
+            }
         case "workspace_deleted":
             return {
                 ...state,
