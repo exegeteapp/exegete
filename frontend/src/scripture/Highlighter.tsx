@@ -174,7 +174,13 @@ export const calculateSnowballHighlights = (column_scriptures: (readonly Scriptu
         }
     }
 
-    const sorted = Array.from(snowballCount.entries()).sort((a, b) => b[1] - a[1]);
+    // we prioritise the words with highest count, and then we sort alphabetically
+    const sorted = Array.from(snowballCount.entries()).sort(([aw, ac], [bw, bc]) => {
+        if (ac === bc) {
+            return aw.localeCompare(bw);
+        }
+        return bc - ac;
+    });
     const snowballHighlight = new Map<string, string>();
 
     for (let i = 0; i < sorted.length; i++) {
