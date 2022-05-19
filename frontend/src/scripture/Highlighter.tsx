@@ -148,9 +148,15 @@ const stopWords = new Set([
     "sinc",
     "come",
     "came",
+    "went",
     "like",
     "yet",
     "one",
+    "o",
+    "whi",
+    "before",
+    "took",
+    "take",
 ]);
 
 export const calculateSnowballHighlights = (column_scriptures: (readonly ScriptureObject[])[][]) => {
