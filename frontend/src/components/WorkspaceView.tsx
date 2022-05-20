@@ -216,7 +216,7 @@ const EditMenu: React.FC = () => {
         </UncontrolledDropdown>
     );
 };
-const DisplayMenu: React.FC = () => {
+const ViewMenu: React.FC = () => {
     const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     const canZoom = (offset: number) => {
@@ -260,7 +260,7 @@ const DisplayMenu: React.FC = () => {
     return (
         <UncontrolledDropdown nav>
             <DropdownToggle caret nav>
-                Display
+                View
             </DropdownToggle>
             <DropdownMenu md-end={"true"} color="dark" dark>
                 <DropdownItem disabled={!canZoom(1)} onClick={() => zoom(1)}>
@@ -397,7 +397,7 @@ const WorkspaceHeader: RefsFC = ({ refs }) => {
                     setShowRenameWorkspaceModal={setShowRenameWorkspaceModal}
                 />
                 <EditMenu />
-                <DisplayMenu />
+                <ViewMenu />
                 <ToolsMenu refs={refs} />
             </BaseHeader>
         </>
