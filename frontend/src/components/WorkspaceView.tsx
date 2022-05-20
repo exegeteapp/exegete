@@ -21,6 +21,7 @@ import {
     WorkspaceProvider,
     deleteWorkspace,
     TextSize,
+    DirtyState,
 } from "../workspace/Workspace";
 import Error from "./Cells/Error";
 import { BaseHeader } from "./Header";
@@ -182,11 +183,21 @@ const EditMenu: React.FC = () => {
     };
 
     const cannotUndo = () => {
-        return !state.can_apply_history || !state.workspace || state.workspace.data.history.undo.length === 0;
+        return (
+            !state.can_apply_history ||
+            state.dirty !== DirtyState.CLEAN ||
+            !state.workspace ||
+            state.workspace.data.history.undo.length === 0
+        );
     };
 
     const cannotRedo = () => {
-        return !state.can_apply_history || !state.workspace || state.workspace.data.history.redo.length === 0;
+        return (
+            !state.can_apply_history ||
+            state.dirty !== DirtyState.CLEAN ||
+            !state.workspace ||
+            state.workspace.data.history.redo.length === 0
+        );
     };
 
     return (
