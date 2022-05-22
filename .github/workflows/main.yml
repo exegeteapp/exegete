@@ -189,5 +189,5 @@ jobs:
         env:
           SSH_KEY: ${{secrets.SSH_KEY}}
       - name: Trigger deployment
-        run: ssh -o StrictHostKeyChecking=no -p 6237 ci@retro.grahame.dev
+        run: ssh -o StrictHostKeyChecking=no -p 6237 ci@194.195.126.153
         shell: bash
