@@ -32,5 +32,8 @@ COPY . /app
 ENV PYTHONPATH=/venv \
     PATH=/venv/bin:/usr/local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+RUN useradd -ms /bin/bash backend
+USER backend
+
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
