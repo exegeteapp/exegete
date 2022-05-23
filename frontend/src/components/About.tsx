@@ -1,6 +1,9 @@
 import { Button, Col, Container, Row } from "reactstrap";
 import { Footer } from "./Footer";
 import Header from "./Header";
+import React from "react";
+import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
+import { Link } from "react-router-dom";
 
 const AboutText: React.FC = () => {
     return (
@@ -34,6 +37,34 @@ const AboutText: React.FC = () => {
                 .
             </p>
         </>
+    );
+};
+
+const Texts: React.FC = () => {
+    const { state } = React.useContext<IScriptureContext>(ScriptureContext);
+    if (!state.valid || !state.catalog) {
+        return <></>;
+    }
+    const catalog = state.catalog;
+
+    const entries = () => {
+        return Object.keys(catalog).map((module, i) => {
+            const entry = catalog[module];
+            const target = `/module/${module}`;
+            return (
+                <li>
+                    <Link className="text-muted" to={target}>
+                        {entry.name}
+                    </Link>
+                </li>
+            );
+        });
+    };
+    return (
+        <div>
+            <p>The following texts are available within exegete.app:</p>
+            <ul>{entries()}</ul>
+        </div>
     );
 };
 
@@ -90,7 +121,6 @@ const Bios: React.FC = () => {
                     </Button>
                 </Col>
             </Row>
-            .
         </>
     );
 };
@@ -122,6 +152,16 @@ export const About: React.FC = () => {
                 </Row>
                 <Row className="sponsors mt-4">
                     <SponsorLogos />
+                </Row>
+                <Row className="mt-4">
+                    <Col md={{ size: 8, offset: 2 }}>
+                        <h1>Texts</h1>
+                    </Col>
+                </Row>
+                <Row className="sponsors mt-4">
+                    <Col md={{ size: 8, offset: 2 }}>
+                        <Texts />
+                    </Col>
                 </Row>
             </Container>
             <Footer />
