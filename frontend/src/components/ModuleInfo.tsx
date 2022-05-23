@@ -65,7 +65,7 @@ const ModuleInfo: React.FC = () => {
                         </tr>
                         <tr>
                             <th scope="row" className="align-top">
-                                Created
+                                Data loaded
                             </th>
                             <td>{module.date_created}</td>
                         </tr>
