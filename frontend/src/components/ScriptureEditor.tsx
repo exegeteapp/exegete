@@ -107,7 +107,7 @@ const EditorElement: React.FC<RenderElementProps> = (props) => {
     }
 };
 
-const NonEditableStyle = (selected: boolean, focused: boolean) => {
+const NonEditableStyle = (selected: boolean, focused: boolean): React.CSSProperties => {
     return {
         verticalAlign: "baseline",
         display: "inline-block",

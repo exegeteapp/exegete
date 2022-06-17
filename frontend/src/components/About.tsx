@@ -10,7 +10,7 @@ const AboutText: React.FC = () => {
         <>
             <p className="lead">
                 exegete.app is an online environment for Biblical exegesis. A project of{" "}
-                <a className="text-muted" href="https://wtc.perth.anglican.org" target="_blank" rel="noreferrer">
+                <a className="text-muted" href="http://wtc.perth.anglican.org" target="_blank" rel="noreferrer">
                     Wollaston Theological College
                 </a>
                 , exegete.app is under active development, funded by a grant from{" "}
