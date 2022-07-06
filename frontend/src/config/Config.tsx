@@ -67,7 +67,7 @@ const getConfig = async (dispatch: React.Dispatch<ConfigAction>) => {
     }
 };
 
-export const ConfigProvider: React.FC = ({ children }) => {
+export const ConfigProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     const [state, dispatch] = React.useReducer(config_reducer, initialConfigState);
 
     React.useEffect(

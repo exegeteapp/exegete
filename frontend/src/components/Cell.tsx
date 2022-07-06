@@ -21,7 +21,7 @@ import {
     WorkspaceContext,
 } from "../workspace/Workspace";
 
-export const Cell: React.FC = ({ children }) => {
+export const Cell: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     const { state } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     let textSize = TextSize.MEDIUM;
@@ -35,15 +35,15 @@ export const Cell: React.FC = ({ children }) => {
     return <Card className={"mb-4 " + fontClass}>{children}</Card>;
 };
 
-export const CellBody: React.FC = ({ children }) => {
+export const CellBody: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     return <CardBody>{children}</CardBody>;
 };
 
-export const CellFooter: React.FC = ({ children }) => {
+export const CellFooter: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     return <CardFooter>{children}</CardFooter>;
 };
 
-export const CellHeader: React.FC<{ uuid: string; buttons?: JSX.Element[] }> = ({ uuid, children, buttons }) => {
+export const CellHeader: React.FC<React.PropsWithChildren<{ uuid: string; buttons?: JSX.Element[] }>> = ({ uuid, children, buttons }) => {
     const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const upId = `up${uuid}`;
     const downId = `down${uuid}`;

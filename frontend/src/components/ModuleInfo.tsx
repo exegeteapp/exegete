@@ -6,7 +6,7 @@ import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { Footer } from "./Footer";
 import Header from "./Header";
 
-const ModuleInfo: React.FC = () => {
+const ModuleInfo: React.FC<React.PropsWithChildren<unknown>> = () => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const { shortcode } = useParams();
 

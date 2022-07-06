@@ -4,7 +4,7 @@ import { saveWorkspaceLocal } from "./LocalWorkspaceStorage";
 import { DirtyState, IWorkspaceContext, WorkspaceContext, WorkspaceAction } from "./Workspace";
 import { diff } from "jsondiffpatch";
 
-export const WorkspaceAutoSave: React.FC = ({ children }) => {
+export const WorkspaceAutoSave: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     React.useEffect(() => {

@@ -64,14 +64,14 @@ export const newScriptureCell = (
     };
 };
 
-const ScriptureColumn: React.FC<{
+const ScriptureColumn: React.FC<React.PropsWithChildren<{
     index: number;
     data: ScriptureCellColumn;
     editing: boolean;
     hidemarkup: boolean;
     separateverses: boolean;
     setAnnotation: (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => void;
-}> = ({ index, data, editing, hidemarkup, separateverses, setAnnotation }) => {
+}>> = ({ index, data, editing, hidemarkup, separateverses, setAnnotation }) => {
     const annotation_functions: ScriptureWordAnnotationFunctions = {
         get: () => data.annotation,
         set: (data) => setAnnotation(index, data),
@@ -186,7 +186,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
         );
     }
 
-    const HideMarkupButton: React.FC = () => {
+    const HideMarkupButton: React.FC<React.PropsWithChildren<unknown>> = () => {
         const id = `hide${cell.uuid}`;
         return (
             <Button
@@ -203,7 +203,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
         );
     };
 
-    const SeparateVersesButton: React.FC = () => {
+    const SeparateVersesButton: React.FC<React.PropsWithChildren<unknown>> = () => {
         const id = `separate${cell.uuid}`;
         return (
             <Button
@@ -237,7 +237,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
         });
     };
 
-    const AddColumnButton: React.FC = () => {
+    const AddColumnButton: React.FC<React.PropsWithChildren<unknown>> = () => {
         const id = `add${cell.uuid}`;
         return (
             <Button id={id} onClick={() => addColumn()} disabled={data.columns.length >= 4}>
@@ -249,7 +249,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
         );
     };
 
-    const RemoveColumnButton: React.FC = () => {
+    const RemoveColumnButton: React.FC<React.PropsWithChildren<unknown>> = () => {
         const id = `remove${cell.uuid}`;
         return (
             <Button id={id} onClick={() => removeLastColumn()} disabled={data.columns.length <= 1}>
@@ -261,7 +261,7 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
         );
     };
 
-    const AnnotateButton: React.FC = () => {
+    const AnnotateButton: React.FC<React.PropsWithChildren<unknown>> = () => {
         const id = `annotate${cell.uuid}`;
         return (
             <Button id={id} onClick={() => toggleEditor()} active={editing}>

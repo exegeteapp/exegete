@@ -5,7 +5,7 @@ import React from "react";
 import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { Link } from "react-router-dom";
 
-const AboutText: React.FC = () => {
+const AboutText: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <>
             <p className="lead">
@@ -40,7 +40,7 @@ const AboutText: React.FC = () => {
     );
 };
 
-const Texts: React.FC = () => {
+const Texts: React.FC<React.PropsWithChildren<unknown>> = () => {
     const { state } = React.useContext<IScriptureContext>(ScriptureContext);
     if (!state.valid || !state.catalog) {
         return <></>;
@@ -68,7 +68,7 @@ const Texts: React.FC = () => {
     );
 };
 
-const SponsorLogos: React.FC = () => {
+const SponsorLogos: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <>
             <Col md={{ size: 2, offset: 2 }} className="text-center">
@@ -92,7 +92,7 @@ const SponsorLogos: React.FC = () => {
     );
 };
 
-const Bios: React.FC = () => {
+const Bios: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <>
             <Row className="team">
@@ -124,7 +124,7 @@ const Bios: React.FC = () => {
         </>
     );
 };
-export const About: React.FC = () => {
+export const About: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <>
             <Header />

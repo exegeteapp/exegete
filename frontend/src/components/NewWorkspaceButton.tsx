@@ -3,10 +3,10 @@ import { Button } from "reactstrap";
 import { useNavigate } from "react-router";
 import { createWorkspace } from "../workspace/Workspace";
 
-export const NewWorkspaceButton: React.FC<{
+export const NewWorkspaceButton: React.FC<React.PropsWithChildren<{
     local: boolean;
     color: string;
-}> = ({ local, children, color }) => {
+}>> = ({ local, children, color }) => {
     const navigate = useNavigate();
 
     const makeNew = async () => {

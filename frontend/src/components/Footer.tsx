@@ -4,7 +4,7 @@ import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBookOpen } from "@fortawesome/free-solid-svg-icons";
 
-export const Footer: React.FC = ({ children }) => {
+export const Footer: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     return (
         <Container className="footer-padding border-top" sm={{ offset: 2, size: 10 }}>
             <Row className="pt-4">

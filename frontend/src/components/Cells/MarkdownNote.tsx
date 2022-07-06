@@ -30,7 +30,7 @@ export const newMarkdownNoteCell: NewCellDataFn<MarkdownNoteCellData> = (
     };
 };
 
-const Editor: React.FC<{ value: string; setValue: (s: string) => void }> = ({ value, setValue }) => {
+const Editor: React.FC<React.PropsWithChildren<{ value: string; setValue: (s: string) => void }>> = ({ value, setValue }) => {
     const handleChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
         setValue(event.currentTarget.value);
     };
@@ -38,7 +38,7 @@ const Editor: React.FC<{ value: string; setValue: (s: string) => void }> = ({ va
     return <textarea className="form-control" onChange={handleChange} rows={10} value={value} />;
 };
 
-const Viewer: React.FC<{ text: string }> = ({ text }) => {
+const Viewer: React.FC<React.PropsWithChildren<{ text: string }>> = ({ text }) => {
     return <ReactMarkdown children={text.length === 0 ? placeholderText : text} />;
 };
 
@@ -56,7 +56,7 @@ export const MarkdownNote: CellFC<MarkdownNoteCellData> = ({ cell }) => {
 
     const inner = editing ? <Editor value={data.text} setValue={setText} /> : <Viewer text={data.text} />;
 
-    const EditButton: React.FC = () => {
+    const EditButton: React.FC<React.PropsWithChildren<unknown>> = () => {
         return (
             <Button onClick={() => setEditing(!editing)} active={editing}>
                 <FontAwesomeIcon icon={faPenToSquare} />

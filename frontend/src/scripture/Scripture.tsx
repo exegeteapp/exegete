@@ -53,7 +53,7 @@ export const getScriptureCatalog = async (dispatch: React.Dispatch<ScriptureActi
     }
 };
 
-export const ScriptureProvider: React.FC = ({ children }) => {
+export const ScriptureProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     const [state, dispatch] = React.useReducer(scripture_reducer, initialScriptureState);
 
     React.useEffect(

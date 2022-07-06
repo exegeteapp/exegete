@@ -19,7 +19,7 @@ export interface ScriptureViewerData {
     readonly annotation: ScriptureWordAnnotationFunctions;
 }
 
-export const ScriptureViewer: React.FC<ScriptureViewerData> = ({
+export const ScriptureViewer: React.FC<React.PropsWithChildren<ScriptureViewerData>> = ({
     verseref,
     hidemarkup,
     shortcode,

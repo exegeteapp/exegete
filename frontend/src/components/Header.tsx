@@ -41,7 +41,7 @@ function UserMenu() {
     );
 }
 
-export const BaseHeader: React.FC = ({ children }) => {
+export const BaseHeader: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     const [toggled, setToggled] = useState(false);
     return (
         <Navbar color="dark" expand="md" fixed="top" dark>

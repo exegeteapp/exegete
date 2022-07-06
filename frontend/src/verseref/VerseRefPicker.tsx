@@ -5,10 +5,10 @@ import parseReference from "./VerseRef";
 import useInput from "../util/useInput";
 import { getModuleParser } from "../scripture/ParserCache";
 
-const ShortCodeInput: React.FC<{
+const ShortCodeInput: React.FC<React.PropsWithChildren<{
     value: string;
     setValue: (s: string) => void;
-}> = ({ value, setValue }) => {
+}>> = ({ value, setValue }) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
 
     if (!scriptureState.valid || !scriptureState.catalog) {
@@ -31,11 +31,11 @@ export interface SCVerseRef {
     readonly verseref: string;
 }
 
-export const VerseRefPicker: React.FC<{
+export const VerseRefPicker: React.FC<React.PropsWithChildren<{
     data: SCVerseRef;
     setData: (data: SCVerseRef) => void;
     small?: boolean;
-}> = ({ data, setData, small }) => {
+}>> = ({ data, setData, small }) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const vr = useInput(data["verseref"]);
     const [sc, setSC] = useState(data["shortcode"]);

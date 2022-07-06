@@ -159,7 +159,7 @@ export const UserLoggedIn = (state: UserState): boolean => {
     return state.valid === true && state.user !== undefined;
 };
 
-export const UserProvider: React.FC = ({ children }) => {
+export const UserProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     const [state, dispatch] = React.useReducer(user_reducer, initialUserState);
 
     React.useEffect(

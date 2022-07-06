@@ -5,7 +5,6 @@ import { HistoryEditor, withHistory } from "slate-history";
 import React from "react";
 import { createEditor, Descendant } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
-import useConstant from "use-constant";
 import { getScripture } from "../scripture/ScriptureAPI";
 import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { getModuleParser } from "../scripture/ParserCache";
@@ -91,7 +90,7 @@ const withWords = (editor: Editor) => {
     return editor;
 };
 
-const EditorElement: React.FC<RenderElementProps> = (props) => {
+const EditorElement: React.FC<React.PropsWithChildren<RenderElementProps>> = (props) => {
     const { attributes, children, element } = props;
     switch (element.type) {
         case "word":
@@ -116,7 +115,7 @@ const NonEditableStyle = (selected: boolean, focused: boolean): React.CSSPropert
     };
 };
 
-const VerseRef: React.FC<RenderElementProps> = ({ attributes, children, element }) => {
+const VerseRef: React.FC<React.PropsWithChildren<RenderElementProps>> = ({ attributes, children, element }) => {
     const selected = useSelected();
     const focused = useFocused();
     if (element.type !== "verseref") {
@@ -134,7 +133,7 @@ const VerseRef: React.FC<RenderElementProps> = ({ attributes, children, element 
     );
 };
 
-const Word: React.FC<RenderElementProps> = ({ attributes, children, element }) => {
+const Word: React.FC<React.PropsWithChildren<RenderElementProps>> = ({ attributes, children, element }) => {
     const selected = useSelected();
     const focused = useFocused();
     if (element.type !== "word") {
@@ -263,7 +262,7 @@ const calculateInitialValue = async (
     return initialValue;
 };
 
-export const Portal: React.FC = ({ children }) => {
+export const Portal: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     return ReactDOM.createPortal(children, document.body);
 };
 
@@ -296,7 +295,11 @@ const toggleOnSelection = (editor: Editor, key: string, value: string) => {
     });
 };
 
-const ToggleAnnoButton: React.FC<{ attr: string; value: string; icon?: IconDefinition }> = ({ attr, value, icon }) => {
+const ToggleAnnoButton: React.FC<React.PropsWithChildren<{ attr: string; value: string; icon?: IconDefinition }>> = ({
+    attr,
+    value,
+    icon,
+}) => {
     const editor = useSlate();
     return (
         <Button
@@ -363,7 +366,7 @@ const EditorMenu = React.forwardRef<HTMLDivElement, { groups: SourceGroup[] }>((
     );
 });
 
-const HoveringToolbar: React.FC<{ groups: SourceGroup[] }> = ({ groups }) => {
+const HoveringToolbar: React.FC<React.PropsWithChildren<{ groups: SourceGroup[] }>> = ({ groups }) => {
     const ref = React.useRef<HTMLDivElement | null>(null);
     const editor = useSlate();
     const inFocus = useFocused();
@@ -527,14 +530,16 @@ const calculateAnnotations = (
     });
 };
 
-export const ScriptureEditor: React.FC<{
-    shortcode: string;
-    verseref: string;
-    annotation: ScriptureWordAnnotationFunctions;
-    separateverses: boolean;
-    hidemarkup: boolean;
-}> = ({ shortcode, verseref, annotation, separateverses, hidemarkup }) => {
-    const editor = useConstant(() => withReact(withWords(withHistory(createEditor()))));
+export const ScriptureEditor: React.FC<
+    React.PropsWithChildren<{
+        shortcode: string;
+        verseref: string;
+        annotation: ScriptureWordAnnotationFunctions;
+        separateverses: boolean;
+        hidemarkup: boolean;
+    }>
+> = ({ shortcode, verseref, annotation, separateverses, hidemarkup }) => {
+    const [editor] = React.useState(() => withReact(withWords(withHistory(createEditor()))));
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const [editorElem, setEditorElem] = React.useState<JSX.Element>(<></>);

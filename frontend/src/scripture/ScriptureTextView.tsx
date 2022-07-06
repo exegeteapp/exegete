@@ -10,7 +10,7 @@ interface RenderState {
     readonly verse: number | null;
 }
 
-export const ScriptureTextView: React.FC<{
+export const ScriptureTextView: React.FC<React.PropsWithChildren<{
     getAnno: (p: WordPosition) => ScriptureWordAnnotation | undefined;
     module: ModuleInfo;
     book: string;
@@ -20,7 +20,7 @@ export const ScriptureTextView: React.FC<{
     last_book: string | null;
     markup: boolean;
     separateverses: boolean;
-}> = ({ module, getAnno, scriptures, last_book, book, last_scripture_object, markup, shortcode, separateverses }) => {
+}>> = ({ module, getAnno, scriptures, last_book, book, last_scripture_object, markup, shortcode, separateverses }) => {
     if (!scriptures) {
         return <></>;
     }

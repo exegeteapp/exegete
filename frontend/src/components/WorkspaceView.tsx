@@ -32,7 +32,7 @@ import { Helmet } from "react-helmet-async";
 import { Footer } from "./Footer";
 import { WorkspaceRedo, WorkspaceUndo } from "../workspace/History";
 
-type RefsFC = React.FC<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>;
+type RefsFC = React.FC<React.PropsWithChildren<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>>;
 
 const ScrollWrapper = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>((props, ref) => {
     return <div ref={ref}>{props.children}</div>;
@@ -78,7 +78,7 @@ const InnerWorkspaceView: RefsFC = ({ refs }) => {
     );
 };
 
-const RenameWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => void }> = ({ show, setShow }) => {
+const RenameWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; setShow: (v: boolean) => void }>> = ({ show, setShow }) => {
     const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const getTitle = () => {
         if (!workspaceState.valid || !workspaceState.workspace) {
@@ -114,7 +114,7 @@ const RenameWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => v
     );
 };
 
-const DeleteWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => void }> = ({ show, setShow }) => {
+const DeleteWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; setShow: (v: boolean) => void }>> = ({ show, setShow }) => {
     const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const navigate = useNavigate();
 
@@ -145,11 +145,11 @@ const DeleteWorkspaceModal: React.FC<{ show: boolean; setShow: (v: boolean) => v
     );
 };
 
-const WorkspaceMenu: React.FC<{
+const WorkspaceMenu: React.FC<React.PropsWithChildren<{
     title: string;
     setShowRenameWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
     setShowDeleteWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ title, setShowRenameWorkspaceModal, setShowDeleteWorkspaceModal }) => {
+}>> = ({ title, setShowRenameWorkspaceModal, setShowDeleteWorkspaceModal }) => {
     return (
         <UncontrolledDropdown nav>
             <DropdownToggle caret nav>
@@ -163,7 +163,7 @@ const WorkspaceMenu: React.FC<{
     );
 };
 
-const EditMenu: React.FC = () => {
+const EditMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
     const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     if (!state.valid || !state.workspace) {
@@ -216,7 +216,7 @@ const EditMenu: React.FC = () => {
         </UncontrolledDropdown>
     );
 };
-const ViewMenu: React.FC = () => {
+const ViewMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
     const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 
     const canZoom = (offset: number) => {

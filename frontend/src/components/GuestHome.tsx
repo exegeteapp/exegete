@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import Login from "./Login";
 import NewWorkspaceButton from "./NewWorkspaceButton";
 
-const WelcomeColumn: React.FC = () => {
+const WelcomeColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <Col md={{ size: 7, offset: 0 }}>
             <p className="lead">
@@ -30,7 +30,7 @@ const WelcomeColumn: React.FC = () => {
     );
 };
 
-const LoginColumn: React.FC = () => {
+const LoginColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <Col md={{ size: 3, offset: 1 }}>
             <p className="text-center">Already have an account? Sign in.</p>
@@ -48,7 +48,7 @@ const LoginColumn: React.FC = () => {
     );
 };
 
-const GuestHome: React.FC = () => {
+const GuestHome: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <>
             <Container id="main">
