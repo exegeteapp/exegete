@@ -64,14 +64,16 @@ export const newScriptureCell = (
     };
 };
 
-const ScriptureColumn: React.FC<React.PropsWithChildren<{
-    index: number;
-    data: ScriptureCellColumn;
-    editing: boolean;
-    hidemarkup: boolean;
-    separateverses: boolean;
-    setAnnotation: (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => void;
-}>> = ({ index, data, editing, hidemarkup, separateverses, setAnnotation }) => {
+const ScriptureColumn: React.FC<
+    React.PropsWithChildren<{
+        index: number;
+        data: ScriptureCellColumn;
+        editing: boolean;
+        hidemarkup: boolean;
+        separateverses: boolean;
+        setAnnotation: (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => void;
+    }>
+> = ({ index, data, editing, hidemarkup, separateverses, setAnnotation }) => {
     const annotation_functions: ScriptureWordAnnotationFunctions = {
         get: () => data.annotation,
         set: (data) => setAnnotation(index, data),

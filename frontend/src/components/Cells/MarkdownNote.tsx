@@ -30,7 +30,10 @@ export const newMarkdownNoteCell: NewCellDataFn<MarkdownNoteCellData> = (
     };
 };
 
-const Editor: React.FC<React.PropsWithChildren<{ value: string; setValue: (s: string) => void }>> = ({ value, setValue }) => {
+const Editor: React.FC<React.PropsWithChildren<{ value: string; setValue: (s: string) => void }>> = ({
+    value,
+    setValue,
+}) => {
     const handleChange = (event: React.FormEvent<HTMLTextAreaElement>) => {
         setValue(event.currentTarget.value);
     };

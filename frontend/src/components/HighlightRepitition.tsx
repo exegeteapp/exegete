@@ -11,10 +11,12 @@ import { IWorkspaceContext, WorkspaceCell, workspaceCellSet, WorkspaceContext } 
 import { ScriptureCellData } from "./Cells/Scripture";
 import { annoKey, newScriptureWordAnnotation, ScriptureWordAnnotation, WordPosition } from "./ScriptureAnnotation";
 
-export const HighlightRepititionButton: React.FC<React.PropsWithChildren<{
-    cell: WorkspaceCell<ScriptureCellData>;
-    editing: boolean;
-}>> = ({ cell, editing }) => {
+export const HighlightRepititionButton: React.FC<
+    React.PropsWithChildren<{
+        cell: WorkspaceCell<ScriptureCellData>;
+        editing: boolean;
+    }>
+> = ({ cell, editing }) => {
     const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
     const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
 

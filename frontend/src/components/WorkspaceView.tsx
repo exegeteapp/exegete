@@ -78,7 +78,10 @@ const InnerWorkspaceView: RefsFC = ({ refs }) => {
     );
 };
 
-const RenameWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; setShow: (v: boolean) => void }>> = ({ show, setShow }) => {
+const RenameWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; setShow: (v: boolean) => void }>> = ({
+    show,
+    setShow,
+}) => {
     const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const getTitle = () => {
         if (!workspaceState.valid || !workspaceState.workspace) {
@@ -114,7 +117,10 @@ const RenameWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; se
     );
 };
 
-const DeleteWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; setShow: (v: boolean) => void }>> = ({ show, setShow }) => {
+const DeleteWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; setShow: (v: boolean) => void }>> = ({
+    show,
+    setShow,
+}) => {
     const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const navigate = useNavigate();
 
@@ -145,11 +151,13 @@ const DeleteWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; se
     );
 };
 
-const WorkspaceMenu: React.FC<React.PropsWithChildren<{
-    title: string;
-    setShowRenameWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
-    setShowDeleteWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
-}>> = ({ title, setShowRenameWorkspaceModal, setShowDeleteWorkspaceModal }) => {
+const WorkspaceMenu: React.FC<
+    React.PropsWithChildren<{
+        title: string;
+        setShowRenameWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
+        setShowDeleteWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
+    }>
+> = ({ title, setShowRenameWorkspaceModal, setShowDeleteWorkspaceModal }) => {
     return (
         <UncontrolledDropdown nav>
             <DropdownToggle caret nav>

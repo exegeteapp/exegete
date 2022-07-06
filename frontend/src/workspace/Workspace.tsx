@@ -20,9 +20,11 @@ export interface WorkspaceCell<T> {
     readonly data: T;
 }
 
-export type CellFC<T> = React.FC<React.PropsWithChildren<{
-    readonly cell: WorkspaceCell<T>;
-}>>;
+export type CellFC<T> = React.FC<
+    React.PropsWithChildren<{
+        readonly cell: WorkspaceCell<T>;
+    }>
+>;
 
 export enum TextSize {
     XXSMALL = "xx-small",
@@ -310,7 +312,11 @@ export interface IWorkspaceContext {
 // https://stackoverflow.com/questions/61333188/react-typescript-avoid-context-default-value
 export const WorkspaceContext = React.createContext<IWorkspaceContext>({} as IWorkspaceContext);
 
-export const WorkspaceProvider: React.FC<React.PropsWithChildren<{ id: string; local: boolean }>> = ({ children, id, local }) => {
+export const WorkspaceProvider: React.FC<React.PropsWithChildren<{ id: string; local: boolean }>> = ({
+    children,
+    id,
+    local,
+}) => {
     const initialState: WorkspaceState = {
         id: id,
         valid: false,

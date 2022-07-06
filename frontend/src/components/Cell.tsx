@@ -43,7 +43,11 @@ export const CellFooter: React.FC<React.PropsWithChildren<unknown>> = ({ childre
     return <CardFooter>{children}</CardFooter>;
 };
 
-export const CellHeader: React.FC<React.PropsWithChildren<{ uuid: string; buttons?: JSX.Element[] }>> = ({ uuid, children, buttons }) => {
+export const CellHeader: React.FC<React.PropsWithChildren<{ uuid: string; buttons?: JSX.Element[] }>> = ({
+    uuid,
+    children,
+    buttons,
+}) => {
     const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
     const upId = `up${uuid}`;
     const downId = `down${uuid}`;
