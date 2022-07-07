@@ -1,6 +1,6 @@
 import aiohttp
 from exegete.settings import settings
-from exegete.api.models import UserDB
+from exegete.api.db import User
 from exegete.api.redis import redis
 from hashlib import sha1
 import logging
@@ -26,7 +26,7 @@ async def mailgun_send(message):
             return (response.status, response.text)
 
 
-async def registration_email(user: UserDB, token: str):
+async def registration_email(user: User, token: str):
     # prevent against abuse by limiting the rate we email any particular address
     if not await okay_to_send(user.email, "registration"):
         logger.info("suppressed registration email to `{}'".format(user.email))
@@ -42,7 +42,7 @@ Dear {user.name},
 Welcome to exegete.app.
 
 Please verify your email address by clicking the link below:
-{settings.base_url}/#/verify/{token}
+{settings.base_url}/verify/{token}
 
 We hope you enjoy using exegete.app!
 """,
@@ -50,7 +50,7 @@ We hope you enjoy using exegete.app!
     )
 
 
-async def forgot_password_email(user: UserDB, token: str):
+async def forgot_password_email(user: User, token: str):
     # prevent against abuse by limiting the rate we email any particular address
     if not await okay_to_send(user.email, "forgotpw"):
         logger.info("suppressed password reset email to `{}'".format(user.email))
@@ -66,7 +66,7 @@ Dear {user.name},
 Welcome to exegete.app.
 
 To reset your password, please click the link below:
-{settings.base_url}/#/resetpassword/{token}
+{settings.base_url}/resetpassword/{token}
 
 If you did not request a password reset, please ignore this email.
 """,

@@ -1,4 +1,5 @@
 import sqlalchemy
+from sqlalchemy.ext.asyncio import create_async_engine
 from pydantic import (
     BaseSettings,
     PostgresDsn,
@@ -7,7 +8,8 @@ from pydantic import (
 
 
 class Settings(BaseSettings):
-    pg_dsn: PostgresDsn = "postgres://user:pass@localhost:5432/exegete"
+    pg_dsn: PostgresDsn = "postgres+psycopg2://user:pass@localhost:5432/exegete"
+    pg_async_dsn: PostgresDsn = "postgres+asyncpg://user:pass@localhost:5432/exegete"
     mailgun_api_key: str
     mailgun_sender_domain: str
     mailgun_from_email: EmailStr
@@ -17,9 +19,16 @@ class Settings(BaseSettings):
     redis_location: str
     base_url: str
 
-    def create_engine(self, **kwargs):
+    def create_sync_engine(self, **kwargs):
         return sqlalchemy.create_engine(
             self.pg_dsn,
+            future=True,
+            **kwargs,
+        )
+
+    def create_async_engine(self, **kwargs):
+        return create_async_engine(
+            self.pg_async_dsn,
             future=True,
             **kwargs,
         )

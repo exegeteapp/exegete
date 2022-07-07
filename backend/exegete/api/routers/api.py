@@ -1,9 +1,8 @@
 from fastapi import APIRouter, Depends
 
-from ..models import UserDB
-from ..users import fastapi_users, auth_backend, User
+from ..users import fastapi_users, auth_backend
 from ..register import get_register_captcha_router
-from ..database import UserDB
+from ..schemas import UserCreate, UserRead, UserUpdate
 from .scripture import scripture_router
 from .workspace import workspace_router
 from .config import config_router
@@ -15,11 +14,7 @@ api_router.include_router(
     tags=["auth"],
 )
 api_router.include_router(
-    get_register_captcha_router(
-        fastapi_users.get_user_manager,
-        UserDB,
-        fastapi_users._user_create_model,
-    ),
+    get_register_captcha_router(fastapi_users.get_user_manager, UserRead, UserCreate),
     prefix="/auth",
     tags=["auth"],
 )
@@ -29,12 +24,14 @@ api_router.include_router(
     tags=["auth"],
 )
 api_router.include_router(
-    fastapi_users.get_verify_router(),
+    fastapi_users.get_verify_router(UserRead),
     prefix="/auth",
     tags=["auth"],
 )
 api_router.include_router(
-    fastapi_users.get_users_router(), prefix="/users", tags=["users"]
+    fastapi_users.get_users_router(UserRead, UserUpdate),
+    prefix="/users",
+    tags=["users"],
 )
 api_router.include_router(config_router)
 api_router.include_router(scripture_router)

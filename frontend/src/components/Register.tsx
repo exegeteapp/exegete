@@ -49,13 +49,18 @@ function Register() {
 
     function submit(e: React.FormEvent<HTMLFormElement>) {
         const doLogin = async () => {
-            await RegisterD(userDispatch, {
-                name: name.value,
-                affiliation: affiliation.value,
-                email: email.value,
-                password: password.value,
-                captcha: captcha,
-            });
+            await RegisterD(
+                userDispatch,
+                {
+                    name: name.value,
+                    affiliation: affiliation.value,
+                    email: email.value,
+                    password: password.value,
+                },
+                {
+                    captcha: captcha,
+                }
+            );
             await LoginD(userDispatch, email.value, password.value);
         };
 

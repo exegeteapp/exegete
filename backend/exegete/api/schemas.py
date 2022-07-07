@@ -1,28 +1,24 @@
-from fastapi_users import models
+from fastapi_users import schemas
 from typing import Optional
 from pydantic import BaseModel
 from uuid import UUID
 import datetime
+import uuid
 
 
-class User(models.BaseUser):
+class UserRead(schemas.BaseUser[uuid.UUID]):
     name: str
     affiliation: str
 
 
-class UserCreate(models.BaseUserCreate):
-    name: str
-    affiliation: str
-    captcha: str
-
-
-class UserUpdate(models.BaseUserUpdate):
+class UserCreate(schemas.BaseUserCreate):
     name: str
     affiliation: str
 
 
-class UserDB(User, models.BaseUserDB):
-    pass
+class UserUpdate(schemas.BaseUserUpdate):
+    name: str
+    affiliation: str
 
 
 class WorkspaceOut(BaseModel):

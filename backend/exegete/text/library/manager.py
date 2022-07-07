@@ -8,7 +8,7 @@ from typing import Callable, TypeVar
 
 class Manager:
     def __init__(self):
-        self.engine = settings.create_engine(
+        self.engine = settings.create_sync_engine(
             echo="INGEST_DEBUG" in os.environ,
         )
 

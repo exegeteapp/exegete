@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from fastapi.responses import Response
 from ..redis import redis
-from ..scripture.catalog import catalog, InvalidReference
+from ..scripture.catalog import get_catalog_singleton, InvalidReference
 
 scripture_router = APIRouter(prefix="/scripture", tags=["scripture"])
 
@@ -26,6 +26,7 @@ async def get_verses(
     verse_end: int,
 ):
     try:
+        catalog = get_catalog_singleton()
         scripture_json_text = await catalog.get_scripture(
             shortcode, book, chapter_start, verse_start, chapter_end, verse_end
         )

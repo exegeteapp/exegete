@@ -10,6 +10,9 @@ interface User {
     readonly password?: string;
     readonly name: string;
     readonly affiliation?: string;
+}
+
+interface Captcha {
     readonly captcha?: string;
 }
 
@@ -100,10 +103,10 @@ export const UserContext = React.createContext<IUserContext>({
     dispatch: () => null,
 });
 
-export const Register = async (dispatch: React.Dispatch<UserAction>, user: User) => {
+export const Register = async (dispatch: React.Dispatch<UserAction>, user: User, captcha: Captcha) => {
     try {
         dispatch({ type: "user_registration_success" });
-        await axios.post<User>("/api/v1/auth/register", user);
+        await axios.post<User>("/api/v1/auth/register", { user: user, captcha: captcha });
         await axios.post("/api/v1/auth/request-verify-token", {
             email: user.email,
         });
