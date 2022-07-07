@@ -93,9 +93,6 @@ async def delete_workspace(
         .where(Workspace.owner_id == user.id, Workspace.id == id)
         .returning(Workspace.id)
     )
-    # BUG: it's not clear how to determine whether any rows were
-    # actually deleted, to distinguish a 404/403/... situation.
-    # for now, this always returns 200
     async with async_engine.connect() as conn:
         success = (await conn.execute(q)).all()
         await conn.commit()
