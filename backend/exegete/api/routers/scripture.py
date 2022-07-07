@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import Response
 from ..redis import redis
 from ..scripture.catalog import get_catalog_singleton, InvalidReference

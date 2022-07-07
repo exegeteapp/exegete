@@ -2,7 +2,7 @@ import re
 import string
 from nltk.stem import SnowballStemmer
 
-whitespace_re = re.compile("^\s*$")
+whitespace_re = re.compile(r"^\s*$")
 
 
 def introduce_spaces(s):

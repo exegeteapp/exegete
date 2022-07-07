@@ -1,3 +1,3 @@
-def one(l):
-    assert len(l) == 1
-    return l[0]
+def one(objs):
+    assert len(objs) == 1
+    return objs[0]

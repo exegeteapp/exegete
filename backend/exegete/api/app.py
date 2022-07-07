@@ -1,14 +1,8 @@
-from fastapi import FastAPI
 import json
-
-app = FastAPI()
-
-
 from fastapi import FastAPI
 from fastapi.middleware.gzip import GZipMiddleware
-
-from .routers.api import api_router
 from .redis import redis
+from .routers.api import api_router
 
 app = FastAPI()
 app.add_middleware(GZipMiddleware, minimum_size=1024)

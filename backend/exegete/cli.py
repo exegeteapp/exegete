@@ -2,10 +2,9 @@
 
 import code
 import sqlalchemy
-import os
 from exegete.settings import settings
 import readline
-import rlcompleter
+import rlcompleter  # noqa
 
 
 def main():

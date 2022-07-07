@@ -1,7 +1,6 @@
 from exegete.text.library.schema import v1
 from exegete.text.library import Manager
 from exegete.text.cleanup import clean_words, introduce_spaces
-from functools import reduce
 import argparse
 from glob import glob
 from lxml import etree

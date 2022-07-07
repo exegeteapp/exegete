@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter
 
 from ..users import fastapi_users, auth_backend
 from ..register import get_register_captcha_router

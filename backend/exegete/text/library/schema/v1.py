@@ -1,8 +1,7 @@
 from sqlalchemy import insert, Index, Enum, select, update
 from sqlalchemy.schema import Table, Column, MetaData, ForeignKey
 from sqlalchemy.sql.schema import UniqueConstraint
-from sqlalchemy.sql.sqltypes import Boolean
-from sqlalchemy.types import Text, JSON, DateTime, Integer, String
+from sqlalchemy.types import Text, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy import func
 from jsonschema import validate

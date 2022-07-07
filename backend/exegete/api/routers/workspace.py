@@ -7,7 +7,6 @@ from exegete.workspace.manager import WorkspaceManager
 from fastapi import APIRouter, Depends, HTTPException
 
 from ..db import User, Workspace, async_engine
-from ..redis import redis
 from ..schemas import WorkspaceIn, WorkspaceOut
 from ..users import current_user
 

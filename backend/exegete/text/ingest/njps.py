@@ -1,5 +1,4 @@
 import os
-import sys
 from exegete.text import one
 from io import StringIO
 
@@ -229,7 +228,7 @@ In executing this monumental task, the translators made use of the entire range 
             for verse, text in enumerate(chapter_data, 1):
                 try:
                     verse_text, footnotes = sefaria_parse(text)
-                except:
+                except Exception:
                     print(json_file, chapter, verse, repr(text))
                     raise
                 if verse_text is not None:
