@@ -1,29 +1,31 @@
 import React from "react";
 import { Alert, Input, Form, FormGroup, Label, Row, Button, Col, Container } from "reactstrap";
 import { useNavigate } from "react-router";
-import { IConfigContext, ConfigContext } from "../config/Config";
 import useInput from "../util/useInput";
 import ReCAPTCHA from "react-google-recaptcha";
-import { IUserContext, UserContext, Register as RegisterD, Login as LoginD } from "../user/User";
+import { Register as RegisterD, selectUser } from "../user/User";
 import Header from "./Header";
 import { Helmet } from "react-helmet-async";
 import { Footer } from "./Footer";
+import { useGetConfigQuery } from "../api/api";
+import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 
 function Register() {
     const navigate = useNavigate();
-    const { state: configState } = React.useContext<IConfigContext>(ConfigContext);
-    const { state: userState, dispatch: userDispatch } = React.useContext<IUserContext>(UserContext);
+    const { data: configData } = useGetConfigQuery();
+    const dispatch = useAppDispatch();
+    const state = useAppSelector(selectUser);
     const [captcha, setCaptcha] = React.useState("");
 
     // hack: this page isn't useful if we're already registered.
     // as a side-effect, this redirects away from the form on success
-    if (userState.user) {
+    if (state.user) {
         navigate("/");
     }
 
     const failureMessage = () => {
-        if (userState.registration_error) {
-            return <Alert color="danger">Account registration failed: {userState.registration_error}</Alert>;
+        if (state.registration_error) {
+            return <Alert color="danger">Account registration failed: {state.registration_error}</Alert>;
         }
     };
 
@@ -48,9 +50,9 @@ function Register() {
     };
 
     function submit(e: React.FormEvent<HTMLFormElement>) {
-        const doLogin = async () => {
-            await RegisterD(
-                userDispatch,
+        e.preventDefault();
+        dispatch(
+            RegisterD([
                 {
                     name: name.value,
                     affiliation: affiliation.value,
@@ -59,13 +61,13 @@ function Register() {
                 },
                 {
                     captcha: captcha,
-                }
-            );
-            await LoginD(userDispatch, email.value, password.value);
-        };
+                },
+            ])
+        );
+    }
 
-        e.preventDefault();
-        doLogin();
+    if (!configData) {
+        return <div></div>;
     }
 
     return (
@@ -133,7 +135,7 @@ function Register() {
                                     onChange={(token: string | null) => {
                                         setCaptcha(token || "");
                                     }}
-                                    sitekey={configState.config?.recaptcha_site_key || ""}
+                                    sitekey={configData.recaptcha_site_key || ""}
                                 />
                             </FormGroup>
                             <div className="d-grid gap-2">

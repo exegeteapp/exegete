@@ -1,12 +1,14 @@
 import React from "react";
 import { Input, Form, FormGroup, Label, Button, Alert } from "reactstrap";
 import useInput from "../util/useInput";
-import { IUserContext, UserContext, Login as DLogin } from "../user/User";
+import { Login as DLogin, selectUser } from "../user/User";
+import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 
 function Login() {
     const email = useInput("");
     const password = useInput("");
-    const { state, dispatch } = React.useContext<IUserContext>(UserContext);
+    const dispatch = useAppDispatch();
+    const state = useAppSelector(selectUser);
 
     const failureMessage = () => {
         if (state.login_error) {
@@ -16,12 +18,8 @@ function Login() {
 
     const submitDisabled = () => email.value.length === 0 || password.value.length === 0;
     function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        const doLogin = async () => {
-            await DLogin(dispatch, email.value, password.value);
-        };
-
         e.preventDefault();
-        doLogin();
+        dispatch(DLogin([email.value, password.value]));
     }
 
     return (

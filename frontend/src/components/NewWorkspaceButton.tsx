@@ -1,7 +1,7 @@
 import React from "react";
 import { Button } from "reactstrap";
 import { useNavigate } from "react-router";
-import { createWorkspace } from "../workspace/Workspace";
+import { createWorkspace } from "../workspace/WorkspaceProvider";
 
 export const NewWorkspaceButton: React.FC<
     React.PropsWithChildren<{

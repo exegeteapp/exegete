@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import parseReference from "../verseref/VerseRef";
-import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { getScripture, ScriptureObject } from "../scripture/ScriptureAPI";
 import { ScriptureTextView } from "../scripture/ScriptureTextView";
 import { getModuleParser } from "../scripture/ParserCache";
@@ -10,6 +9,7 @@ import {
     ScriptureWordAnnotationFunctions,
     WordPosition,
 } from "./ScriptureAnnotation";
+import { useGetScriptureCatalogQuery } from "../api/api";
 
 export interface ScriptureViewerData {
     readonly shortcode: string;
@@ -26,17 +26,17 @@ export const ScriptureViewer: React.FC<React.PropsWithChildren<ScriptureViewerDa
     annotation,
     separateverses,
 }) => {
-    const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
+    const { data: catalog } = useGetScriptureCatalogQuery();
     const [scriptures, setScriptures] = React.useState<(ReadonlyArray<ScriptureObject> | null)[]>([]);
     const [books, setBooks] = React.useState<string[]>([]);
 
     useEffect(() => {
         let isSubscribed = true;
-        if (!scriptureState.valid || !scriptureState.catalog) {
+        if (!catalog) {
             return;
         }
 
-        const module = scriptureState.catalog[shortcode];
+        const module = catalog[shortcode];
         const parser = getModuleParser(module, shortcode);
         const res = parseReference(module, parser, verseref);
 
@@ -57,7 +57,7 @@ export const ScriptureViewer: React.FC<React.PropsWithChildren<ScriptureViewerDa
         return () => {
             isSubscribed = false;
         };
-    }, [scriptureState.catalog, scriptureState.valid, shortcode, verseref]);
+    }, [catalog, shortcode, verseref]);
 
     // if we directly use annotation within the useEffect, we'll get
     // continual re-renders as it's a dynamically constructed object.
@@ -72,8 +72,8 @@ export const ScriptureViewer: React.FC<React.PropsWithChildren<ScriptureViewerDa
     };
 
     const elems: JSX.Element[] = [];
-    if (scriptureState.valid && scriptureState.catalog) {
-        const module = scriptureState.catalog[shortcode];
+    if (catalog) {
+        const module = catalog[shortcode];
         for (let i = 0; i < scriptures.length; i++) {
             // backtrack looking for the previous scripture object displayed
             let last_scripture_object: ScriptureObject | null = null;
@@ -103,7 +103,7 @@ export const ScriptureViewer: React.FC<React.PropsWithChildren<ScriptureViewerDa
         }
     }
 
-    if (!scriptureState.valid || !scriptureState.catalog) {
+    if (!catalog) {
         return <div>Loading...</div>;
     }
 

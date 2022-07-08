@@ -13,15 +13,20 @@ import {
     ModalHeader,
     UncontrolledDropdown,
 } from "reactstrap";
-import { IUserContext, UserContext, UserLoggedIn } from "../user/User";
+import { selectUser, UserLoggedIn } from "../user/User";
 import { validate as uuidValidate } from "uuid";
 import {
-    WorkspaceContext,
-    IWorkspaceContext,
-    WorkspaceProvider,
-    deleteWorkspace,
     TextSize,
     DirtyState,
+    selectWorkspace,
+    workspaceDeleted,
+    workspaceSetTitle,
+    workspaceSetTextSize,
+    workspaceCellAdd,
+    selectWorkspaceCellListing,
+    selectWorkspaceTitle,
+    workspaceUndo,
+    workspaceRedo,
 } from "../workspace/Workspace";
 import Error from "./Cells/Error";
 import { BaseHeader } from "./Header";
@@ -30,7 +35,8 @@ import Registry from "../workspace/CellRegistry";
 import { makeNewCell } from "../workspace/Cell";
 import { Helmet } from "react-helmet-async";
 import { Footer } from "./Footer";
-import { WorkspaceRedo, WorkspaceUndo } from "../workspace/History";
+import { useAppDispatch, useAppSelector } from "../exegete/hooks";
+import { deleteWorkspace, WorkspaceProvider } from "../workspace/WorkspaceProvider";
 
 type RefsFC = React.FC<React.PropsWithChildren<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>>;
 
@@ -38,25 +44,25 @@ const ScrollWrapper = React.forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivEl
     return <div ref={ref}>{props.children}</div>;
 });
 
-const InnerWorkspaceView: RefsFC = ({ refs }) => {
-    const { state: workspaceState } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+const CellView: RefsFC = ({ refs }) => {
+    const cell_listing = useAppSelector(selectWorkspaceCellListing);
 
-    if (!workspaceState.valid || !workspaceState.workspace) {
-        return <p>Loading workspace...</p>;
+    if (!cell_listing) {
+        return <></>;
     }
 
-    const cells = workspaceState.workspace.data.cells.map((cell, index) => {
+    const cells = cell_listing.map((cell, index) => {
         const inner = () => {
             for (var key in Registry) {
                 if (key === cell.cell_type) {
                     return React.createElement(Registry[key].component, {
                         key: cell.uuid,
-                        cell: cell,
+                        uuid: cell.uuid,
                     });
                 }
             }
 
-            return <Error key={cell.uuid} cell={cell} />;
+            return <Error key={cell.uuid} uuid={cell.uuid} />;
         };
 
         return (
@@ -66,14 +72,21 @@ const InnerWorkspaceView: RefsFC = ({ refs }) => {
         );
     });
 
+    return <div>{cells}</div>;
+};
+
+const InnerWorkspaceView: RefsFC = ({ refs }) => {
+    const title = useAppSelector(selectWorkspaceTitle);
+
+    if (title === undefined) {
+        return <p>Loading workspace...</p>;
+    }
     return (
         <>
             <Helmet>
-                <title>
-                    {workspaceState && workspaceState.workspace ? workspaceState.workspace.title : ""} – exegete.app
-                </title>
+                <title>{title} – exegete.app</title>
             </Helmet>
-            {cells}
+            <CellView refs={refs} />
         </>
     );
 };
@@ -82,20 +95,15 @@ const RenameWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; se
     show,
     setShow,
 }) => {
-    const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
-    const getTitle = () => {
-        if (!workspaceState.valid || !workspaceState.workspace) {
-            return "";
-        }
-        return workspaceState.workspace.title;
-    };
-    const newTitle = useInput(getTitle());
+    const title = useAppSelector(selectWorkspaceTitle);
+    const dispatch = useAppDispatch();
+    const newTitle = useInput(title || "");
 
     const cancel = () => {
         setShow(false);
     };
     const save = () => {
-        dispatch({ type: "workspace_set_title", title: newTitle.value });
+        dispatch(workspaceSetTitle(newTitle.value));
         setShow(false);
     };
 
@@ -121,16 +129,18 @@ const DeleteWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; se
     show,
     setShow,
 }) => {
-    const { state: workspaceState, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const workspaceState = useAppSelector(selectWorkspace);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const cancel = () => {
         setShow(false);
     };
 
+    // FIXME: this ought to be done with thunks..
     const apply = () => {
         deleteWorkspace(workspaceState.id, workspaceState.local);
-        dispatch({ type: "workspace_deleted" });
+        dispatch(workspaceDeleted());
         setShow(false);
         navigate(`/`);
     };
@@ -172,7 +182,8 @@ const WorkspaceMenu: React.FC<
 };
 
 const EditMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
-    const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const state = useAppSelector(selectWorkspace);
+    const dispatch = useAppDispatch();
 
     if (!state.valid || !state.workspace) {
         return <></>;
@@ -181,13 +192,13 @@ const EditMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
         if (!state.workspace) {
             return;
         }
-        WorkspaceUndo(dispatch, state.workspace.data);
+        dispatch(workspaceUndo());
     };
     const redo = () => {
         if (!state.workspace) {
             return;
         }
-        WorkspaceRedo(dispatch, state.workspace.data);
+        dispatch(workspaceRedo());
     };
 
     const cannotUndo = () => {
@@ -224,8 +235,10 @@ const EditMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
         </UncontrolledDropdown>
     );
 };
+
 const ViewMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
-    const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const state = useAppSelector(selectWorkspace);
+    const dispatch = useAppDispatch();
 
     const canZoom = (offset: number) => {
         if (!state.valid || !state.workspace) {
@@ -254,7 +267,7 @@ const ViewMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
 
         if (targetIndex >= 0 && targetIndex < levels.length) {
             const newLevel = levels[targetIndex];
-            dispatch({ type: "workspace_set_text_size", text_size: newLevel });
+            dispatch(workspaceSetTextSize(newLevel));
         }
     };
 
@@ -262,7 +275,7 @@ const ViewMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
         if (!state.valid || !state.workspace) {
             return;
         }
-        dispatch({ type: "workspace_set_text_size", text_size: TextSize.MEDIUM });
+        dispatch(workspaceSetTextSize(TextSize.MEDIUM));
     };
 
     return (
@@ -284,7 +297,8 @@ const ViewMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
 };
 
 const ToolsMenu: RefsFC = ({ refs }) => {
-    const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const state = useAppSelector(selectWorkspace);
+    const dispatch = useAppDispatch();
     const cells = state.workspace ? state.workspace.data.cells : [];
     const [newlyAdded, setNewlyAdded] = React.useState(false);
 
@@ -295,10 +309,7 @@ const ToolsMenu: RefsFC = ({ refs }) => {
         for (let i = 0; i < defn.launchers.length; i++) {
             const launcher = defn.launchers[i];
             const newCell = () => {
-                dispatch({
-                    type: "workspace_cell_add",
-                    cell: makeNewCell(state.workspace!.data, key, defn, launcher),
-                });
+                dispatch(workspaceCellAdd(makeNewCell(state.workspace!.data, key, defn, launcher)));
                 setNewlyAdded(true);
             };
             items.push(
@@ -364,14 +375,9 @@ const ToolsMenu: RefsFC = ({ refs }) => {
 };
 
 const WorkspaceHeader: RefsFC = ({ refs }) => {
-    const { state: workspaceState } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const title = useAppSelector(selectWorkspaceTitle);
     const [showRenameWorkspaceModal, setShowRenameWorkspaceModal] = React.useState(false);
     const [showDeleteWorkspaceModal, setShowDeleteWorkspaceModal] = React.useState(false);
-    var title: string = "";
-
-    if (workspaceState.valid && workspaceState.workspace) {
-        title = workspaceState.workspace.title;
-    }
 
     // there's no point having modals in the DOM all the time, and it complicates state management.
     // we pop them into existence when needed.
@@ -400,7 +406,7 @@ const WorkspaceHeader: RefsFC = ({ refs }) => {
             {modals}
             <BaseHeader>
                 <WorkspaceMenu
-                    title={title}
+                    title={title || "(loading)"}
                     setShowDeleteWorkspaceModal={setShowDeleteWorkspaceModal}
                     setShowRenameWorkspaceModal={setShowRenameWorkspaceModal}
                 />
@@ -414,8 +420,8 @@ const WorkspaceHeader: RefsFC = ({ refs }) => {
 
 const WorkspaceView = () => {
     const { id } = useParams();
-    const { state: userState } = React.useContext<IUserContext>(UserContext);
     const refs = React.useRef<(HTMLDivElement | null)[]>([]);
+    const userState = useAppSelector(selectUser);
 
     const local = !UserLoggedIn(userState);
 

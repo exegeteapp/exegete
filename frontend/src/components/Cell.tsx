@@ -13,22 +13,17 @@ import {
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp, faWindowClose } from "@fortawesome/free-solid-svg-icons";
-import {
-    IWorkspaceContext,
-    TextSize,
-    workspaceCellDelete,
-    workspaceCellMove,
-    WorkspaceContext,
-} from "../workspace/Workspace";
+import { selectWorkspaceGlobal, TextSize, workspaceCellDelete, workspaceCellMove } from "../workspace/Workspace";
+import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 
 export const Cell: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
-    const { state } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const global = useAppSelector(selectWorkspaceGlobal);
 
     let textSize = TextSize.MEDIUM;
-    // paranoia: cross-validate that the level is one in the enum, as we're writing a class into the DOM
-    if (state.valid && state.workspace) {
-        textSize = state.workspace.data.global.view.textSize;
+    if (global) {
+        textSize = global.view.textSize;
     }
+    // paranoia: cross-validate that the level is one in the enum, as we're writing a class into the DOM
     const levels = Object.values(TextSize);
     const currentIndex = levels.indexOf(textSize);
     const fontClass = currentIndex !== -1 ? `text-${textSize}` : "text-medium";
@@ -48,21 +43,21 @@ export const CellHeader: React.FC<React.PropsWithChildren<{ uuid: string; button
     children,
     buttons,
 }) => {
-    const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const dispatch = useAppDispatch();
     const upId = `up${uuid}`;
     const downId = `down${uuid}`;
     const closeId = `close${uuid}`;
 
     const deleteMe = () => {
-        workspaceCellDelete(dispatch, uuid);
+        dispatch(workspaceCellDelete(uuid));
     };
 
     const moveUp = () => {
-        workspaceCellMove(dispatch, uuid, -1);
+        dispatch(workspaceCellMove([uuid, -1]));
     };
 
     const moveDown = () => {
-        workspaceCellMove(dispatch, uuid, 1);
+        dispatch(workspaceCellMove([uuid, 1]));
     };
 
     return (

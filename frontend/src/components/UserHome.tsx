@@ -4,11 +4,12 @@ import { WorkspaceMetadata } from "../workspace/Workspace";
 import { getWorkspaces } from "../workspace/Get";
 import NewWorkspaceButton from "./NewWorkspaceButton";
 import WorkspaceList from "./WorkspaceList";
-import { IUserContext, UserContext } from "../user/User";
+import { useAppSelector } from "../exegete/hooks";
+import { selectUser } from "../user/User";
 
 function UserHome() {
     const [workspaces, setWorkspaces] = React.useState<WorkspaceMetadata[]>([]);
-    const { state: userState } = React.useContext<IUserContext>(UserContext);
+    const state = useAppSelector(selectUser);
 
     React.useEffect(
         () => {
@@ -25,7 +26,7 @@ function UserHome() {
     return (
         <>
             <Container id="main">
-                <h1 className="display-5">Welcome, {userState.user?.name}.</h1>
+                <h1 className="display-5">Welcome, {state.user?.name}.</h1>
                 <NewWorkspaceButton local={false} color="success">
                     Create new workspace
                 </NewWorkspaceButton>

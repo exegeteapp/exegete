@@ -1,11 +1,13 @@
 import React from "react";
 import { saveWorkspaceAPI } from "./APIWorkspaceStorage";
 import { saveWorkspaceLocal } from "./LocalWorkspaceStorage";
-import { DirtyState, IWorkspaceContext, WorkspaceContext, WorkspaceAction } from "./Workspace";
+import { DirtyState, selectWorkspace, workspaceSaved } from "./Workspace";
 import { diff } from "jsondiffpatch";
+import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 
 export const WorkspaceAutoSave: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
-    const { state, dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const state = useAppSelector(selectWorkspace);
+    const dispatch = useAppDispatch();
 
     React.useEffect(() => {
         const makeWorkspaceDelta = () => {
@@ -54,16 +56,22 @@ export const WorkspaceAutoSave: React.FC<React.PropsWithChildren<unknown>> = ({ 
             if (!workspace) {
                 return;
             }
-            const dispatch_obj: WorkspaceAction =
+            const dispatch_fn =
                 state.dirty === DirtyState.MAKE_DELTA
-                    ? { type: "workspace_saved", workspace: workspace, set_history: true }
-                    : { type: "workspace_saved", workspace: workspace, set_history: false };
+                    ? () => {
+                          dispatch(workspaceSaved([workspace, true]));
+                      }
+                    : () => {
+                          dispatch(workspaceSaved([workspace, false]));
+                      };
+
+            // FIXME? Maybe need a thunk
             if (state.local) {
                 saveWorkspaceLocal(workspace);
-                dispatch(dispatch_obj);
+                dispatch_fn();
             } else {
                 saveWorkspaceAPI(workspace).then(() => {
-                    dispatch(dispatch_obj);
+                    dispatch_fn();
                 });
             }
         }, 1000);

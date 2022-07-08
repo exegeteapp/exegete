@@ -9,7 +9,7 @@ export type RegistryLauncher = {
 
 export type RegistryEntry = {
     describe: (data: any) => string;
-    component: CellFC<any>;
+    component: CellFC;
     launchers: RegistryLauncher[];
 };
 

@@ -9,7 +9,9 @@ import "raf/polyfill";
 import { config } from "@fortawesome/fontawesome-svg-core";
 
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
+import { Provider } from "react-redux";
+import { store } from "./exegete/store";
 import "@fortawesome/fontawesome-svg-core/styles.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./index.css";
@@ -19,11 +21,15 @@ import reportWebVitals from "./reportWebVitals";
 // address CSP issues with react-fontawesome
 config.autoAddCss = false;
 
-ReactDOM.render(
+const container = document.getElementById("root")!;
+const root = createRoot(container);
+
+root.render(
     <React.StrictMode>
-        <App />
-    </React.StrictMode>,
-    document.getElementById("root")
+        <Provider store={store}>
+            <App />
+        </Provider>
+    </React.StrictMode>
 );
 
 // If you want to start measuring performance in your app, pass a function

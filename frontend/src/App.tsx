@@ -1,8 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { UserProvider } from "./user/User";
-import { ScriptureProvider } from "./scripture/Scripture";
-import { IConfigContext, ConfigContext, ConfigProvider } from "./config/Config";
 import Home from "./components/Home";
 import Register from "./components/Register";
 import Verify from "./components/Verify";
@@ -17,11 +15,12 @@ import { Privacy } from "./components/Privacy";
 import { Disclaimer } from "./components/Disclaimer";
 import { About } from "./components/About";
 import ScrollToTop from "./components/ScrollToTop";
+import { useGetConfigQuery } from "./api/api";
 
 function RouterComponent() {
-    const { state } = React.useContext<IConfigContext>(ConfigContext);
+    const { error, isLoading } = useGetConfigQuery();
 
-    if (!state.valid) {
+    if (error || isLoading) {
         return <div></div>;
     }
 
@@ -51,13 +50,9 @@ function App() {
             <Helmet>
                 <title>exegete.app</title>
             </Helmet>
-            <ConfigProvider>
-                <UserProvider>
-                    <ScriptureProvider>
-                        <RouterComponent />
-                    </ScriptureProvider>
-                </UserProvider>
-            </ConfigProvider>
+            <UserProvider>
+                <RouterComponent />
+            </UserProvider>
         </HelmetProvider>
     );
 }

@@ -1,10 +1,4 @@
-import {
-    CellFC,
-    IWorkspaceContext,
-    workspaceCellSet,
-    WorkspaceContext,
-    WorkspaceData,
-} from "../../workspace/Workspace";
+import { CellFC, selectWorkspaceCell, workspaceCellSet, WorkspaceData } from "../../workspace/Workspace";
 import React from "react";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
@@ -17,6 +11,7 @@ import { ScriptureEditor } from "../ScriptureEditor";
 import { ScriptureWordAnnotation, ScriptureWordAnnotationFunctions, WordPosition } from "../ScriptureAnnotation";
 import { ModuleButton } from "../ModuleButton";
 import { HighlightRepititionButton } from "../HighlightRepitition";
+import { useAppDispatch, useAppSelector } from "../../exegete/hooks";
 
 export const ScriptureSlug = "scripture";
 
@@ -100,45 +95,70 @@ const ScriptureColumn: React.FC<
     return inner;
 };
 
-export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
-    const data = cell.data;
+export const Scripture: CellFC = ({ uuid }) => {
+    const cell = useAppSelector(selectWorkspaceCell(uuid));
     const [editing, setEditing] = React.useState(false);
-    const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const dispatch = useAppDispatch();
+
+    if (!cell) {
+        return <></>;
+    }
+    const data = cell.data;
 
     const toggleEditor = () => {
         setEditing(!editing);
     };
 
     const setHideMarkup = (hidemarkup: boolean) => {
-        workspaceCellSet(dispatch, cell.uuid, {
-            ...cell.data,
-            hidemarkup,
-        });
+        dispatch(
+            workspaceCellSet([
+                cell.uuid,
+                {
+                    ...cell.data,
+                    hidemarkup,
+                },
+            ])
+        );
     };
 
     const setSeparateVerses = (separateverses: boolean) => {
-        workspaceCellSet(dispatch, cell.uuid, {
-            ...cell.data,
-            separateverses,
-        });
+        dispatch(
+            workspaceCellSet([
+                cell.uuid,
+                {
+                    ...cell.data,
+                    separateverses,
+                },
+            ])
+        );
     };
 
     const updateVR = (index: number, vr: SCVerseRef) => {
         const new_columns = [...cell.data.columns];
         new_columns[index] = { ...cell.data.columns[index], ...vr };
-        workspaceCellSet(dispatch, cell.uuid, {
-            ...cell.data,
-            columns: new_columns,
-        });
+        dispatch(
+            workspaceCellSet([
+                cell.uuid,
+                {
+                    ...cell.data,
+                    columns: new_columns,
+                },
+            ])
+        );
     };
 
     const setAnnotation = (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => {
         const new_columns = [...cell.data.columns];
         new_columns[index] = { ...new_columns[index], annotation: new_annotation };
-        workspaceCellSet(dispatch, cell.uuid, {
-            ...cell.data,
-            columns: new_columns,
-        });
+        dispatch(
+            workspaceCellSet([
+                cell.uuid,
+                {
+                    ...cell.data,
+                    columns: new_columns,
+                },
+            ])
+        );
     };
 
     const cw = columnWidth[cell.data.columns.length] || 3;
@@ -225,18 +245,28 @@ export const Scripture: CellFC<ScriptureCellData> = ({ cell }) => {
     const addColumn = () => {
         const new_column = { ...data.columns[data.columns.length - 1] };
         const new_columns = [...data.columns, new_column];
-        workspaceCellSet(dispatch, cell.uuid, {
-            ...cell.data,
-            columns: new_columns,
-        });
+        dispatch(
+            workspaceCellSet([
+                cell.uuid,
+                {
+                    ...cell.data,
+                    columns: new_columns,
+                },
+            ])
+        );
     };
 
     const removeLastColumn = () => {
         const new_columns = data.columns.slice(0, -1);
-        workspaceCellSet(dispatch, cell.uuid, {
-            ...cell.data,
-            columns: new_columns,
-        });
+        dispatch(
+            workspaceCellSet([
+                cell.uuid,
+                {
+                    ...cell.data,
+                    columns: new_columns,
+                },
+            ])
+        );
     };
 
     const AddColumnButton: React.FC<React.PropsWithChildren<unknown>> = () => {

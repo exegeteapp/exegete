@@ -2,12 +2,13 @@ import { faRobot } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button, UncontrolledTooltip } from "reactstrap";
+import { useGetScriptureCatalogQuery } from "../api/api";
+import { useAppDispatch } from "../exegete/hooks";
 import { calculateSnowballAnnotations, calculateSnowballHighlights } from "../scripture/Highlighter";
 import { getModuleParser } from "../scripture/ParserCache";
-import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { getScripture, ScriptureObject } from "../scripture/ScriptureAPI";
 import parseReference, { ScriptureBookChapters } from "../verseref/VerseRef";
-import { IWorkspaceContext, WorkspaceCell, workspaceCellSet, WorkspaceContext } from "../workspace/Workspace";
+import { WorkspaceCell, workspaceCellSet } from "../workspace/Workspace";
 import { ScriptureCellData } from "./Cells/Scripture";
 import { annoKey, newScriptureWordAnnotation, ScriptureWordAnnotation, WordPosition } from "./ScriptureAnnotation";
 
@@ -17,11 +18,11 @@ export const HighlightRepititionButton: React.FC<
         editing: boolean;
     }>
 > = ({ cell, editing }) => {
-    const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
-    const { dispatch } = React.useContext<IWorkspaceContext>(WorkspaceContext);
+    const { data: catalog } = useGetScriptureCatalogQuery();
+    const dispatch = useAppDispatch();
 
     const HighlightRepitition = () => {
-        if (!scriptureState.valid || !scriptureState.catalog) {
+        if (!catalog) {
             return;
         }
 
@@ -30,7 +31,7 @@ export const HighlightRepititionButton: React.FC<
         const column_promises: Promise<readonly ScriptureObject[]>[][] = [];
         for (let index = 0; index < cell.data.columns.length; index++) {
             const column = cell.data.columns[index];
-            const module = scriptureState.catalog[column.shortcode];
+            const module = catalog[column.shortcode];
             const parser = getModuleParser(module, column.shortcode);
             const res = parseReference(module, parser, column.verseref);
             if (res.success) {
@@ -73,10 +74,7 @@ export const HighlightRepititionButton: React.FC<
                 });
                 return { ...column, annotation: newAnno };
             });
-            workspaceCellSet(dispatch, cell.uuid, {
-                ...cell.data,
-                columns: new_columns,
-            });
+            dispatch(workspaceCellSet([cell.uuid, { ...cell.data, columns: new_columns }]));
         });
     };
 

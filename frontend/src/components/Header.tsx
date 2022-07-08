@@ -10,13 +10,16 @@ import {
     DropdownMenu,
     DropdownItem,
 } from "reactstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { faBookOpen, faUser } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { IUserContext, UserContext, Logout } from "../user/User";
+import { Logout, selectUser } from "../user/User";
+import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 
 function UserMenu() {
-    const { dispatch, state } = React.useContext<IUserContext>(UserContext);
+    const dispatch = useAppDispatch();
+    const state = useAppSelector(selectUser);
+    const navigate = useNavigate();
 
     if (!state.valid || !state.user) {
         return <div></div>;
@@ -24,7 +27,8 @@ function UserMenu() {
 
     const handleLogout = () => {
         const doLogout = async () => {
-            await Logout(dispatch);
+            await dispatch(Logout());
+            navigate("/");
         };
         doLogout();
     };

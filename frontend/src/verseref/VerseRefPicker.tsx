@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Input, Alert, Form, Row, Col } from "reactstrap";
-import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import parseReference from "./VerseRef";
 import useInput from "../util/useInput";
 import { getModuleParser } from "../scripture/ParserCache";
+import { useGetScriptureCatalogQuery } from "../api/api";
 
 const ShortCodeInput: React.FC<
     React.PropsWithChildren<{
@@ -11,13 +11,13 @@ const ShortCodeInput: React.FC<
         setValue: (s: string) => void;
     }>
 > = ({ value, setValue }) => {
-    const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
+    const { data: catalog } = useGetScriptureCatalogQuery();
 
-    if (!scriptureState.valid || !scriptureState.catalog) {
+    if (!catalog) {
         return <></>;
     }
 
-    const options = Object.entries(scriptureState.catalog).map((c, i) => {
+    const options = Object.entries(catalog).map((c, i) => {
         return <option key={i}>{c[0]}</option>;
     });
 
@@ -40,7 +40,7 @@ export const VerseRefPicker: React.FC<
         small?: boolean;
     }>
 > = ({ data, setData, small }) => {
-    const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
+    const { data: catalog } = useGetScriptureCatalogQuery();
     const vr = useInput(data["verseref"]);
     const [sc, setSC] = useState(data["shortcode"]);
     const [parserError, setParserError] = React.useState("");
@@ -63,11 +63,11 @@ export const VerseRefPicker: React.FC<
     const in_width = small ? 8 : 9;
 
     useEffect(() => {
-        if (!scriptureState.valid || !scriptureState.catalog) {
+        if (!catalog) {
             return;
         }
 
-        const module = scriptureState.catalog[sc];
+        const module = catalog[sc];
         const parser = getModuleParser(module, sc);
         const res = parseReference(module, parser, vr.value);
 
@@ -76,7 +76,7 @@ export const VerseRefPicker: React.FC<
         } else {
             setParserError(res.error);
         }
-    }, [scriptureState, sc, vr.value]);
+    }, [catalog, sc, vr.value]);
 
     return (
         <>

@@ -1,7 +1,7 @@
 import { CellFC } from "../../workspace/Workspace";
 
-export const Error: CellFC<any> = ({ cell }) => {
-    return <div>Error loading cell of type: `{cell.cell_type}`.</div>;
+export const Error: CellFC = ({ uuid }) => {
+    return <div>Error loading cell of unknown type.</div>;
 };
 
 export default Error;

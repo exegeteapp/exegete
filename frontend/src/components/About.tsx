@@ -2,8 +2,8 @@ import { Button, Col, Container, Row } from "reactstrap";
 import { Footer } from "./Footer";
 import Header from "./Header";
 import React from "react";
-import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
 import { Link } from "react-router-dom";
+import { useGetScriptureCatalogQuery } from "../api/api";
 
 const AboutText: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
@@ -41,11 +41,10 @@ const AboutText: React.FC<React.PropsWithChildren<unknown>> = () => {
 };
 
 const Texts: React.FC<React.PropsWithChildren<unknown>> = () => {
-    const { state } = React.useContext<IScriptureContext>(ScriptureContext);
-    if (!state.valid || !state.catalog) {
+    const { data: catalog } = useGetScriptureCatalogQuery();
+    if (!catalog) {
         return <></>;
     }
-    const catalog = state.catalog;
 
     const entries = () => {
         return Object.keys(catalog).map((module, i) => {

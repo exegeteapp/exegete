@@ -2,19 +2,19 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { Container, Table } from "reactstrap";
-import { IScriptureContext, ScriptureContext } from "../scripture/Scripture";
+import { useGetScriptureCatalogQuery } from "../api/api";
 import { Footer } from "./Footer";
 import Header from "./Header";
 
 const ModuleInfo: React.FC<React.PropsWithChildren<unknown>> = () => {
-    const { state: scriptureState } = React.useContext<IScriptureContext>(ScriptureContext);
+    const { data: catalog } = useGetScriptureCatalogQuery();
     const { shortcode } = useParams();
 
-    if (!scriptureState.valid || !scriptureState.catalog || !shortcode) {
+    if (!catalog || !shortcode) {
         return <></>;
     }
 
-    const module = scriptureState.catalog[shortcode];
+    const module = catalog[shortcode];
 
     return (
         <>

@@ -8,6 +8,7 @@
         "@fortawesome/fontawesome-svg-core": "^6.1.1",
         "@fortawesome/free-solid-svg-icons": "^6.1.1",
         "@fortawesome/react-fontawesome": "^0.1.18",
+        "@reduxjs/toolkit": "^1.8.3",
         "@testing-library/jest-dom": "^5.16.4",
         "@testing-library/react": "^13.3.0",
         "@testing-library/user-event": "^14.2.1",
@@ -32,6 +33,7 @@
         "react-google-recaptcha": "^2.1.0",
         "react-helmet-async": "^1.3.0",
         "react-markdown": "^8.0.2",
+        "react-redux": "^8.0.2",
         "react-router-dom": "^6.3.0",
         "react-scripts": "5.0.0",
         "reactstrap": "^9.0.1",
@@ -72,5 +74,5 @@
     },
     "overrides": {
         "nth-check": "2.0.1"
-   }
+    }
 }
