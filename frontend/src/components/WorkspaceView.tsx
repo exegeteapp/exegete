@@ -168,6 +168,7 @@ const WorkspaceMenu: React.FC<
         setShowDeleteWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
     }>
 > = ({ title, setShowRenameWorkspaceModal, setShowDeleteWorkspaceModal }) => {
+    const navigate = useNavigate();
     return (
         <UncontrolledDropdown nav>
             <DropdownToggle caret nav>
@@ -176,6 +177,7 @@ const WorkspaceMenu: React.FC<
             <DropdownMenu md-end={"true"} color="dark" dark>
                 <DropdownItem onClick={() => setShowRenameWorkspaceModal(true)}>Rename</DropdownItem>
                 <DropdownItem onClick={() => setShowDeleteWorkspaceModal(true)}>Delete</DropdownItem>
+                <DropdownItem onClick={() => navigate("/")}>Close</DropdownItem>
             </DropdownMenu>
         </UncontrolledDropdown>
     );
