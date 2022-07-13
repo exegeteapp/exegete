@@ -1,15 +1,15 @@
 import React from "react";
-import { deleteWorkspaceLocal, loadWorkspaceLocal } from "./LocalWorkspaceStorage";
-import { deleteWorkspaceAPI, loadWorkspaceAPI } from "./APIWorkspaceStorage";
+import { deleteWorkspaceLocal } from "./LocalWorkspaceStorage";
+import { deleteWorkspaceAPI } from "./APIWorkspaceStorage";
 import { createWorkspaceAPI } from "../workspace/APIWorkspaceStorage";
 import { createWorkspaceLocal } from "../workspace/LocalWorkspaceStorage";
 import { v4 } from "uuid";
 import { makeNewCell } from "./Cell";
 import Registry from "./CellRegistry";
 import { WorkspaceAutoSave } from "./Autosave";
-import { CurrentWorkspaceFormat, MigrateWorkspace } from "./WorkspaceMigrations";
+import { CurrentWorkspaceFormat } from "./WorkspaceMigrations";
 import { useAppDispatch } from "../exegete/hooks";
-import { workspaceLoaded, workspaceStart, workspaceUnload } from "./Workspace";
+import { LoadWorkspace, workspaceUnload } from "./Workspace";
 import { NewWorkspaceData, TextSize, WorkspaceData } from "./Types";
 
 export const WorkspaceProvider: React.FC<React.PropsWithChildren<{ id: string; local: boolean }>> = ({
@@ -20,27 +20,7 @@ export const WorkspaceProvider: React.FC<React.PropsWithChildren<{ id: string; l
     const dispatch = useAppDispatch();
 
     React.useEffect(() => {
-        async function getFromApi() {
-            dispatch(workspaceStart());
-            const workspace = MigrateWorkspace(await loadWorkspaceAPI(id));
-            if (workspace) {
-                dispatch(workspaceLoaded(workspace));
-            }
-        }
-
-        function getFromLocal() {
-            const workspace = MigrateWorkspace(loadWorkspaceLocal(id));
-            if (workspace) {
-                dispatch(workspaceLoaded(workspace));
-            }
-        }
-
-        if (local) {
-            getFromLocal();
-        } else {
-            getFromApi();
-        }
-
+        dispatch(LoadWorkspace({ local, id }));
         return () => {
             dispatch(workspaceUnload());
         };

@@ -92,9 +92,9 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
 ];
 export const CurrentWorkspaceFormat = 6;
 
-export const MigrateWorkspace = (w: WorkspaceMetadata | null): WorkspaceMetadata | null => {
+export const MigrateWorkspace = (w: WorkspaceMetadata | undefined): WorkspaceMetadata | undefined => {
     if (!w) {
-        return null;
+        return undefined;
     }
     if (w.data.workspace_format === CurrentWorkspaceFormat) {
         return w;

@@ -5,18 +5,18 @@ import { v4 } from "uuid";
 
 const idToKey = (id: string) => `workspace[${id}]`;
 
-export const loadWorkspaceLocal = (id: string): WorkspaceMetadata | null => {
+export const loadWorkspaceLocal = (id: string): WorkspaceMetadata | undefined => {
     if (!uuidValidate(id)) {
-        return null;
+        return undefined;
     }
     const key = idToKey(id);
     const val = localStorage.getItem(key);
     if (!val) {
-        return null;
+        return undefined;
     }
     const dval = LZString.decompress(val);
     if (!dval) {
-        return null;
+        return undefined;
     }
     const obj = JSON.parse(dval);
     return obj as WorkspaceMetadata;

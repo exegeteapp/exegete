@@ -5,8 +5,9 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../exegete/store";
 import { deleteWorkspace } from "./WorkspaceProvider";
 import { CellListingEntry, TextSize, WorkspaceCell, WorkspaceMetadata } from "./Types";
-import { saveWorkspaceLocal } from "./LocalWorkspaceStorage";
-import { saveWorkspaceAPI } from "./APIWorkspaceStorage";
+import { loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
+import { loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
+import { MigrateWorkspace } from "./WorkspaceMigrations";
 
 export type CellFC = React.FC<
     React.PropsWithChildren<{
@@ -66,9 +67,6 @@ export const workspaceSlice = createSlice({
     name: "workspace",
     initialState,
     reducers: {
-        workspaceStart: (state) => {
-            state.valid = true;
-        },
         workspaceUnload: (state) => {
             state.valid = false;
             state.dirty = DirtyState.CLEAN;
@@ -76,13 +74,6 @@ export const workspaceSlice = createSlice({
             state.cell_listing = buildCellListing(state.workspace);
             state.local = false;
             state.can_apply_history = true;
-        },
-        workspaceLoaded: (state, action: PayloadAction<WorkspaceMetadata>) => {
-            state.workspace = action.payload;
-            state.cell_listing = buildCellListing(state.workspace);
-            state.last_workspace = action.payload;
-            state.valid = true;
-            state.dirty = DirtyState.CLEAN;
         },
         workspaceCellSet: (state, action: PayloadAction<[string, any]>) => {
             if (!state.workspace) {
@@ -227,6 +218,14 @@ export const workspaceSlice = createSlice({
                 state.dirty = DirtyState.CLEAN;
             }
         });
+        builder.addCase(LoadWorkspace.fulfilled, (state, action) => {
+            const { workspace, local } = action.payload;
+            state.workspace = state.last_workspace = workspace;
+            state.cell_listing = buildCellListing(state.workspace);
+            state.local = local;
+            state.valid = true;
+            state.dirty = DirtyState.CLEAN;
+        });
     },
 });
 
@@ -237,6 +236,25 @@ export const DeleteWorkspace = createAsyncThunk("workspace/delete", async (arg, 
         await deleteWorkspace(id, state.local);
     }
 });
+
+export const LoadWorkspace = createAsyncThunk(
+    "workspace/load",
+    async ({ id, local }: { id: string; local: boolean }, thunkAPI) => {
+        if (local) {
+            const workspace = MigrateWorkspace(loadWorkspaceLocal(id));
+            return {
+                workspace: workspace,
+                local: local,
+            };
+        } else {
+            const workspace = MigrateWorkspace(await loadWorkspaceAPI(id));
+            return {
+                workspace: workspace,
+                local: local,
+            };
+        }
+    }
+);
 
 export const SaveWorkspace = createAsyncThunk("workspace/save", async (arg, thunkAPI) => {
     const state: WorkspaceState = (thunkAPI.getState() as any).workspace;
@@ -293,12 +311,10 @@ export const {
     workspaceCellDelete,
     workspaceCellMove,
     workspaceCellSet,
-    workspaceLoaded,
     workspaceRedo,
     workspaceUndo,
     workspaceSetTextSize,
     workspaceSetTitle,
-    workspaceStart,
     workspaceUnload,
 } = workspaceSlice.actions;
 
