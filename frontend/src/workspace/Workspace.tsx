@@ -1,5 +1,5 @@
 import React from "react";
-import { reverse, patch, diff } from "jsondiffpatch";
+import { reverse, patch, diff, Delta } from "jsondiffpatch";
 import { arrayMoveMutable } from "array-move";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../exegete/store";
@@ -36,8 +36,8 @@ interface WorkspaceState {
     dirty: DirtyState;
     // workspace is local-only
     local: boolean;
-    // can undo/redo functionality operate?
-    can_apply_history: boolean;
+    // if > 0, history will be blocked
+    history_blocked: number;
 }
 
 const initialState: WorkspaceState = {
@@ -47,7 +47,7 @@ const initialState: WorkspaceState = {
     workspace: undefined,
     last_workspace: undefined,
     local: false,
-    can_apply_history: true,
+    history_blocked: 0,
 };
 
 const cellIndex = (cells: ReadonlyArray<WorkspaceCell<any>>, uuid: string) => {
@@ -73,7 +73,7 @@ export const workspaceSlice = createSlice({
             state.workspace = state.last_workspace = undefined;
             state.cell_listing = buildCellListing(state.workspace);
             state.local = false;
-            state.can_apply_history = true;
+            state.history_blocked = 0;
         },
         workspaceCellSet: (state, action: PayloadAction<[string, any]>) => {
             if (!state.workspace) {
@@ -101,8 +101,11 @@ export const workspaceSlice = createSlice({
             state.cell_listing = buildCellListing(state.workspace);
             state.dirty = DirtyState.MAKE_DELTA;
         },
-        workspaceCanApplyHistory: (state, action: PayloadAction<boolean>) => {
-            state.can_apply_history = action.payload;
+        workspaceCanApplyHistory: (state) => {
+            state.history_blocked -= 1;
+        },
+        workspaceCannotApplyHistory: (state) => {
+            state.history_blocked += 1;
         },
         workspaceCellMove: (state, action: PayloadAction<[string, number]>) => {
             if (!state.workspace) {
@@ -200,7 +203,12 @@ export const workspaceSlice = createSlice({
             state.dirty = DirtyState.CLEAN;
         });
         builder.addCase(SaveWorkspace.fulfilled, (state, action) => {
-            if (!state.workspace || !action.payload) {
+            if (!state.workspace) {
+                return;
+            }
+            if (!action.payload.changed) {
+                // we started the process of saving, but nothing had been changed
+                state.dirty = DirtyState.CLEAN;
                 return;
             }
             const { workspace, set_history } = action.payload;
@@ -259,7 +267,11 @@ export const LoadWorkspace = createAsyncThunk(
 export const SaveWorkspace = createAsyncThunk("workspace/save", async (arg, thunkAPI) => {
     const state: WorkspaceState = (thunkAPI.getState() as any).workspace;
 
-    const makeWorkspaceWithDelta = () => {
+    if (!state.workspace || state.dirty === DirtyState.CLEAN) {
+        return { changed: false };
+    }
+
+    const calculateDelta = () => {
         if (!state.workspace || !state.last_workspace) {
             return undefined;
         }
@@ -272,41 +284,60 @@ export const SaveWorkspace = createAsyncThunk("workspace/save", async (arg, thun
             cells: state.workspace.data.cells,
             global: state.workspace.data.global,
         };
-        const delta = diff(now, last);
-        if (!delta) {
-            return undefined;
-        }
+        return diff(now, last);
+    };
+
+    const makeWorkspaceWithDelta = (delta: Delta) => {
+        const workspace = state.workspace!;
         return {
-            ...state.workspace,
+            ...workspace,
             data: {
-                ...state.workspace.data,
+                ...workspace.data,
                 history: {
-                    ...state.workspace.data.history,
-                    undo: [delta, ...state.workspace.data.history.undo],
+                    ...workspace.data.history,
+                    undo: [delta, ...workspace.data.history.undo],
                     redo: [],
                 },
             },
         };
     };
 
-    const make_delta = state.dirty === DirtyState.MAKE_DELTA;
-    const workspace = make_delta ? makeWorkspaceWithDelta() : state.workspace;
-    if (!workspace) {
-        return;
-    }
-    if (state.local) {
-        saveWorkspaceLocal(workspace);
-    } else {
-        await saveWorkspaceAPI(workspace);
-    }
-    return {
-        workspace: workspace,
-        set_history: make_delta,
+    const save = async (workspace: WorkspaceMetadata) => {
+        if (state.local) {
+            saveWorkspaceLocal(workspace);
+        } else {
+            await saveWorkspaceAPI(workspace);
+        }
     };
+
+    if (state.dirty === DirtyState.MAKE_DELTA) {
+        const delta = calculateDelta();
+        if (!delta) {
+            return { changed: false };
+        }
+        const workspace = makeWorkspaceWithDelta(delta);
+        await save(workspace);
+        return {
+            changed: true,
+            workspace: workspace,
+            set_history: true,
+        };
+    } else {
+        // we're pushing the current workspace state up without calculating a delta:
+        // if we're applying an undo or a redo, we wouldn't want to calculate how
+        // to undo the undo!
+        await save(state.workspace);
+        return {
+            changed: true,
+            workspace: state.workspace,
+            set_history: false,
+        };
+    }
 });
 
 export const {
     workspaceCanApplyHistory,
+    workspaceCannotApplyHistory,
     workspaceCellAdd,
     workspaceCellDelete,
     workspaceCellMove,

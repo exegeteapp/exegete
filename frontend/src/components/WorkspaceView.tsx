@@ -203,7 +203,7 @@ const EditMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
 
     const cannotUndo = () => {
         return (
-            !state.can_apply_history ||
+            state.history_blocked > 0 ||
             state.dirty !== DirtyState.CLEAN ||
             !state.workspace ||
             state.workspace.data.history.undo.length === 0
@@ -212,7 +212,7 @@ const EditMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
 
     const cannotRedo = () => {
         return (
-            !state.can_apply_history ||
+            state.history_blocked > 0 ||
             state.dirty !== DirtyState.CLEAN ||
             !state.workspace ||
             state.workspace.data.history.redo.length === 0

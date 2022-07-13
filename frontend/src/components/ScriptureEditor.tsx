@@ -24,7 +24,7 @@ import { BookInfo, FindBook, languageClass, ModuleInfo } from "../scripture/Scri
 import { DistinguishableColours } from "../colours/distinguishable";
 import { useGetScriptureCatalogQuery } from "../api/api";
 import { useAppDispatch } from "../exegete/hooks";
-import { workspaceCanApplyHistory } from "../workspace/Workspace";
+import { workspaceCanApplyHistory, workspaceCannotApplyHistory } from "../workspace/Workspace";
 
 const PermittedKeys = new Set<string>([
     " ",
@@ -550,9 +550,9 @@ export const ScriptureEditor: React.FC<
     React.useEffect(() => {
         // we don't want our global undo/redo function to be active while in the slate editor
         // this is an annoying issue caused by slatejs being an uncontrolled react component
-        dispatch(workspaceCanApplyHistory(false));
+        dispatch(workspaceCannotApplyHistory());
         return () => {
-            dispatch(workspaceCanApplyHistory(true));
+            dispatch(workspaceCanApplyHistory());
         };
     }, [dispatch]);
 
