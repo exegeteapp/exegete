@@ -46,8 +46,9 @@ export const getScripture = async (params: ScriptureParams): Promise<ReadonlyArr
     } else {
     }
     try {
-        const url = `/api/v1/scripture/verses/${params.shortcode}/${params.book}`;
-        const resp = await axios.get<ScriptureObject[]>(url, { params: params });
+        const { book, shortcode, ...range } = params;
+        const url = `/api/v1/scripture/verses/${shortcode}/${book}`;
+        const resp = await axios.get<ScriptureObject[]>(url, { params: range });
         scriptureCache.push([key, resp.data]);
         scriptureCache = scriptureCache.slice(-CACHE_SIZE);
         return resp.data;
