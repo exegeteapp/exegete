@@ -174,8 +174,12 @@ export const workspaceSlice = createSlice({
                 return;
             }
             const [uuid, data] = action.payload;
+            const idx = cellIndex(state.workspace.data.cells, uuid);
+            // components may emit updates that have no content, skip these
+            if (idx !== -1 && JSON.stringify(state.workspace.data.cells[idx].data) === JSON.stringify(data)) {
+                return;
+            }
             const newCells = [...state.workspace.data.cells];
-            const idx = cellIndex(newCells, uuid);
             if (idx !== -1) {
                 newCells[idx] = { ...newCells[idx], data: data };
             }
@@ -187,8 +191,7 @@ export const workspaceSlice = createSlice({
                 return;
             }
             const uuid = action.payload;
-            const newCells = state.workspace.data.cells.filter((c) => c.uuid !== uuid);
-            state.workspace.data.cells = newCells;
+            state.workspace.data.cells = state.workspace.data.cells.filter((c) => c.uuid !== uuid);
             state.cell_listing = buildCellListing(state.workspace);
             state.dirty = DirtyState.MAKE_DELTA;
         },
@@ -200,7 +203,6 @@ export const workspaceSlice = createSlice({
                 return;
             }
             const [uuid, offset] = action.payload;
-
             const newCells = [...state.workspace.data.cells];
             const idx = cellIndex(newCells, uuid);
             if (idx !== -1) {
