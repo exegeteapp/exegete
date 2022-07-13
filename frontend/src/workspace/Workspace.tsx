@@ -1,10 +1,12 @@
 import React from "react";
-import { reverse, patch } from "jsondiffpatch";
+import { reverse, patch, diff } from "jsondiffpatch";
 import { arrayMoveMutable } from "array-move";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../exegete/store";
 import { deleteWorkspace } from "./WorkspaceProvider";
 import { CellListingEntry, TextSize, WorkspaceCell, WorkspaceMetadata } from "./Types";
+import { saveWorkspaceLocal } from "./LocalWorkspaceStorage";
+import { saveWorkspaceAPI } from "./APIWorkspaceStorage";
 
 export type CellFC = React.FC<
     React.PropsWithChildren<{
@@ -81,25 +83,6 @@ export const workspaceSlice = createSlice({
             state.last_workspace = action.payload;
             state.valid = true;
             state.dirty = DirtyState.CLEAN;
-        },
-        workspaceSaved: (state, action: PayloadAction<[WorkspaceMetadata, boolean]>) => {
-            if (!state.workspace) {
-                return;
-            }
-            const [workspace, set_history] = action.payload;
-            // this is slightly complex. we want to set the last_workspace
-            // to the version of the workspace metadata that has been saved.
-            // we update the history on the current workspace object, but
-            // leave the rest of the state intact, as there may have been edits
-            // made by the user while the save operation was occurring
-            if (set_history) {
-                state.workspace.data.history = workspace.data.history;
-                state.last_workspace = workspace;
-                state.dirty = DirtyState.CLEAN;
-            } else {
-                state.last_workspace = workspace;
-                state.dirty = DirtyState.CLEAN;
-            }
         },
         workspaceCellSet: (state, action: PayloadAction<[string, any]>) => {
             if (!state.workspace) {
@@ -225,15 +208,83 @@ export const workspaceSlice = createSlice({
             state.valid = false;
             state.dirty = DirtyState.CLEAN;
         });
+        builder.addCase(SaveWorkspace.fulfilled, (state, action) => {
+            if (!state.workspace || !action.payload) {
+                return;
+            }
+            const { workspace, set_history } = action.payload;
+            // this is slightly complex. we want to set the last_workspace
+            // to the version of the workspace metadata that has been saved.
+            // we update the history on the current workspace object, but
+            // leave the rest of the state intact, as there may have been edits
+            // made by the user while the save operation was occurring
+            if (set_history) {
+                state.workspace.data.history = workspace.data.history;
+                state.last_workspace = workspace;
+                state.dirty = DirtyState.CLEAN;
+            } else {
+                state.last_workspace = workspace;
+                state.dirty = DirtyState.CLEAN;
+            }
+        });
     },
 });
 
 export const DeleteWorkspace = createAsyncThunk("workspace/delete", async (arg, thunkAPI) => {
-    const state: any = thunkAPI.getState();
-    const id = state.workspace.workspace.id;
-    if (state && id) {
-        await deleteWorkspace(id, state.workspace.local);
+    const state: WorkspaceState = (thunkAPI.getState() as any).workspace;
+    if (state.workspace) {
+        const id = state.workspace.id;
+        await deleteWorkspace(id, state.local);
     }
+});
+
+export const SaveWorkspace = createAsyncThunk("workspace/save", async (arg, thunkAPI) => {
+    const state: WorkspaceState = (thunkAPI.getState() as any).workspace;
+
+    const makeWorkspaceWithDelta = () => {
+        if (!state.workspace || !state.last_workspace) {
+            return undefined;
+        }
+        // calculate and push undo information
+        const last = {
+            cells: state.last_workspace.data.cells,
+            global: state.last_workspace.data.global,
+        };
+        const now = {
+            cells: state.workspace.data.cells,
+            global: state.workspace.data.global,
+        };
+        const delta = diff(now, last);
+        if (!delta) {
+            return undefined;
+        }
+        return {
+            ...state.workspace,
+            data: {
+                ...state.workspace.data,
+                history: {
+                    ...state.workspace.data.history,
+                    undo: [delta, ...state.workspace.data.history.undo],
+                    redo: [],
+                },
+            },
+        };
+    };
+
+    const make_delta = state.dirty === DirtyState.MAKE_DELTA;
+    const workspace = make_delta ? makeWorkspaceWithDelta() : state.workspace;
+    if (!workspace) {
+        return;
+    }
+    if (state.local) {
+        saveWorkspaceLocal(workspace);
+    } else {
+        await saveWorkspaceAPI(workspace);
+    }
+    return {
+        workspace: workspace,
+        set_history: make_delta,
+    };
 });
 
 export const {
@@ -243,7 +294,6 @@ export const {
     workspaceCellMove,
     workspaceCellSet,
     workspaceLoaded,
-    workspaceSaved,
     workspaceRedo,
     workspaceUndo,
     workspaceSetTextSize,
