@@ -1,5 +1,5 @@
 import { Table } from "reactstrap";
-import { WorkspaceMetadata } from "../workspace/Workspace";
+import { WorkspaceMetadata } from "../workspace/Types";
 import { Link } from "react-router-dom";
 
 const WorkspaceList = ({ workspaces }: { workspaces: WorkspaceMetadata[] }) => {

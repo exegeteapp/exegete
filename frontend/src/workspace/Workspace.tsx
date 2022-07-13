@@ -1,74 +1,16 @@
 import React from "react";
 import { reverse, patch } from "jsondiffpatch";
 import { arrayMoveMutable } from "array-move";
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../exegete/store";
-import { Delta } from "jsondiffpatch";
-
-export type NewCellDataFn<T> = (workspace: WorkspaceData) => T;
-
-export interface WorkspaceCell<T> {
-    readonly cell_type: string;
-    readonly uuid: string;
-    readonly data: T;
-}
-
-export interface CellListingEntry {
-    readonly cell_type: string;
-    readonly uuid: string;
-}
+import { deleteWorkspace } from "./WorkspaceProvider";
+import { CellListingEntry, TextSize, WorkspaceCell, WorkspaceMetadata } from "./Types";
 
 export type CellFC = React.FC<
     React.PropsWithChildren<{
         readonly uuid: string;
     }>
 >;
-
-export enum TextSize {
-    XXSMALL = "xx-small",
-    XSMALL = "x-small",
-    SMALL = "small",
-    MEDIUM = "medium",
-    LARGE = "large",
-    XLARGE = "x-large",
-    XXLARGE = "xx-large",
-}
-
-export type View = {
-    textSize: TextSize;
-};
-
-export type Global = {
-    view: View;
-};
-
-export type History = {
-    readonly undo: Array<Delta>;
-    readonly redo: Array<Delta>;
-};
-
-export interface WorkspaceData {
-    workspace_format: number;
-    cells: Array<WorkspaceCell<any>>;
-    global: Global;
-    history: History;
-}
-
-export interface WorkspaceMetadata {
-    readonly id: string;
-    readonly title: string;
-    readonly data: WorkspaceData;
-    readonly created: Date;
-    readonly updated: Date | null;
-}
-
-// minimal set of metadata set on the frontend
-// before the backend or local storage set the rest
-export interface NewWorkspaceData {
-    readonly id: string;
-    readonly title: string;
-    readonly data: WorkspaceData;
-}
 
 export enum DirtyState {
     CLEAN,
@@ -77,7 +19,6 @@ export enum DirtyState {
 }
 
 interface WorkspaceState {
-    id: string;
     // have we gone through the bootstrap process?
     valid: boolean;
     // the working workspace data
@@ -97,7 +38,6 @@ interface WorkspaceState {
 }
 
 const initialState: WorkspaceState = {
-    id: "",
     valid: false,
     dirty: DirtyState.CLEAN,
     cell_listing: [],
@@ -123,13 +63,11 @@ const buildCellListing = (workspace: WorkspaceMetadata | undefined): CellListing
 export const workspaceSlice = createSlice({
     name: "workspace",
     initialState,
-    // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
         workspaceStart: (state) => {
             state.valid = true;
         },
         workspaceUnload: (state) => {
-            state.id = "";
             state.valid = false;
             state.dirty = DirtyState.CLEAN;
             state.workspace = state.last_workspace = undefined;
@@ -162,12 +100,6 @@ export const workspaceSlice = createSlice({
                 state.last_workspace = workspace;
                 state.dirty = DirtyState.CLEAN;
             }
-        },
-        workspaceDeleted: (state) => {
-            state.workspace = undefined;
-            state.cell_listing = buildCellListing(state.workspace);
-            state.valid = false;
-            state.dirty = DirtyState.CLEAN;
         },
         workspaceCellSet: (state, action: PayloadAction<[string, any]>) => {
             if (!state.workspace) {
@@ -229,7 +161,7 @@ export const workspaceSlice = createSlice({
         },
         workspaceSetTextSize: (state, action: PayloadAction<TextSize>) => {
             if (!state.workspace) {
-                return state;
+                return;
             }
             state.workspace.data.global.view.textSize = action.payload;
             state.dirty = DirtyState.MAKE_DELTA;
@@ -286,6 +218,22 @@ export const workspaceSlice = createSlice({
             state.dirty = DirtyState.PUSH;
         },
     },
+    extraReducers: (builder) => {
+        builder.addCase(DeleteWorkspace.fulfilled, (state, action) => {
+            state.workspace = undefined;
+            state.cell_listing = undefined;
+            state.valid = false;
+            state.dirty = DirtyState.CLEAN;
+        });
+    },
+});
+
+export const DeleteWorkspace = createAsyncThunk("workspace/delete", async (arg, thunkAPI) => {
+    const state: any = thunkAPI.getState();
+    const id = state.workspace.workspace.id;
+    if (state && id) {
+        await deleteWorkspace(id, state.workspace.local);
+    }
 });
 
 export const {
@@ -294,7 +242,6 @@ export const {
     workspaceCellDelete,
     workspaceCellMove,
     workspaceCellSet,
-    workspaceDeleted,
     workspaceLoaded,
     workspaceSaved,
     workspaceRedo,

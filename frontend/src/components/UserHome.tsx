@@ -1,6 +1,6 @@
 import React from "react";
 import { Container } from "reactstrap";
-import { WorkspaceMetadata } from "../workspace/Workspace";
+import { WorkspaceMetadata } from "../workspace/Types";
 import { getWorkspaces } from "../workspace/Get";
 import NewWorkspaceButton from "./NewWorkspaceButton";
 import WorkspaceList from "./WorkspaceList";

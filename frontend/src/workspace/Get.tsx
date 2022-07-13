@@ -1,6 +1,6 @@
 import { ApiAxiosRequestConfig } from "../user/JWT";
 import axios from "axios";
-import { WorkspaceData, WorkspaceMetadata } from "./Workspace";
+import { WorkspaceData, WorkspaceMetadata } from "./Types";
 import { Delta } from "jsondiffpatch";
 
 export const getWorkspaces = async (): Promise<WorkspaceMetadata[]> => {

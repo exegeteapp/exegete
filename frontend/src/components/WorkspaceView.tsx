@@ -16,10 +16,9 @@ import {
 import { selectUser, UserLoggedIn } from "../user/User";
 import { validate as uuidValidate } from "uuid";
 import {
-    TextSize,
     DirtyState,
     selectWorkspace,
-    workspaceDeleted,
+    DeleteWorkspace,
     workspaceSetTitle,
     workspaceSetTextSize,
     workspaceCellAdd,
@@ -36,7 +35,8 @@ import { makeNewCell } from "../workspace/Cell";
 import { Helmet } from "react-helmet-async";
 import { Footer } from "./Footer";
 import { useAppDispatch, useAppSelector } from "../exegete/hooks";
-import { deleteWorkspace, WorkspaceProvider } from "../workspace/WorkspaceProvider";
+import { WorkspaceProvider } from "../workspace/WorkspaceProvider";
+import { TextSize } from "../workspace/Types";
 
 type RefsFC = React.FC<React.PropsWithChildren<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>>;
 
@@ -129,7 +129,6 @@ const DeleteWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; se
     show,
     setShow,
 }) => {
-    const workspaceState = useAppSelector(selectWorkspace);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -137,12 +136,13 @@ const DeleteWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; se
         setShow(false);
     };
 
-    // FIXME: this ought to be done with thunks..
     const apply = () => {
-        deleteWorkspace(workspaceState.id, workspaceState.local);
-        dispatch(workspaceDeleted());
-        setShow(false);
-        navigate(`/`);
+        const doDelete = async () => {
+            await dispatch(DeleteWorkspace());
+            setShow(false);
+            navigate(`/`);
+        };
+        doDelete();
     };
 
     return (

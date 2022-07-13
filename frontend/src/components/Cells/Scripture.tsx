@@ -1,4 +1,4 @@
-import { CellFC, selectWorkspaceCell, workspaceCellSet, WorkspaceData } from "../../workspace/Workspace";
+import { CellFC, selectWorkspaceCell, workspaceCellSet } from "../../workspace/Workspace";
 import React from "react";
 import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
@@ -12,6 +12,7 @@ import { ScriptureWordAnnotation, ScriptureWordAnnotationFunctions, WordPosition
 import { ModuleButton } from "../ModuleButton";
 import { HighlightRepititionButton } from "../HighlightRepitition";
 import { useAppDispatch, useAppSelector } from "../../exegete/hooks";
+import { WorkspaceData } from "../../workspace/Types";
 
 export const ScriptureSlug = "scripture";
 

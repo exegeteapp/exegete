@@ -8,7 +8,8 @@ import { calculateSnowballAnnotations, calculateSnowballHighlights } from "../sc
 import { getModuleParser } from "../scripture/ParserCache";
 import { getScripture, ScriptureObject } from "../scripture/ScriptureAPI";
 import parseReference, { ScriptureBookChapters } from "../verseref/VerseRef";
-import { WorkspaceCell, workspaceCellSet } from "../workspace/Workspace";
+import { WorkspaceCell } from "../workspace/Types";
+import { workspaceCellSet } from "../workspace/Workspace";
 import { ScriptureCellData } from "./Cells/Scripture";
 import { annoKey, newScriptureWordAnnotation, ScriptureWordAnnotation, WordPosition } from "./ScriptureAnnotation";
 

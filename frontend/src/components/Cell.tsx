@@ -13,8 +13,9 @@ import {
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowDown, faArrowUp, faWindowClose } from "@fortawesome/free-solid-svg-icons";
-import { selectWorkspaceGlobal, TextSize, workspaceCellDelete, workspaceCellMove } from "../workspace/Workspace";
+import { selectWorkspaceGlobal, workspaceCellDelete, workspaceCellMove } from "../workspace/Workspace";
 import { useAppDispatch, useAppSelector } from "../exegete/hooks";
+import { TextSize } from "../workspace/Types";
 
 export const Cell: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     const global = useAppSelector(selectWorkspaceGlobal);

@@ -9,14 +9,8 @@ import Registry from "./CellRegistry";
 import { WorkspaceAutoSave } from "./Autosave";
 import { CurrentWorkspaceFormat, MigrateWorkspace } from "./WorkspaceMigrations";
 import { useAppDispatch } from "../exegete/hooks";
-import {
-    NewWorkspaceData,
-    TextSize,
-    WorkspaceData,
-    workspaceLoaded,
-    workspaceStart,
-    workspaceUnload,
-} from "./Workspace";
+import { workspaceLoaded, workspaceStart, workspaceUnload } from "./Workspace";
+import { NewWorkspaceData, TextSize, WorkspaceData } from "./Types";
 
 export const WorkspaceProvider: React.FC<React.PropsWithChildren<{ id: string; local: boolean }>> = ({
     children,
@@ -82,10 +76,10 @@ export const createWorkspace = async (local: boolean) => {
     return newData.id;
 };
 
-export const deleteWorkspace = (id: string, local: boolean) => {
+export const deleteWorkspace = async (id: string, local: boolean) => {
     if (local) {
         deleteWorkspaceLocal(id);
     } else {
-        deleteWorkspaceAPI(id);
+        await deleteWorkspaceAPI(id);
     }
 };

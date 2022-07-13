@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CellFC, NewCellDataFn, selectWorkspaceCell, workspaceCellSet, WorkspaceData } from "../../workspace/Workspace";
+import { CellFC, selectWorkspaceCell, workspaceCellSet } from "../../workspace/Workspace";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import ReactMarkdown from "react-markdown";
 import React from "react";
@@ -8,6 +8,7 @@ import { RegistryEntry } from "../../workspace/CellRegistry";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import { useAppDispatch, useAppSelector } from "../../exegete/hooks";
+import { NewCellDataFn, WorkspaceData } from "../../workspace/Types";
 
 export interface MarkdownNoteCellData {
     readonly text: string;

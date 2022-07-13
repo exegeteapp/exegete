@@ -1,6 +1,6 @@
 import { ApiAxiosRequestConfig } from "../user/JWT";
 import axios from "axios";
-import { NewWorkspaceData, WorkspaceMetadata } from "./Workspace";
+import { NewWorkspaceData, WorkspaceMetadata } from "./Types";
 
 export const loadWorkspaceAPI = async (id: string) => {
     const resp = await axios.get<WorkspaceMetadata>(`/api/v1/workspace/${id}`, ApiAxiosRequestConfig());

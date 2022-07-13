@@ -1,4 +1,4 @@
-import { WorkspaceData, WorkspaceMetadata } from "./Workspace";
+import { WorkspaceData, WorkspaceMetadata } from "./Types";
 
 // we write a migration any time there's a breaking change to the workspace
 // format. this includes changes to the definitions of the various cell types.

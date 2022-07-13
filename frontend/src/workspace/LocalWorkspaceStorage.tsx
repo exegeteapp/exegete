@@ -1,6 +1,6 @@
 import LZString from "lz-string";
 import { validate as uuidValidate } from "uuid";
-import { NewWorkspaceData, WorkspaceMetadata } from "./Workspace";
+import { NewWorkspaceData, WorkspaceMetadata } from "./Types";
 import { v4 } from "uuid";
 
 const idToKey = (id: string) => `workspace[${id}]`;
