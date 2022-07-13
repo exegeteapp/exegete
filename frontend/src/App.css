@@ -114,12 +114,23 @@ html {
 .toolbar-dropdown {
     background-color: rgb(108, 117, 125);
     list-style: none;
-    margin-left: 0;
+    padding-top: 6px;
+}
+
+.toolbar-dropdown:hover {
+    background-color: rgb(92, 99, 106);
 }
 
 .toolbar-dropdown > a {
     color: white;
+    padding-left: 8px;
+    padding-right: 8px;
 }
+
+.toolbar-dropdown > a:hover {
+    color: white;
+}
+
 
 .sponsors a {
     text-decoration: none;
