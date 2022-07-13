@@ -62,7 +62,7 @@ export const userSlice = createSlice({
         });
         builder.addCase(Logout.fulfilled, (state, action) => {
             state.user = action.payload.user;
-            state.valid = false;
+            state.valid = true; // we concretely know that we have no user
         });
         builder.addCase(Bootstrap.fulfilled, (state, action) => {
             const user = action.payload;
