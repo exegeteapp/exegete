@@ -396,7 +396,7 @@ const WorkspaceHeader: RefsFC = ({ refs }) => {
         modals.push(
             <GospelParallelModal
                 key={modals.length + 1}
-                show={showRenameWorkspaceModal}
+                show={showGospelParallelModal}
                 setShow={setShowGospelParallelModal}
             />
         );
