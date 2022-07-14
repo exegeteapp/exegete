@@ -111,9 +111,7 @@ export const GospelParallelModal: React.FC<
                             {options}
                         </Input>
                     </FormGroup>
-                    <FormGroup>
-                        <p>{description}</p>
-                    </FormGroup>
+                    <FormGroup>{description}</FormGroup>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" onClick={open} disabled={!canAdd}>
