@@ -72,7 +72,7 @@ const Texts: React.FC<React.PropsWithChildren<unknown>> = () => {
             <p>The following texts are available within exegete.app:</p>
             <ul>{entries()}</ul>
             <p>
-                The database of Gospel parallels is based upon that layed out in{" "}
+                The database of Gospel parallels is based upon that laid out in{" "}
                 <a
                     className="text-muted"
                     href="https://bible.org/assets/pdf/White_ntsynopsis.pdf"
