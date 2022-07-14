@@ -8,7 +8,12 @@
 // have been excluded.
 //
 
-interface ParallelText {
+import { getModuleParser } from "../scripture/ParserCache";
+import { ModuleInfo } from "../scripture/ScriptureCatalog";
+import { CompareResult, cv_compare, cv_end, cv_start } from "../verseref/VerseComparison";
+import parseReference, { ScriptureBookChapters } from "../verseref/VerseRef";
+
+interface GospelParallelText {
     title: string;
     mt?: string;
     mk?: string;
@@ -16,7 +21,7 @@ interface ParallelText {
     jn?: string;
 }
 
-export const parallels: ParallelText[] = [
+const parallels: GospelParallelText[] = [
     {
         title: "Prologue",
         mt: "1:1",
@@ -237,7 +242,7 @@ export const parallels: ParallelText[] = [
     },
     {
         title: "Jesus is Rejected at Nazareth",
-        mt: "13:53-48",
+        mt: "13:53-58",
         mk: "6:1-6", // FIXME: 6a
     },
     {
@@ -633,7 +638,7 @@ export const parallels: ParallelText[] = [
     {
         title: "Jesus Mocked by the Soldiers",
         mt: "27:27-31", // FIXME: 31a
-        mk: "15:16-20a", // FIXME: 20a
+        mk: "15:16-20", // FIXME: 20a
     },
     {
         title: "The Road to Golgotha",
@@ -710,3 +715,92 @@ export const parallels: ParallelText[] = [
         lk: "24:44-53",
     },
 ];
+
+export type Database = [string, GospelParallelText, ScriptureBookChapters][];
+
+export const MakeGospelParallelsDatabase = (module: ModuleInfo, shortcode: string) => {
+    const parser = getModuleParser(module, shortcode);
+    const parse = (entries: ScriptureBookChapters, prefix: string, ref: string | undefined) => {
+        if (ref === undefined) {
+            return;
+        }
+        const s = prefix + ref;
+        const res = parseReference(module, parser, s);
+        if (!res.success) {
+            throw new Error("Broken reference in parallel text database: " + s);
+        }
+        if (res.sbcs.length > 1) {
+            throw new Error("Reference spans SBSCs in parallel text database: " + s);
+        } else if (res.sbcs.length === 0) {
+            throw new Error("Reference empty SBSCs in parallel text database: " + s);
+        }
+        entries.push(res.sbcs[0]);
+    };
+    const lookup: Database = [];
+    parallels.forEach((parallel, i) => {
+        const entries: ScriptureBookChapters = [];
+        parse(entries, "Matthew ", parallel.mt);
+        parse(entries, "Mark ", parallel.mk);
+        parse(entries, "Luke ", parallel.lk);
+        parse(entries, "John ", parallel.jn);
+        lookup.push(["gp" + i, parallel, entries]);
+    });
+    return lookup;
+};
+
+export type ParallelSearchResult = [string, GospelParallelText, ScriptureBookChapters][];
+
+export const ParallelSearch = (
+    module: ModuleInfo,
+    shortcode: string,
+    db: Database,
+    s: string
+): ParallelSearchResult => {
+    // a simple interface: we search for `s` against the title of each parallel text,
+    // and also interpreting it as a verse reference. if it is a valid verse reference,
+    // any parallel text which intersects the verse reference will be returned
+
+    const parse = () => {
+        const parser = getModuleParser(module, shortcode);
+        const res = parseReference(module, parser, s);
+        if (res.success) {
+            return res.sbcs;
+        }
+    };
+
+    const matches: [string, GospelParallelText, ScriptureBookChapters][] = [];
+    const s_sbcs = parse();
+    const s_lower = s.toLowerCase();
+
+    db.forEach(([identifier, parallel, entries]) => {
+        if (parallel.title.toLowerCase().includes(s_lower)) {
+            matches.push([identifier, parallel, entries]);
+            return;
+        }
+        if (s_sbcs) {
+            for (const entry of entries) {
+                const cv_entry_start = cv_start(entry);
+                const cv_entry_end = cv_end(entry);
+                // if any part of `sbc` intersects with the entry, then we have a match
+                for (const sbc of s_sbcs) {
+                    if (sbc.book !== entry.book) {
+                        continue;
+                    }
+                    const cv_sbc_start = cv_start(sbc);
+                    const cv_sbc_end = cv_end(sbc);
+                    if (cv_compare(cv_sbc_start, cv_entry_end) === CompareResult.AFTER) {
+                        continue;
+                    }
+                    if (cv_compare(cv_sbc_end, cv_entry_start) === CompareResult.BEFORE) {
+                        continue;
+                    }
+                    // we have an overlap!
+                    matches.push([identifier, parallel, entries]);
+                    return;
+                }
+            }
+        }
+    });
+
+    return matches;
+};

@@ -4,7 +4,7 @@ import { deleteWorkspaceAPI } from "./APIWorkspaceStorage";
 import { createWorkspaceAPI } from "../workspace/APIWorkspaceStorage";
 import { createWorkspaceLocal } from "../workspace/LocalWorkspaceStorage";
 import { v4 } from "uuid";
-import { makeNewCell } from "./Cell";
+import { makeNewCellFromLauncher } from "./Cell";
 import Registry from "./CellRegistry";
 import { WorkspaceAutoSave } from "./Autosave";
 import { CurrentWorkspaceFormat } from "./WorkspaceMigrations";
@@ -40,7 +40,7 @@ export const createWorkspace = async (local: boolean) => {
     const newSlug = "scripture";
     const data = {
         ...defaultDocument,
-        cells: [makeNewCell(defaultDocument, newSlug, Registry[newSlug], Registry[newSlug].launchers[0])],
+        cells: [makeNewCellFromLauncher(defaultDocument, newSlug, Registry[newSlug], Registry[newSlug].launchers[0])],
     };
     const newData: NewWorkspaceData = {
         id: v4(),

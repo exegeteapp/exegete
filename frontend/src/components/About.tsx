@@ -61,8 +61,29 @@ const Texts: React.FC<React.PropsWithChildren<unknown>> = () => {
     };
     return (
         <div>
+            <p>
+                exegete.app is made possible by the provision of freely-licensed Biblical translations, and other
+                resources. Our thanks go to{" "}
+                <a className="text-muted" href="https://sefaria.org" target="_blank" rel="noreferrer">
+                    Sefaria
+                </a>
+                , The Jewish Publication Society, and the publishers of the NET Bible, for making these works available.
+            </p>
             <p>The following texts are available within exegete.app:</p>
             <ul>{entries()}</ul>
+            <p>
+                The database of Gospel parallels is based upon that layed out in{" "}
+                <a
+                    className="text-muted"
+                    href="https://bible.org/assets/pdf/White_ntsynopsis.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    White, Gregory A. The NET Bible: Synopsis of the Four Gospels. Richardson: Biblical Studies Press,
+                    2005
+                </a>
+                .
+            </p>
         </div>
     );
 };
@@ -154,7 +175,7 @@ export const About: React.FC<React.PropsWithChildren<unknown>> = () => {
                 </Row>
                 <Row className="mt-4">
                     <Col md={{ size: 8, offset: 2 }}>
-                        <h1>Texts</h1>
+                        <h1>Texts and other resources</h1>
                     </Col>
                 </Row>
                 <Row className="sponsors mt-4">

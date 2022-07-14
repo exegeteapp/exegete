@@ -31,12 +31,13 @@ import Error from "./Cells/Error";
 import { BaseHeader } from "./Header";
 import useInput from "../util/useInput";
 import Registry from "../workspace/CellRegistry";
-import { makeNewCell } from "../workspace/Cell";
+import { makeNewCellFromLauncher } from "../workspace/Cell";
 import { Helmet } from "react-helmet-async";
 import { Footer } from "./Footer";
 import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 import { WorkspaceProvider } from "../workspace/WorkspaceProvider";
 import { TextSize } from "../workspace/Types";
+import { GospelParallelModal } from "./GospelParallelModal";
 
 type RefsFC = React.FC<React.PropsWithChildren<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>>;
 
@@ -109,10 +110,10 @@ const RenameWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; se
 
     return (
         <>
-            <Modal toggle={() => setShow(!show)} isOpen={true}>
+            <Modal autoFocus={false} toggle={() => setShow(!show)} isOpen={true}>
                 <ModalHeader toggle={() => setShow(!show)}>Rename Workspace</ModalHeader>
                 <ModalBody>
-                    <Input type="text" {...newTitle}></Input>
+                    <Input autoFocus={true} type="text" {...newTitle}></Input>
                 </ModalBody>
                 <ModalFooter>
                     <Button color="primary" onClick={save}>
@@ -298,7 +299,12 @@ const ViewMenu: React.FC<React.PropsWithChildren<unknown>> = () => {
     );
 };
 
-const ToolsMenu: RefsFC = ({ refs }) => {
+const ToolsMenu: React.FC<
+    React.PropsWithChildren<{
+        setShowGospelParallelModal: React.Dispatch<React.SetStateAction<boolean>>;
+        refs: React.MutableRefObject<(HTMLDivElement | null)[]>;
+    }>
+> = ({ setShowGospelParallelModal, refs }) => {
     const state = useAppSelector(selectWorkspace);
     const dispatch = useAppDispatch();
     const cells = state.workspace ? state.workspace.data.cells : [];
@@ -311,7 +317,7 @@ const ToolsMenu: RefsFC = ({ refs }) => {
         for (let i = 0; i < defn.launchers.length; i++) {
             const launcher = defn.launchers[i];
             const newCell = () => {
-                dispatch(workspaceCellAdd(makeNewCell(state.workspace!.data, key, defn, launcher)));
+                dispatch(workspaceCellAdd(makeNewCellFromLauncher(state.workspace!.data, key, defn, launcher)));
                 setNewlyAdded(true);
             };
             items.push(
@@ -369,6 +375,7 @@ const ToolsMenu: RefsFC = ({ refs }) => {
             </DropdownToggle>
             <DropdownMenu md-end={"true"} color="dark" dark>
                 {items}
+                <DropdownItem onClick={() => setShowGospelParallelModal(true)}>Add Gospel Parallel</DropdownItem>
                 {jumpItems.length > 0 ? <DropdownItem key="divider" divider /> : <></>}
                 {jumpItems}
             </DropdownMenu>
@@ -378,12 +385,22 @@ const ToolsMenu: RefsFC = ({ refs }) => {
 
 const WorkspaceHeader: RefsFC = ({ refs }) => {
     const title = useAppSelector(selectWorkspaceTitle);
+    const [showGospelParallelModal, setShowGospelParallelModal] = React.useState(false);
     const [showRenameWorkspaceModal, setShowRenameWorkspaceModal] = React.useState(false);
     const [showDeleteWorkspaceModal, setShowDeleteWorkspaceModal] = React.useState(false);
 
     // there's no point having modals in the DOM all the time, and it complicates state management.
     // we pop them into existence when needed.
     const modals: JSX.Element[] = [];
+    if (showGospelParallelModal) {
+        modals.push(
+            <GospelParallelModal
+                key={modals.length + 1}
+                show={showRenameWorkspaceModal}
+                setShow={setShowGospelParallelModal}
+            />
+        );
+    }
     if (showRenameWorkspaceModal) {
         modals.push(
             <RenameWorkspaceModal
@@ -414,7 +431,7 @@ const WorkspaceHeader: RefsFC = ({ refs }) => {
                 />
                 <EditMenu />
                 <ViewMenu />
-                <ToolsMenu refs={refs} />
+                <ToolsMenu refs={refs} setShowGospelParallelModal={setShowGospelParallelModal} />
             </BaseHeader>
         </>
     );
