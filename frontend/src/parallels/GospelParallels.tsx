@@ -434,7 +434,7 @@ const parallels: GospelParallelText[] = [
         title: "The Cursing of the Fig Tree",
         mt: "21:18-19",
         mk: "11:12-14",
-        lk: "13:69",
+        lk: "13:6-9",
     },
     {
         title: "The Cleansing of the Temple",
