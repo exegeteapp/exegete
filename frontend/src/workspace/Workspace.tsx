@@ -351,6 +351,12 @@ export const {
 
 export const selectWorkspace = (state: RootState) => state.workspace;
 export const selectWorkspaceCellListing = (state: RootState) => state.workspace.cell_listing;
+export const selectWorkspaceId = (state: RootState) => {
+    if (state.workspace.workspace) {
+        return state.workspace.workspace.id;
+    }
+    return undefined;
+};
 export const selectWorkspaceTitle = (state: RootState) => {
     if (state.workspace.workspace) {
         return state.workspace.workspace.title;

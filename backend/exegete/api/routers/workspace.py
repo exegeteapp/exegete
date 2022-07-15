@@ -48,7 +48,6 @@ async def download_workspace(id, user: User = Depends(current_user)):
 
     fd = io.BytesIO()
     workspace_data = WorkspaceOut.parse_obj(await fetch_workspace_from_db(user, id))
-    filename = "{}.exegete".format(make_filename(workspace_data.title))
     with zipfile.ZipFile(fd, "w") as zip_file:
         zip_file.writestr("exegete/{}.json".format(id), workspace_data.json())
         zip_file.writestr(
@@ -60,7 +59,6 @@ async def download_workspace(id, user: User = Depends(current_user)):
     return StreamingResponse(
         iter([fd.getvalue()]),
         media_type="application/x-exegete-workspace",
-        headers={"Content-Disposition": f"attachment;filename=%s" % filename},
     )
 
 

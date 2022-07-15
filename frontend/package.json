@@ -37,6 +37,7 @@
         "react-router-dom": "^6.3.0",
         "react-scripts": "5.0.0",
         "reactstrap": "^9.0.1",
+        "sanitize-filename": "^1.6.3",
         "slate": "^0.76.1",
         "slate-history": "^0.66.0",
         "slate-react": "^0.76.1",

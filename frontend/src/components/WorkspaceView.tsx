@@ -26,6 +26,7 @@ import {
     selectWorkspaceTitle,
     workspaceUndo,
     workspaceRedo,
+    selectWorkspaceId,
 } from "../workspace/Workspace";
 import Error from "./Cells/Error";
 import { BaseHeader } from "./Header";
@@ -38,6 +39,7 @@ import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 import { WorkspaceProvider } from "../workspace/WorkspaceProvider";
 import { TextSize } from "../workspace/Types";
 import { GospelParallelModal } from "./GospelParallelModal";
+import { downloadWorkspaceAPI } from "../workspace/APIWorkspaceStorage";
 
 type RefsFC = React.FC<React.PropsWithChildren<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>>;
 
@@ -164,12 +166,18 @@ const DeleteWorkspaceModal: React.FC<React.PropsWithChildren<{ show: boolean; se
 
 const WorkspaceMenu: React.FC<
     React.PropsWithChildren<{
+        id: string | undefined;
         title: string;
         setShowRenameWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
         setShowDeleteWorkspaceModal: React.Dispatch<React.SetStateAction<boolean>>;
     }>
-> = ({ title, setShowRenameWorkspaceModal, setShowDeleteWorkspaceModal }) => {
+> = ({ id, title, setShowRenameWorkspaceModal, setShowDeleteWorkspaceModal }) => {
     const navigate = useNavigate();
+    const downloadWorkspace = () => {
+        if (id) {
+            downloadWorkspaceAPI(id, title);
+        }
+    };
     return (
         <UncontrolledDropdown nav>
             <DropdownToggle caret nav>
@@ -178,6 +186,7 @@ const WorkspaceMenu: React.FC<
             <DropdownMenu md-end={"true"} color="dark" dark>
                 <DropdownItem onClick={() => setShowRenameWorkspaceModal(true)}>Rename</DropdownItem>
                 <DropdownItem onClick={() => setShowDeleteWorkspaceModal(true)}>Delete</DropdownItem>
+                <DropdownItem onClick={() => downloadWorkspace()}>Download</DropdownItem>
                 <DropdownItem onClick={() => navigate("/")}>Close</DropdownItem>
             </DropdownMenu>
         </UncontrolledDropdown>
@@ -384,6 +393,7 @@ const ToolsMenu: React.FC<
 };
 
 const WorkspaceHeader: RefsFC = ({ refs }) => {
+    const id = useAppSelector(selectWorkspaceId);
     const title = useAppSelector(selectWorkspaceTitle);
     const [showGospelParallelModal, setShowGospelParallelModal] = React.useState(false);
     const [showRenameWorkspaceModal, setShowRenameWorkspaceModal] = React.useState(false);
@@ -425,6 +435,7 @@ const WorkspaceHeader: RefsFC = ({ refs }) => {
             {modals}
             <BaseHeader>
                 <WorkspaceMenu
+                    id={id}
                     title={title || "(loading)"}
                     setShowDeleteWorkspaceModal={setShowDeleteWorkspaceModal}
                     setShowRenameWorkspaceModal={setShowRenameWorkspaceModal}
