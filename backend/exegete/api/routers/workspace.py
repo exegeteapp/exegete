@@ -1,10 +1,14 @@
 from typing import List
 
+import zipfile
 import asyncpg
 import jsonschema
+import datetime
 import sqlalchemy
+import io
 from exegete.workspace.manager import WorkspaceManager
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import StreamingResponse
 
 from ..db import User, Workspace, async_engine
 from ..schemas import WorkspaceIn, WorkspaceOut
@@ -14,11 +18,10 @@ workspace_router = APIRouter(prefix="/workspace", tags=["workspace"])
 workspace_manager = WorkspaceManager()
 
 
-@workspace_router.get("/{id:uuid}", response_model=WorkspaceOut)
-async def get_workspace(
-    id,
-    user: User = Depends(current_user),
-):
+async def fetch_workspace_from_db(user, id):
+    """
+    this function won't return the database if the user doesn't own it.
+    """
     async with async_engine.connect() as conn:
         workspace = Workspace.__table__.select().filter(
             Workspace.owner_id == user.id, Workspace.id == id
@@ -27,6 +30,38 @@ async def get_workspace(
             return (await conn.execute(workspace)).one()
         except sqlalchemy.exc.NoResultFound:
             raise HTTPException(403, "Workspace not found or permissions error.")
+
+
+@workspace_router.get("/{id:uuid}", response_model=WorkspaceOut)
+async def get_workspace(
+    id,
+    user: User = Depends(current_user),
+):
+    return await fetch_workspace_from_db(user, id)
+
+
+@workspace_router.get("/download/{id:uuid}")
+async def download_workspace(id, user: User = Depends(current_user)):
+    def make_filename(s):
+        keepcharacters = (" ", "_")
+        return "".join(c for c in s if c.isalnum() or c in keepcharacters).rstrip()
+
+    fd = io.BytesIO()
+    workspace_data = WorkspaceOut.parse_obj(await fetch_workspace_from_db(user, id))
+    filename = "{}.exegete".format(make_filename(workspace_data.title))
+    with zipfile.ZipFile(fd, "w") as zip_file:
+        zip_file.writestr("exegete/{}.json".format(id), workspace_data.json())
+        zip_file.writestr(
+            "README.txt".format(id),
+            "This is an workspace exported from https://exegete.app/ on {}\n".format(
+                datetime.datetime.now().isoformat()
+            ),
+        )
+    return StreamingResponse(
+        iter([fd.getvalue()]),
+        media_type="application/x-exegete-workspace",
+        headers={"Content-Disposition": f"attachment;filename=%s" % filename},
+    )
 
 
 @workspace_router.get("/", response_model=List[WorkspaceOut])
