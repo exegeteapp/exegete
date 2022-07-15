@@ -1,8 +1,8 @@
 import { Table } from "reactstrap";
-import { WorkspaceMetadata } from "../workspace/Types";
 import { Link } from "react-router-dom";
+import { SortableWorkspaceListingMetadata } from "./UserHome";
 
-const WorkspaceList = ({ workspaces }: { workspaces: WorkspaceMetadata[] }) => {
+const WorkspaceList = ({ workspaces }: { workspaces: SortableWorkspaceListingMetadata[] }) => {
     const render_date = (d: Date | null) => {
         if (!d) {
             return "";

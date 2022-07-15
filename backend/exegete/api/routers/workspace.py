@@ -11,7 +11,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
 from ..db import User, Workspace, async_engine
-from ..schemas import WorkspaceIn, WorkspaceOut
+from ..schemas import WorkspaceIn, WorkspaceOut, WorkspaceListingOut
 from ..users import current_user
 
 workspace_router = APIRouter(prefix="/workspace", tags=["workspace"])
@@ -48,10 +48,13 @@ async def download_workspace(id, user: User = Depends(current_user)):
 
     fd = io.BytesIO()
     workspace_data = WorkspaceOut.parse_obj(await fetch_workspace_from_db(user, id))
-    with zipfile.ZipFile(fd, "w") as zip_file:
-        zip_file.writestr("exegete/{}.json".format(id), workspace_data.json())
+    with zipfile.ZipFile(
+        fd, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9
+    ) as zip_file:
+        pfx = "exegete/{}/".format(id)
+        zip_file.writestr("{}/workspace.json".format(pfx), workspace_data.json())
         zip_file.writestr(
-            "README.txt".format(id),
+            "{}/README.txt".format(pfx),
             "This is an workspace exported from https://exegete.app/ on {}\n".format(
                 datetime.datetime.now().isoformat()
             ),
@@ -62,7 +65,7 @@ async def download_workspace(id, user: User = Depends(current_user)):
     )
 
 
-@workspace_router.get("/", response_model=List[WorkspaceOut])
+@workspace_router.get("/", response_model=List[WorkspaceListingOut])
 async def list_workspaces(
     user: User = Depends(current_user),
 ):

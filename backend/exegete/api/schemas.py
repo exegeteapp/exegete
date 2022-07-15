@@ -32,6 +32,16 @@ class WorkspaceOut(BaseModel):
         arbitrary_types_allowed = True
 
 
+class WorkspaceListingOut(BaseModel):
+    id: UUID
+    title: str
+    created: datetime.datetime
+    updated: Optional[datetime.datetime]
+
+    class Config:
+        arbitrary_types_allowed = True
+
+
 class WorkspaceIn(BaseModel):
     title: str
     data: dict

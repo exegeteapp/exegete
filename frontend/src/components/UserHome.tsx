@@ -1,27 +1,37 @@
 import React from "react";
 import { Container } from "reactstrap";
-import { WorkspaceMetadata } from "../workspace/Types";
-import { getWorkspaces } from "../workspace/Get";
 import NewWorkspaceButton from "./NewWorkspaceButton";
 import WorkspaceList from "./WorkspaceList";
 import { useAppSelector } from "../exegete/hooks";
 import { selectUser } from "../user/User";
+import { useGetWorkspaceQuery } from "../api/apiauth";
+
+// we want to convert the JSON object described below into
+// an object with JS data types
+export interface SortableWorkspaceListingMetadata {
+    readonly id: string;
+    readonly title: string;
+    readonly created: Date;
+    readonly updated: Date | null;
+}
+
+const date_n = (d: string | null) => {
+    if (!d) {
+        return null;
+    }
+    return new Date(d);
+};
 
 function UserHome() {
-    const [workspaces, setWorkspaces] = React.useState<WorkspaceMetadata[]>([]);
     const state = useAppSelector(selectUser);
+    const workspaces = useGetWorkspaceQuery(undefined, { refetchOnReconnect: true, refetchOnFocus: true });
 
-    React.useEffect(
-        () => {
-            async function get() {
-                const w = await getWorkspaces();
-                w.sort((a, b) => (b.updated || b.created).getTime() - (a.updated || a.created).getTime());
-                setWorkspaces(w);
-            }
-            get();
-        },
-        [] // only run once
-    );
+    const listing: SortableWorkspaceListingMetadata[] = (workspaces.data || []).map((w) => ({
+        ...w,
+        created: new Date(w.created),
+        updated: date_n(w.updated),
+    }));
+    listing.sort((a, b) => (b.updated || b.created).getTime() - (a.updated || a.created).getTime());
 
     return (
         <>
@@ -30,7 +40,7 @@ function UserHome() {
                 <NewWorkspaceButton local={false} color="success">
                     Create new workspace
                 </NewWorkspaceButton>
-                <WorkspaceList workspaces={workspaces} />
+                <WorkspaceList workspaces={listing} />
             </Container>
         </>
     );
