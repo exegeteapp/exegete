@@ -31,37 +31,39 @@ export interface ScriptureParams extends ScriptureBookChapter {
 }
 
 // scripture is small (kilobytes), and complicated exegesis might do lots of queries
-const CACHE_SIZE = 1024;
-let scriptureCache: [string, ScriptureObject[]][] = [];
+let scriptureCache: [string, Promise<ScriptureObject[]>][] = [];
 
 const cache_key = (params: ScriptureParams): string => {
     return `${params.shortcode}_${params.book}_${params.chapter_start}_${params.verse_start}_${params.chapter_end}_${params.verse_end}`;
 };
 
-export const getScripture = async (params: ScriptureParams): Promise<ReadonlyArray<ScriptureObject>> => {
+export const getScripture = async (params: ScriptureParams): Promise<ScriptureObject[]> => {
+    const make_promise = async () => {
+        try {
+            const { book, shortcode, ...range } = params;
+            const url = `/api/v1/scripture/verses/${shortcode}/${book}`;
+            const resp = await axios.get<ScriptureObject[]>(url, { params: range });
+            return resp.data;
+        } catch (error: any) {
+            return [
+                {
+                    type: "error",
+                    chapter_start: 0,
+                    chapter_end: 0,
+                    verse_start: 0,
+                    verse_end: 0,
+                    text: [],
+                },
+            ];
+        }
+    };
+
     const key = cache_key(params);
     const match = scriptureCache.find(([k]) => key === k);
     if (match) {
         return match[1];
-    } else {
     }
-    try {
-        const { book, shortcode, ...range } = params;
-        const url = `/api/v1/scripture/verses/${shortcode}/${book}`;
-        const resp = await axios.get<ScriptureObject[]>(url, { params: range });
-        scriptureCache.push([key, resp.data]);
-        scriptureCache = scriptureCache.slice(-CACHE_SIZE);
-        return resp.data;
-    } catch (error: any) {
-        return [
-            {
-                type: "error",
-                chapter_start: 0,
-                chapter_end: 0,
-                verse_start: 0,
-                verse_end: 0,
-                text: [],
-            },
-        ];
-    }
+    const promise = make_promise();
+    scriptureCache.push([key, promise]);
+    return promise;
 };
