@@ -293,6 +293,7 @@ const toggleOnSelection = (editor: Editor, key: string, value: string) => {
         },
         split: false,
         mode: "lowest",
+        hanging: true,
     });
 };
 
@@ -578,7 +579,7 @@ export const ScriptureEditor: React.FC<
         };
 
         const onKeyDown: React.KeyboardEventHandler<HTMLDivElement> = (event) => {
-            // let's not tampr with special keys
+            // let's not tamper with special keys
             if (event.metaKey || event.ctrlKey || event.altKey) {
                 return;
             }
