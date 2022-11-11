@@ -10,12 +10,10 @@ See our [about page](https://exegete.app/about) for more information.
 
 2. run up the `docker-compose` environment.
 
-3. Import the NET Bible and the SBL-GNT
+3. Import the basic Biblical texts.
 
 ```bash
-docker compose exec backend bash
-python -m exegete.text.ingest.netbible /data/exegete-data/NET-bible/json/
-python -m exegete.text.ingest.sblgnt /data/exegete-data/SBLGNT/
-python -m exegete.text.ingest.njps /data/exegete-data/NJPS/
+docker-compose exec backend bash
+./scripts/run-import.sh
 ```
 
