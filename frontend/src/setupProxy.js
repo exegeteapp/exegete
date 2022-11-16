@@ -4,21 +4,21 @@ module.exports = function (app) {
     app.use(
         "/api",
         createProxyMiddleware({
-            target: "http://localhost:8000",
+            target: "http://127.0.0.1:8000",
             changeOrigin: true,
         })
     );
     app.use(
         "/docs",
         createProxyMiddleware({
-            target: "http://localhost:8000",
+            target: "http://127.0.0.1:8000",
             changeOrigin: true,
         })
     );
     app.use(
         "/openapi.json",
         createProxyMiddleware({
-            target: "http://localhost:8000",
+            target: "http://127.0.0.1:8000",
             changeOrigin: true,
         })
     );
