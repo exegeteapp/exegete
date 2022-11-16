@@ -45,7 +45,7 @@ function ForgotPassword() {
                 <Row>
                     <Col sm={{ size: 6, offset: 3 }}>
                         {failureMessage()}
-                        <Form inline onSubmit={handleSubmit}>
+                        <Form onSubmit={handleSubmit}>
                             <FormGroup>
                                 <Label for="email" hidden>
                                     Email

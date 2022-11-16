@@ -81,7 +81,7 @@ function Register() {
                     <Col sm={{ size: 6, offset: 3 }}>
                         <h1 className="display-3">Sign up</h1>
                         {failureMessage()}
-                        <Form inline onSubmit={submit}>
+                        <Form onSubmit={submit}>
                             <FormGroup>
                                 <Label for="name" hidden>
                                     Name

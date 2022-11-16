@@ -11,9 +11,9 @@ import parseReference, { ScriptureBookChapters } from "../verseref/VerseRef";
 import { WorkspaceCell } from "../workspace/Types";
 import { workspaceCellSet } from "../workspace/Workspace";
 import { ScriptureCellData } from "./Cells/Scripture";
-import { annoKey, newScriptureWordAnnotation, ScriptureWordAnnotation, WordPosition } from "./ScriptureAnnotation";
+import { newScriptureWordAnnotation } from "./ScriptureAnnotation";
 
-export const HighlightRepititionButton: React.FC<
+export const HighlightRepetitionButton: React.FC<
     React.PropsWithChildren<{
         cell: WorkspaceCell<ScriptureCellData>;
         editing: boolean;
@@ -22,7 +22,19 @@ export const HighlightRepititionButton: React.FC<
     const { data: catalog } = useGetScriptureCatalogQuery();
     const dispatch = useAppDispatch();
 
-    const HighlightRepitition = () => {
+    const haveRepAnnotations = cell.data.columns.some((column) => column.repAnnotation.length > 0);
+
+    const toggleHighlightRepetition = () => {
+        if (haveRepAnnotations) {
+            // toggle off by removing all repAnnotations
+            const new_columns = cell.data.columns.map((column) => ({
+                ...column,
+                repAnnotation: [],
+            }));
+            dispatch(workspaceCellSet([cell.uuid, { ...cell.data, columns: new_columns }]));
+            return;
+        }
+
         if (!catalog) {
             return;
         }
@@ -50,30 +62,10 @@ export const HighlightRepititionButton: React.FC<
                 const sbcs = column_sbcs[index];
                 const objs = column_scriptures[index];
                 const annotations = calculateSnowballAnnotations(column.shortcode, sbcs, objs, highlights);
-
-                const annoMap = new Map<string, [WordPosition, ScriptureWordAnnotation]>();
-
-                for (const [position, a] of column.annotation) {
-                    annoMap.set(annoKey(position), [position, a]);
-                }
-                for (const [position, highlight] of annotations) {
-                    const entry = annoMap.get(annoKey(position));
-                    if (entry) {
-                        annoMap.set(annoKey(position), [entry[0], { ...entry[1], highlight: highlight }]);
-                    } else {
-                        annoMap.set(annoKey(position), [
-                            position,
-                            {
-                                ...newScriptureWordAnnotation(),
-                                highlight: highlight,
-                            },
-                        ]);
-                    }
-                }
-                const newAnno = Array.from(annoMap).map(([key, [position, annotation]]) => {
-                    return [position, annotation];
+                const newAnno = Array.from(annotations).map(([position, highlight]) => {
+                    return [position, { ...newScriptureWordAnnotation(), highlight: highlight }];
                 });
-                return { ...column, annotation: newAnno };
+                return { ...column, repAnnotation: newAnno };
             });
             dispatch(workspaceCellSet([cell.uuid, { ...cell.data, columns: new_columns }]));
         });
@@ -81,10 +73,10 @@ export const HighlightRepititionButton: React.FC<
 
     const id = `highlight${cell.uuid}`;
     return (
-        <Button id={id} onClick={() => HighlightRepitition()} disabled={editing}>
+        <Button id={id} active={haveRepAnnotations} onClick={() => toggleHighlightRepetition()} disabled={editing}>
             <FontAwesomeIcon icon={faRobot} />
             <UncontrolledTooltip autohide placement="bottom" target={id}>
-                Highlight repitition
+                Highlight repetition
             </UncontrolledTooltip>
         </Button>
     );

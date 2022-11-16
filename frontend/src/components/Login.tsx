@@ -25,7 +25,7 @@ function Login() {
     return (
         <div>
             {failureMessage()}
-            <Form inline onSubmit={handleSubmit}>
+            <Form onSubmit={handleSubmit}>
                 <FormGroup>
                     <Label for="email" hidden>
                         Email

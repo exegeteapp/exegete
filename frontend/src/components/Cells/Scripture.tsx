@@ -8,9 +8,14 @@ import { faArrowLeft, faArrowRight, faHighlighter, faList, faTags } from "@forta
 import { RegistryEntry } from "../../workspace/CellRegistry";
 import { ScriptureViewer } from "../ScriptureViewer";
 import { ScriptureEditor } from "../ScriptureEditor";
-import { ScriptureWordAnnotation, ScriptureWordAnnotationFunctions, WordPosition } from "../ScriptureAnnotation";
+import {
+    mergeAnnotationArray,
+    ScriptureWordAnnotation,
+    ScriptureWordAnnotationFunctions,
+    WordPosition,
+} from "../ScriptureAnnotation";
 import { ModuleButton } from "../ModuleButton";
-import { HighlightRepititionButton } from "../HighlightRepitition";
+import { HighlightRepetitionButton } from "../HighlightRepetition";
 import { useAppDispatch, useAppSelector } from "../../exegete/hooks";
 import { WorkspaceData } from "../../workspace/Types";
 
@@ -22,6 +27,7 @@ export interface ScriptureCellColumn {
     readonly shortcode: string;
     readonly verseref: string;
     readonly annotation: AnnotationArray;
+    readonly repAnnotation: AnnotationArray;
 }
 
 export interface ScriptureCellData {
@@ -70,8 +76,24 @@ const ScriptureColumn: React.FC<
         setAnnotation: (index: number, new_annotation: [WordPosition, ScriptureWordAnnotation][]) => void;
     }>
 > = ({ index, data, editing, hidemarkup, separateverses, setAnnotation }) => {
+    const [mergedAnnotation, setMergedAnnotation] = React.useState<AnnotationArray>([]);
+
+    React.useEffect(() => {
+        const merged = mergeAnnotationArray(data.repAnnotation, data.annotation);
+        setMergedAnnotation(merged);
+    }, [data.annotation, data.repAnnotation]);
+
+    const merged_annotation_functions: ScriptureWordAnnotationFunctions = {
+        get: () => {
+            return mergedAnnotation;
+        },
+        set: (data) => setAnnotation(index, data),
+    };
+
     const annotation_functions: ScriptureWordAnnotationFunctions = {
-        get: () => data.annotation,
+        get: () => {
+            return data.annotation;
+        },
         set: (data) => setAnnotation(index, data),
     };
 
@@ -80,6 +102,7 @@ const ScriptureColumn: React.FC<
             shortcode={data.shortcode}
             verseref={data.verseref}
             annotation={annotation_functions}
+            repAnnotation={data.repAnnotation}
             separateverses={separateverses}
             hidemarkup={hidemarkup}
         />
@@ -88,7 +111,7 @@ const ScriptureColumn: React.FC<
             shortcode={data.shortcode}
             verseref={data.verseref}
             hidemarkup={hidemarkup}
-            annotation={annotation_functions}
+            annotation={merged_annotation_functions}
             separateverses={separateverses}
         />
     );
@@ -312,7 +335,7 @@ export const Scripture: CellFC = ({ uuid }) => {
                 uuid={cell.uuid}
                 buttons={[
                     <AnnotateButton key={0} />,
-                    <HighlightRepititionButton key={1} editing={editing} cell={cell} />,
+                    <HighlightRepetitionButton key={1} editing={editing} cell={cell} />,
                     <HideMarkupButton key={2} />,
                     <SeparateVersesButton key={3} />,
                     <RemoveColumnButton key={4} />,
@@ -347,6 +370,7 @@ export const ScriptureDefinition: RegistryEntry = {
                             shortcode: "NET",
                             verseref: "Matthew 6.26-34",
                             annotation: [],
+                            repAnnotation: [],
                         },
                     ],
                     false
@@ -362,16 +386,19 @@ export const ScriptureDefinition: RegistryEntry = {
                             shortcode: "NET",
                             verseref: "Matthew 3.13-17",
                             annotation: [],
+                            repAnnotation: [],
                         },
                         {
                             shortcode: "NET",
                             verseref: "Mark 1.9-11",
                             annotation: [],
+                            repAnnotation: [],
                         },
                         {
                             shortcode: "NET",
                             verseref: "Luke 3.21-22",
                             annotation: [],
+                            repAnnotation: [],
                         },
                     ],
                     false

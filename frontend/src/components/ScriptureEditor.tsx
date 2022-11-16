@@ -25,6 +25,7 @@ import { DistinguishableColours } from "../colours/distinguishable";
 import { useGetScriptureCatalogQuery } from "../api/api";
 import { useAppDispatch } from "../exegete/hooks";
 import { workspaceCanApplyHistory, workspaceCannotApplyHistory } from "../workspace/Workspace";
+import { AnnotationArray } from "./Cells/Scripture";
 
 const PermittedKeys = new Set<string>([
     " ",
@@ -60,6 +61,7 @@ type WordElement = {
     start_of_verse: boolean;
     children: CustomText[];
     position: WordPosition;
+    subStyle: WordAnnotation;
 } & WordAnnotation;
 
 type CustomText = {
@@ -140,29 +142,36 @@ const Word: React.FC<React.PropsWithChildren<RenderElementProps>> = ({ attribute
     if (element.type !== "word") {
         return <></>;
     }
-    const sourceDefn = getSource(element.source);
+
+    const layeredElement = {
+        ...element,
+        source: element.source ? element.source : element.subStyle.source,
+        display: element.display ? element.display : element.subStyle.display,
+        highlight: element.highlight ? element.highlight : element.subStyle.highlight,
+    };
+    const sourceDefn = getSource(layeredElement.source);
 
     let td = "none";
-    if (element.display === "strikethrough" && element.highlight) {
+    if (layeredElement.display === "strikethrough" && layeredElement.highlight) {
         td = "underline line-through";
-    } else if (element.display === "strikethrough") {
+    } else if (layeredElement.display === "strikethrough") {
         td = "line-through";
-    } else if (element.highlight) {
+    } else if (layeredElement.highlight) {
         td = "underline";
     }
 
     const style: React.CSSProperties = {
         ...NonEditableStyle(selected, focused),
         textDecoration: td,
-        opacity: element.display === "hidden" ? "25%" : "100%",
+        opacity: layeredElement.display === "hidden" ? "25%" : "100%",
         color: sourceDefn ? sourceDefn.colour : "black",
-        textDecorationColor: element.highlight ? element.highlight : "",
-        textDecorationThickness: element.highlight ? "5px" : "",
+        textDecorationColor: layeredElement.highlight ? layeredElement.highlight : "",
+        textDecorationThickness: layeredElement.highlight ? "5px" : "",
         textDecorationSkipInk: "none",
     };
     return (
         <span {...attributes} contentEditable={false} style={style}>
-            {element.value}
+            {layeredElement.value}
             {children}
         </span>
     );
@@ -172,13 +181,13 @@ const calculateInitialValue = async (
     shortcode: string,
     res: ParseResultSuccess,
     annotation: ScriptureWordAnnotationFunctions,
+    repAnnotation: AnnotationArray,
     separateverses: boolean,
     hidemarkup: boolean
 ): Promise<Descendant[]> => {
     const scripturePromises = res.sbcs.map((sbc) => getScripture({ ...sbc, shortcode: shortcode }));
     const scriptures = await Promise.all(scripturePromises);
     const anno = annotation.get();
-    const annoMap = new Map<string, ScriptureWordAnnotation>();
     const make_para = (elems_1: Descendant[]): ParaElement => {
         // the mandatory space at the start of every paragraph is there so the user can
         // get their cursor in before the first immutable/null word
@@ -187,11 +196,27 @@ const calculateInitialValue = async (
             children: [{ type: "text", text: " " }, ...elems_1],
         };
     };
+
+    const annoMap = new Map<string, ScriptureWordAnnotation>();
     for (const [p_2, a] of anno) {
         annoMap.set(annoKey(p_2), a);
     }
+    const repAnnoMap = new Map<string, ScriptureWordAnnotation>();
+    for (const [p_2, a] of repAnnotation) {
+        repAnnoMap.set(annoKey(p_2), a);
+    }
+
     const initialValue: ParaElement[] = [];
     let wordElem: Descendant[] = [];
+
+    const annoToStyle = (anno: ScriptureWordAnnotation | undefined) => {
+        return {
+            highlight: anno ? anno.highlight : "",
+            source: anno ? anno.source : "",
+            display: anno ? anno.display : "",
+        };
+    };
+
     for (let i = 0; i < scriptures.length; i++) {
         const book = res.sbcs[i].book;
         const objs = scriptures[i];
@@ -236,14 +261,14 @@ const calculateInitialValue = async (
                         text: wordAnno.preText,
                     });
                 }
+                const wordRepAnno = repAnnoMap.get(annoKey(position));
                 wordElem.push({
+                    ...annoToStyle(wordAnno),
+                    subStyle: annoToStyle(wordRepAnno),
                     type: "word",
                     value: word.value,
                     children: [{ type: "text", text: "" }],
-                    highlight: wordAnno ? wordAnno.highlight : "",
-                    source: wordAnno ? wordAnno.source : "",
                     start_of_verse: wi === 0,
-                    display: wordAnno ? wordAnno.display : "",
                     position,
                 });
                 wordElem.push({
@@ -452,7 +477,7 @@ const calculateAnnotations = (
                 const entry = annoMap.get(key);
                 let anno = entry ? entry[1] : undefined;
 
-                // bit of a hack: if we're in the separate verses mode, chop one of para_pending when we hit a
+                // bit of a hack: if we're in the separate verses mode, chop one off para_pending when we hit a
                 // new verse
                 if (child.start_of_verse && para_pending > 0 && separateverses) {
                     para_pending -= 1;
@@ -465,9 +490,9 @@ const calculateAnnotations = (
                     anno = {
                         ...anno,
                         paraSkip: para_pending,
-                        display: child.display,
-                        source: child.source,
-                        highlight: child.highlight,
+                        display: child.display || "",
+                        source: child.source || "",
+                        highlight: child.highlight || "",
                     };
                     para_pending = 0;
                 }
@@ -537,10 +562,11 @@ export const ScriptureEditor: React.FC<
         shortcode: string;
         verseref: string;
         annotation: ScriptureWordAnnotationFunctions;
+        repAnnotation: AnnotationArray;
         separateverses: boolean;
         hidemarkup: boolean;
     }>
-> = ({ shortcode, verseref, annotation, separateverses, hidemarkup }) => {
+> = ({ shortcode, verseref, annotation, repAnnotation, separateverses, hidemarkup }) => {
     const [editor] = React.useState(() => withReact(withWords(withHistory(createEditor()))));
     const { data: catalog } = useGetScriptureCatalogQuery();
     const dispatch = useAppDispatch();
@@ -609,20 +635,22 @@ export const ScriptureEditor: React.FC<
 
         if (res.success) {
             const eligibleGroups = determineEligibleGroups(module, res.sbcs);
-            calculateInitialValue(shortcode, res, annotation, separateverses, hidemarkup).then((initialValue) => {
-                if (isSubscribed) {
-                    setEditorElem(
-                        <Slate editor={editor} value={initialValue} onChange={onChange}>
-                            <HoveringToolbar groups={eligibleGroups} />
-                            <Editable
-                                className={languageClass(module.language)}
-                                renderElement={renderElement}
-                                onKeyDown={onKeyDown}
-                            />
-                        </Slate>
-                    );
+            calculateInitialValue(shortcode, res, annotation, repAnnotation, separateverses, hidemarkup).then(
+                (initialValue) => {
+                    if (isSubscribed) {
+                        setEditorElem(
+                            <Slate editor={editor} value={initialValue} onChange={onChange}>
+                                <HoveringToolbar groups={eligibleGroups} />
+                                <Editable
+                                    className={languageClass(module.language)}
+                                    renderElement={renderElement}
+                                    onKeyDown={onKeyDown}
+                                />
+                            </Slate>
+                        );
+                    }
                 }
-            });
+            );
         } else {
             setError();
         }
@@ -630,7 +658,7 @@ export const ScriptureEditor: React.FC<
         return () => {
             isSubscribed = false;
         };
-    }, [editor, catalog, shortcode, verseref, renderElement, annotation, separateverses, hidemarkup]);
+    }, [editor, catalog, shortcode, verseref, renderElement, annotation, repAnnotation, separateverses, hidemarkup]);
 
     return editorElem;
 };

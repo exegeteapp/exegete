@@ -62,7 +62,7 @@ function ResetPassword() {
                 <Row>
                     <Col sm={{ size: 6, offset: 3 }}>
                         {failureMessage()}
-                        <Form inline onSubmit={handleSubmit}>
+                        <Form onSubmit={handleSubmit}>
                             <FormGroup>
                                 <Label for="password" hidden>
                                     Password
