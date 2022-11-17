@@ -9,7 +9,7 @@ import useInput from "../util/useInput";
 import { makeNewCell } from "../workspace/Cell";
 import Registry from "../workspace/CellRegistry";
 import { selectWorkspace, workspaceCellAdd } from "../workspace/Workspace";
-import { ScriptureSlug } from "./Cells/Scripture";
+import { ScriptureCellColumn, ScriptureCellData, ScriptureSlug } from "./Cells/Scripture";
 
 export const GospelParallelModal: React.FC<
     React.PropsWithChildren<{ show: boolean; setShow: (v: boolean) => void }>
@@ -55,16 +55,17 @@ export const GospelParallelModal: React.FC<
     const describeSBC = (sbc: ScriptureBookChapter) => {
         return `${sbc.book} ${sbc.chapter_start}:${sbc.verse_start}-${sbc.chapter_end}:${sbc.verse_end}`;
     };
-    const makeSC = () => {
+    const makeSC = (): ScriptureCellData | undefined => {
         if (!selectedEntry) {
-            return [];
+            return undefined;
         }
         const [, , sbcs] = selectedEntry;
-        const columns = sbcs.map((sbc) => {
+        const columns: ScriptureCellColumn[] = sbcs.map((sbc) => {
             return {
                 shortcode: "NET",
                 verseref: describeSBC(sbc),
                 annotation: [],
+                repAnnotation: [],
             };
         });
         return {
@@ -77,7 +78,10 @@ export const GospelParallelModal: React.FC<
     const open = () => {
         const key = ScriptureSlug;
         const defn = Registry[key];
-        dispatch(workspaceCellAdd(makeNewCell(state.workspace!.data, ScriptureSlug, defn, makeSC())));
+        const sc = makeSC();
+        if (sc) {
+            dispatch(workspaceCellAdd(makeNewCell(state.workspace!.data, ScriptureSlug, defn, sc)));
+        }
         setShow(false);
     };
 
