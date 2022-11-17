@@ -89,8 +89,27 @@ const migrations: [toVersion: number, migration: (workspace: WorkspaceData) => W
             return workspace;
         },
     ],
+    [
+        7,
+        (workspace: WorkspaceData) => {
+            // repAnnotation added to scripture columns
+            for (const c of workspace.cells) {
+                // shortcode was added to annotation
+                if (c.cell_type === "scripture") {
+                    const data = c.data as any;
+                    for (const column of data.columns) {
+                        if (!column.repAnnotation) {
+                            column.repAnnotation = [];
+                        }
+                    }
+                    continue;
+                }
+            }
+            return workspace;
+        },
+    ],
 ];
-export const CurrentWorkspaceFormat = 6;
+export const CurrentWorkspaceFormat = 7;
 
 export const MigrateWorkspace = (w: WorkspaceMetadata | undefined): WorkspaceMetadata | undefined => {
     if (!w) {
