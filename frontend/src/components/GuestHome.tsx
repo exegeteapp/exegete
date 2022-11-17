@@ -2,6 +2,7 @@ import { Row, Button, Col, Container } from "reactstrap";
 import { Link } from "react-router-dom";
 import Login from "./Login";
 import NewWorkspaceButton from "./NewWorkspaceButton";
+import { News } from "./News";
 
 const WelcomeColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
@@ -25,6 +26,9 @@ const WelcomeColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
                     Try exegete.app now!
                 </NewWorkspaceButton>
                 <p className="text-center">No signup needed.</p>
+            </div>
+            <div className="d-grid gap-2">
+                <News />
             </div>
         </Col>
     );

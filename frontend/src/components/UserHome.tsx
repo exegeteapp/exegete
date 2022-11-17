@@ -5,6 +5,7 @@ import WorkspaceList from "./WorkspaceList";
 import { useAppSelector } from "../exegete/hooks";
 import { selectUser } from "../user/User";
 import { useGetWorkspaceQuery } from "../api/apiauth";
+import { News } from "./News";
 
 // we want to convert the JSON object described below into
 // an object with JS data types
@@ -41,6 +42,9 @@ function UserHome() {
                     Create new workspace
                 </NewWorkspaceButton>
                 <WorkspaceList workspaces={listing} />
+                <div className="pt-4">
+                    <News />
+                </div>
             </Container>
         </>
     );
