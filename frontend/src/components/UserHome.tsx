@@ -4,8 +4,8 @@ import NewWorkspaceButton from "./NewWorkspaceButton";
 import WorkspaceList from "./WorkspaceList";
 import { useAppSelector } from "../exegete/hooks";
 import { selectUser } from "../user/User";
-import { useGetWorkspaceQuery } from "../api/apiauth";
 import { News } from "./News";
+import { listWorkspacesAPI } from "../workspace/APIWorkspaceStorage";
 
 // we want to convert the JSON object described below into
 // an object with JS data types
@@ -25,14 +25,22 @@ const date_n = (d: string | null) => {
 
 function UserHome() {
     const state = useAppSelector(selectUser);
-    const workspaces = useGetWorkspaceQuery(undefined, { refetchOnReconnect: true, refetchOnFocus: true });
+    const [workspaces, setWorkspaces] = React.useState<SortableWorkspaceListingMetadata[]>([]);
 
-    const listing: SortableWorkspaceListingMetadata[] = (workspaces.data || []).map((w) => ({
-        ...w,
-        created: new Date(w.created),
-        updated: date_n(w.updated),
-    }));
-    listing.sort((a, b) => (b.updated || b.created).getTime() - (a.updated || a.created).getTime());
+    React.useEffect(() => {
+        async function get() {
+            const data = await listWorkspacesAPI();
+            const listing: SortableWorkspaceListingMetadata[] = (data || []).map((w) => ({
+                ...w,
+                created: new Date(w.created),
+                updated: date_n(w.updated),
+            }));
+            listing.sort((a, b) => (b.updated || b.created).getTime() - (a.updated || a.created).getTime());
+            setWorkspaces(listing);
+        }
+
+        get();
+    });
 
     return (
         <>
@@ -41,7 +49,7 @@ function UserHome() {
                 <NewWorkspaceButton local={false} color="success">
                     Create new workspace
                 </NewWorkspaceButton>
-                <WorkspaceList workspaces={listing} />
+                <WorkspaceList workspaces={workspaces} />
                 <div className="pt-4">
                     <News />
                 </div>

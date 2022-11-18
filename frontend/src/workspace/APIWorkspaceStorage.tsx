@@ -47,3 +47,20 @@ export const deleteWorkspaceAPI = async (id: string) => {
     }
     return false;
 };
+
+// we want to convert the JSON object described below into
+// an object with JS data types
+interface WorkspaceListingMetadata {
+    readonly id: string;
+    readonly title: string;
+    readonly created: string;
+    readonly updated: string | null;
+}
+
+export const listWorkspacesAPI = async () => {
+    const resp = await axios.get<WorkspaceListingMetadata[]>(`/api/v1/workspace/`, ApiAxiosRequestConfig());
+    if (resp.status === 200) {
+        return resp.data;
+    }
+    return undefined;
+};
