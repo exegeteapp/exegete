@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Home from "./components/Routes/Home/Home";
 import Register from "./components/Routes/Register";
 import VerifyEmail from "./components/Routes/VerifyEmail";
-import Workspace from "./components/Routes/Workspace";
+import Workspace from "./components/Routes/Workspace/Workspace";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import "./App.css";
 import ForgotPassword from "./components/Routes/ForgotPassword";

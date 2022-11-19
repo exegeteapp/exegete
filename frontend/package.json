@@ -37,9 +37,9 @@
         "react-router-dom": "^6.4.3",
         "reactstrap": "^9.1.5",
         "sanitize-filename": "^1.6.3",
-        "slate": "^0.85.0",
-        "slate-history": "^0.85.0",
-        "slate-react": "^0.83.2",
+        "slate": "^0.86.0",
+        "slate-history": "^0.86.0",
+        "slate-react": "^0.86.0",
         "typescript": "^4.9.3",
         "uuid": "^9.0.0",
         "web-vitals": "^3.1.0"

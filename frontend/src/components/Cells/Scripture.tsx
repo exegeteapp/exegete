@@ -362,7 +362,7 @@ export const ScriptureDefinition: RegistryEntry = {
     component: Scripture,
     launchers: [
         {
-            title: "Scripture viewer",
+            title: "Scripture Viewer",
             newData: (d) =>
                 newScriptureCell(
                     d,
@@ -378,7 +378,7 @@ export const ScriptureDefinition: RegistryEntry = {
                 ),
         },
         {
-            title: "Parallel texts",
+            title: "Scripture Viewer – Parallel Texts",
             newData: (d) =>
                 newScriptureCell(
                     d,
