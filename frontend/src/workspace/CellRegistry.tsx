@@ -1,7 +1,7 @@
-import { MarkdownNoteSlug, MarkdownNoteDefinition } from "../components/Cells/MarkdownNote";
-import { ScriptureSlug, ScriptureDefinition } from "../components/Cells/Scripture";
+import { MarkdownNoteDefinition, MarkdownNoteSlug } from "../components/Cells/MarkdownNote";
+import { ScriptureDefinition, ScriptureSlug } from "../components/Cells/Scripture";
+import { CellFC } from "../components/Workspace";
 import { NewCellDataFn } from "./Types";
-import { CellFC } from "./Workspace";
 
 export type RegistryLauncher = {
     title: string;

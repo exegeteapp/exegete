@@ -36,10 +36,10 @@ import { makeNewCellFromLauncher } from "../../workspace/Cell";
 import { Helmet } from "react-helmet-async";
 import { Footer } from "../Footer";
 import { useAppDispatch, useAppSelector } from "../../exegete/hooks";
-import { WorkspaceProvider } from "../../workspace/WorkspaceProvider";
 import { TextSize } from "../../workspace/Types";
 import { GospelParallelModal } from "../GospelParallelModal";
 import { downloadWorkspaceAPI } from "../../workspace/APIWorkspaceStorage";
+import { WorkspaceProvider } from "../Workspace";
 
 type RefsFC = React.FC<React.PropsWithChildren<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>>;
 

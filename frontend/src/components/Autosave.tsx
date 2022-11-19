@@ -1,5 +1,5 @@
 import React from "react";
-import { DirtyState, SaveWorkspace, selectWorkspace } from "./Workspace";
+import { DirtyState, SaveWorkspace, selectWorkspace } from "../workspace/Workspace";
 import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 
 export const WorkspaceAutoSave: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {

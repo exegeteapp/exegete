@@ -1,4 +1,3 @@
-import React from "react";
 import { reverse, patch, diff, Delta } from "jsondiffpatch";
 import { arrayMoveMutable } from "array-move";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
@@ -8,12 +7,6 @@ import { CellListingEntry, TextSize, WorkspaceCell, WorkspaceMetadata } from "./
 import { loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
 import { loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
 import { MigrateWorkspace } from "./WorkspaceMigrations";
-
-export type CellFC = React.FC<
-    React.PropsWithChildren<{
-        readonly uuid: string;
-    }>
->;
 
 export enum DirtyState {
     CLEAN,

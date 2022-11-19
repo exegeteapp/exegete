@@ -1,6 +1,5 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { UserProvider } from "./user/User";
 import Home from "./components/Routes/Home/Home";
 import Register from "./components/Routes/Register";
 import VerifyEmail from "./components/Routes/VerifyEmail";
@@ -16,6 +15,7 @@ import { Disclaimer } from "./components/Routes/Disclaimer";
 import { About } from "./components/Routes/About";
 import ScrollToTop from "./util/ScrollToTop";
 import { useGetConfigQuery } from "./api/api";
+import { UserProvider } from "./components/UserProvider";
 
 function RouterComponent() {
     const { error, isLoading } = useGetConfigQuery();

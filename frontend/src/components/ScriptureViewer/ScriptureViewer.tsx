@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
-import parseReference from "../verseref/VerseRef";
-import { getScripture, ScriptureObject } from "../scripture/ScriptureAPI";
-import { ScriptureTextView } from "../scripture/ScriptureTextView";
-import { getModuleParser } from "../scripture/ParserCache";
+import parseReference from "../../verseref/VerseRef";
+import { getScripture, ScriptureObject } from "../../scripture/ScriptureAPI";
+import { ScriptureTextView } from "./ScriptureTextView";
+import { getModuleParser } from "../../scripture/ParserCache";
 import {
     annoKey,
     ScriptureWordAnnotation,
     ScriptureWordAnnotationFunctions,
     WordPosition,
-} from "../scripture/ScriptureAnnotation";
-import { useGetScriptureCatalogQuery } from "../api/api";
+} from "../../scripture/ScriptureAnnotation";
+import { useGetScriptureCatalogQuery } from "../../api/api";
 
 export interface ScriptureViewerData {
     readonly shortcode: string;

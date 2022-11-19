@@ -35,7 +35,6 @@
         "react-markdown": "^8.0.3",
         "react-redux": "^8.0.5",
         "react-router-dom": "^6.4.3",
-        "react-scripts": "5.0.1",
         "reactstrap": "^9.1.5",
         "sanitize-filename": "^1.6.3",
         "slate": "^0.85.0",
@@ -71,6 +70,7 @@
         ]
     },
     "devDependencies": {
+        "react-scripts": "5.0.1",
         "prettier": "^2.7.1"
     },
     "overrides": {

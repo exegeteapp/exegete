@@ -1,8 +1,6 @@
-import React from "react";
 import axios from "axios";
 import { IJwt, storeJwt, ApiAxiosRequestConfig, deleteJWT } from "./JWT";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { useAppDispatch } from "../exegete/hooks";
 import { RootState } from "../exegete/store";
 
 interface User {
@@ -64,7 +62,7 @@ export const userSlice = createSlice({
             state.user = action.payload.user;
             state.valid = true; // we concretely know that we have no user
         });
-        builder.addCase(Bootstrap.fulfilled, (state, action) => {
+        builder.addCase(UserBootstrap.fulfilled, (state, action) => {
             const user = action.payload;
             // Note: it doesn't matter if we're logged in or not, what matters
             // is that we've checked.
@@ -140,20 +138,12 @@ export const Logout = createAsyncThunk("user/logout", async (thunkAPI) => {
     };
 });
 
-export const Bootstrap = createAsyncThunk("user/bootstrap", async (thunkAPI) => {
+export const UserBootstrap = createAsyncThunk("user/bootstrap", async (thunkAPI) => {
     return await getUser();
 });
 
 export const UserLoggedIn = (state: UserState): boolean => {
     return state.valid === true && state.user !== undefined;
-};
-
-export const UserProvider: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
-    const dispatch = useAppDispatch();
-
-    dispatch(Bootstrap());
-
-    return <div>{children}</div>;
 };
 
 export const selectUser = (state: RootState) => state.user;

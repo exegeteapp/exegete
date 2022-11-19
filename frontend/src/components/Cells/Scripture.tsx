@@ -1,13 +1,13 @@
-import { CellFC, selectWorkspaceCell, workspaceCellSet } from "../../workspace/Workspace";
+import { selectWorkspaceCell, workspaceCellSet } from "../../workspace/Workspace";
 import React from "react";
-import { SCVerseRef, VerseRefPicker } from "../../verseref/VerseRefPicker";
+import { SCVerseRef, VerseRefPicker } from "../VerseRefPicker";
 import { Cell, CellBody, CellFooter, CellHeader } from "../Cell";
 import { Button, ButtonGroup, Col, Row, UncontrolledTooltip } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight, faHighlighter, faList, faTags } from "@fortawesome/free-solid-svg-icons";
 import { RegistryEntry } from "../../workspace/CellRegistry";
-import { ScriptureViewer } from "../ScriptureViewer";
-import { ScriptureEditor } from "../ScriptureEditor";
+import { ScriptureViewer } from "../ScriptureViewer/ScriptureViewer";
+import { ScriptureEditor } from "../ScriptureEditor/ScriptureEditor";
 import {
     mergeAnnotationArray,
     ScriptureWordAnnotation,
@@ -18,6 +18,7 @@ import { ModuleButton } from "../ModuleButton";
 import { HighlightRepetitionButton } from "../HighlightRepetition";
 import { useAppDispatch, useAppSelector } from "../../exegete/hooks";
 import { WorkspaceData } from "../../workspace/Types";
+import { CellFC } from "../Workspace";
 
 export const ScriptureSlug = "scripture";
 

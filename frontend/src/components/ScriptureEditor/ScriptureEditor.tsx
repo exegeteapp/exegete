@@ -1,31 +1,28 @@
 // This example is for an Editor with `ReactEditor` and `HistoryEditor`
-import { BaseEditor, Editor, Transforms } from "slate";
-import { ReactEditor, RenderElementProps, useFocused, useSelected, useSlate } from "slate-react";
-import { HistoryEditor, withHistory } from "slate-history";
 import React from "react";
-import { createEditor, Descendant } from "slate";
-import { Slate, Editable, withReact } from "slate-react";
-import { getScripture } from "../scripture/ScriptureAPI";
-import { getModuleParser } from "../scripture/ParserCache";
-import parseReference, { ParseResultSuccess, ScriptureBookChapters } from "../verseref/VerseRef";
+import { createEditor, Descendant, Editor } from "slate";
+import { withHistory } from "slate-history";
+import { Editable, RenderElementProps, Slate, withReact } from "slate-react";
+import { useGetScriptureCatalogQuery } from "../../api/api";
+import { useAppDispatch } from "../../exegete/hooks";
+import { getModuleParser } from "../../scripture/ParserCache";
 import {
     annoKey,
     newScriptureWordAnnotation,
     ScriptureWordAnnotation,
     ScriptureWordAnnotationFunctions,
     WordPosition,
-} from "../scripture/ScriptureAnnotation";
-import ReactDOM from "react-dom";
-import { Button, ButtonGroup, ButtonToolbar, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
-import { faBrush, faStrikethrough, faTrashCan, IconDefinition } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { applicableGroups, getSource, SourceGroup } from "../sources/Sources";
-import { BookInfo, FindBook, languageClass, ModuleInfo } from "../scripture/ScriptureCatalog";
-import { DistinguishableColours } from "../colours/distinguishable";
-import { useGetScriptureCatalogQuery } from "../api/api";
-import { useAppDispatch } from "../exegete/hooks";
-import { workspaceCanApplyHistory, workspaceCannotApplyHistory } from "../workspace/Workspace";
-import { AnnotationArray } from "./Cells/Scripture";
+} from "../../scripture/ScriptureAnnotation";
+import { getScripture } from "../../scripture/ScriptureAPI";
+import { BookInfo, FindBook, languageClass, ModuleInfo } from "../../scripture/ScriptureCatalog";
+import { applicableGroups } from "../../sources/Sources";
+import parseReference, { ParseResultSuccess, ScriptureBookChapters } from "../../verseref/VerseRef";
+import { workspaceCanApplyHistory, workspaceCannotApplyHistory } from "../../workspace/Workspace";
+import { AnnotationArray } from "../Cells/Scripture";
+import { HoveringToolbar } from "./HoveringToolbar";
+import { CustomElement, ParaElement } from "./Types";
+import { VerseRef } from "./VerseRef";
+import { Word } from "./Word";
 
 const PermittedKeys = new Set<string>([
     " ",
@@ -37,47 +34,6 @@ const PermittedKeys = new Set<string>([
     "ArrowUp",
     "ArrowDown",
 ]);
-
-type ParaElement = {
-    type: "paragraph";
-    children: (CustomElement | CustomText)[];
-};
-
-type WordAnnotation = {
-    source: string;
-    display: string;
-    highlight: string;
-};
-
-type VerseRefElement = {
-    type: "verseref";
-    value: string;
-    children: CustomText[];
-};
-
-type WordElement = {
-    type: "word";
-    value: string;
-    start_of_verse: boolean;
-    children: CustomText[];
-    position: WordPosition;
-    subStyle: WordAnnotation;
-} & WordAnnotation;
-
-type CustomText = {
-    type: "text";
-    text: string;
-};
-
-type CustomElement = ParaElement | WordElement | VerseRefElement;
-
-declare module "slate" {
-    interface CustomTypes {
-        Editor: BaseEditor & ReactEditor & HistoryEditor;
-        Element: CustomElement;
-        Text: CustomText;
-    }
-}
 
 const withWords = (editor: Editor) => {
     const { isInline, isVoid } = editor;
@@ -107,74 +63,6 @@ const EditorElement: React.FC<React.PropsWithChildren<RenderElementProps>> = (pr
                 </p>
             );
     }
-};
-
-const NonEditableStyle = (selected: boolean, focused: boolean): React.CSSProperties => {
-    return {
-        verticalAlign: "baseline",
-        display: "inline-block",
-        backgroundColor: "#eee",
-        boxShadow: selected && focused ? "0 0 0 2px #B4D5FF" : "none",
-    };
-};
-
-const VerseRef: React.FC<React.PropsWithChildren<RenderElementProps>> = ({ attributes, children, element }) => {
-    const selected = useSelected();
-    const focused = useFocused();
-    if (element.type !== "verseref") {
-        return <></>;
-    }
-    const style = {
-        ...NonEditableStyle(selected, focused),
-        fontWeight: "bold",
-    };
-    return (
-        <span {...attributes} contentEditable={false} style={style}>
-            {element.value}
-            {children}
-        </span>
-    );
-};
-
-const Word: React.FC<React.PropsWithChildren<RenderElementProps>> = ({ attributes, children, element }) => {
-    const selected = useSelected();
-    const focused = useFocused();
-    if (element.type !== "word") {
-        return <></>;
-    }
-
-    const layeredElement = {
-        ...element,
-        source: element.source ? element.source : element.subStyle.source,
-        display: element.display ? element.display : element.subStyle.display,
-        highlight: element.highlight ? element.highlight : element.subStyle.highlight,
-    };
-    const sourceDefn = getSource(layeredElement.source);
-
-    let td = "none";
-    if (layeredElement.display === "strikethrough" && layeredElement.highlight) {
-        td = "underline line-through";
-    } else if (layeredElement.display === "strikethrough") {
-        td = "line-through";
-    } else if (layeredElement.highlight) {
-        td = "underline";
-    }
-
-    const style: React.CSSProperties = {
-        ...NonEditableStyle(selected, focused),
-        textDecoration: td,
-        opacity: layeredElement.display === "hidden" ? "25%" : "100%",
-        color: sourceDefn ? sourceDefn.colour : "black",
-        textDecorationColor: layeredElement.highlight ? layeredElement.highlight : "",
-        textDecorationThickness: layeredElement.highlight ? "5px" : "",
-        textDecorationSkipInk: "none",
-    };
-    return (
-        <span {...attributes} contentEditable={false} style={style}>
-            {layeredElement.value}
-            {children}
-        </span>
-    );
 };
 
 const calculateInitialValue = async (
@@ -286,169 +174,6 @@ const calculateInitialValue = async (
         initialValue.push(make_para(wordElem));
     }
     return initialValue;
-};
-
-export const Portal: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
-    return ReactDOM.createPortal(children, document.body);
-};
-
-const activeOnSelection = (editor: Editor, key: string, value: string): boolean => {
-    const [match] = Editor.nodes(editor, {
-        match: (node, path) => {
-            const word = node as WordElement;
-            if (word.type !== "word") {
-                return false;
-            }
-            return (word as any)[key] === value;
-        },
-    });
-    return !!match;
-};
-
-const toggleOnSelection = (editor: Editor, key: string, value: string) => {
-    const isSet = activeOnSelection(editor, key, value);
-    const props = isSet ? { [key]: "" } : { [key]: value };
-    Transforms.setNodes(editor, props, {
-        match: (node, path) => {
-            const word = node as WordElement;
-            if (word.type !== "word") {
-                return false;
-            }
-            return true;
-        },
-        split: false,
-        mode: "lowest",
-        hanging: true,
-    });
-};
-
-const ToggleAnnoButton: React.FC<React.PropsWithChildren<{ attr: string; value: string; icon?: IconDefinition }>> = ({
-    attr,
-    value,
-    icon,
-}) => {
-    const editor = useSlate();
-    return (
-        <Button
-            active={activeOnSelection(editor, attr, value)}
-            className="float-end"
-            onClick={() => toggleOnSelection(editor, attr, value)}
-        >
-            {icon ? <FontAwesomeIcon icon={icon} /> : value}
-        </Button>
-    );
-};
-
-const EditorMenu = React.forwardRef<HTMLDivElement, { groups: SourceGroup[] }>(({ groups }, ref) => {
-    const editor = useSlate();
-
-    const bgs: React.ReactElement[] = groups.map((group, index) => {
-        const btns = group.sources.map((source, index) => {
-            return <ToggleAnnoButton attr="source" value={source.code} key={index} />;
-        });
-        return (
-            <ButtonGroup className="pe-1" key={index}>
-                {btns}
-            </ButtonGroup>
-        );
-    });
-
-    const colours = DistinguishableColours.map((c, i) => {
-        return (
-            <Button
-                active={activeOnSelection(editor, "highlight", c)}
-                key={i}
-                onClick={() => toggleOnSelection(editor, "highlight", c)}
-                style={{ backgroundColor: c }}
-            />
-        );
-    });
-
-    return (
-        <div
-            className="editor-popupmenu"
-            ref={ref}
-            onMouseDown={(e) => {
-                // stop focus grab
-                e.preventDefault();
-            }}
-        >
-            <ButtonToolbar className="float-end mb-1">
-                {bgs}
-                <ButtonGroup>
-                    <UncontrolledDropdown nav className="toolbar-dropdown">
-                        <DropdownToggle caret nav>
-                            <FontAwesomeIcon icon={faBrush} />
-                        </DropdownToggle>
-                        <DropdownMenu color="dark" dark>
-                            {colours}
-                        </DropdownMenu>
-                    </UncontrolledDropdown>
-
-                    <ToggleAnnoButton attr="display" value="strikethrough" icon={faStrikethrough} />
-                    <ToggleAnnoButton attr="display" value="hidden" icon={faTrashCan} />
-                </ButtonGroup>
-            </ButtonToolbar>
-        </div>
-    );
-});
-
-const HoveringToolbar: React.FC<React.PropsWithChildren<{ groups: SourceGroup[] }>> = ({ groups }) => {
-    const ref = React.useRef<HTMLDivElement | null>(null);
-    const editor = useSlate();
-    const inFocus = useFocused();
-
-    React.useEffect(() => {
-        const el = ref.current;
-        const { selection } = editor;
-
-        if (!el) {
-            return;
-        }
-
-        const showMenu = () => {
-            if (!selection || !inFocus) {
-                return false;
-            }
-            // we have a word to annotate if there's at least one word in the selection
-            const [match] = Editor.nodes(editor, {
-                match: (node, path) => {
-                    const word = node as WordElement;
-                    if (word.type !== "word") {
-                        return false;
-                    }
-                    return true;
-                },
-            });
-            return !!match;
-        };
-
-        // we have a word to annotate if there is a void, or there is a string selected
-        if (!showMenu()) {
-            el.removeAttribute("style");
-            return;
-        }
-
-        const domSelection = window.getSelection();
-        if (domSelection) {
-            const domRange = domSelection.getRangeAt(0);
-            const rect = domRange.getBoundingClientRect();
-            let top = rect.top + window.pageYOffset - el.offsetHeight;
-            let left = rect.left + window.pageXOffset - el.offsetWidth / 2 + rect.width / 2;
-            if (left < 5) {
-                left = 5;
-            }
-            el.style.opacity = "1";
-            el.style.top = `${top}px`;
-            el.style.left = `${left}px`;
-        }
-    });
-
-    return (
-        <Portal>
-            <EditorMenu ref={ref} groups={groups} />
-        </Portal>
-    );
 };
 
 const calculateAnnotations = (
