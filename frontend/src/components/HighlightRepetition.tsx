@@ -11,7 +11,7 @@ import parseReference, { ScriptureBookChapters } from "../verseref/VerseRef";
 import { WorkspaceCell } from "../workspace/Types";
 import { workspaceCellSet } from "../workspace/Workspace";
 import { ScriptureCellData } from "./Cells/Scripture";
-import { newScriptureWordAnnotation } from "./ScriptureAnnotation";
+import { newScriptureWordAnnotation } from "../scripture/ScriptureAnnotation";
 
 export const HighlightRepetitionButton: React.FC<
     React.PropsWithChildren<{

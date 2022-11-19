@@ -14,7 +14,7 @@ import {
     ScriptureWordAnnotation,
     ScriptureWordAnnotationFunctions,
     WordPosition,
-} from "./ScriptureAnnotation";
+} from "../scripture/ScriptureAnnotation";
 import ReactDOM from "react-dom";
 import { Button, ButtonGroup, ButtonToolbar, DropdownMenu, DropdownToggle, UncontrolledDropdown } from "reactstrap";
 import { faBrush, faStrikethrough, faTrashCan, IconDefinition } from "@fortawesome/free-solid-svg-icons";

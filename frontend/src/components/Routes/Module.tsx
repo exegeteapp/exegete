@@ -2,11 +2,11 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { Container, Table } from "reactstrap";
-import { useGetScriptureCatalogQuery } from "../api/api";
-import { Footer } from "./Footer";
-import Header from "./Header";
+import { useGetScriptureCatalogQuery } from "../../api/api";
+import { Footer } from "../Footer";
+import Header from "../Header";
 
-const ModuleInfo: React.FC<React.PropsWithChildren<unknown>> = () => {
+const Module: React.FC<React.PropsWithChildren<unknown>> = () => {
     const { data: catalog } = useGetScriptureCatalogQuery();
     const { shortcode } = useParams();
 
@@ -77,4 +77,4 @@ const ModuleInfo: React.FC<React.PropsWithChildren<unknown>> = () => {
     );
 };
 
-export default ModuleInfo;
+export default Module;

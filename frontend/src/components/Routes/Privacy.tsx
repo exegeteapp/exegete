@@ -1,6 +1,6 @@
 import { Container } from "reactstrap";
-import { Footer } from "./Footer";
-import Header from "./Header";
+import { Footer } from "../Footer";
+import Header from "../Header";
 
 export const Privacy: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (

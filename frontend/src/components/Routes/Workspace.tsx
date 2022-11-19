@@ -13,7 +13,7 @@ import {
     ModalHeader,
     UncontrolledDropdown,
 } from "reactstrap";
-import { selectUser, UserLoggedIn } from "../user/User";
+import { selectUser, UserLoggedIn } from "../../user/User";
 import { validate as uuidValidate } from "uuid";
 import {
     DirtyState,
@@ -27,19 +27,19 @@ import {
     workspaceUndo,
     workspaceRedo,
     selectWorkspaceId,
-} from "../workspace/Workspace";
-import Error from "./Cells/Error";
-import { BaseHeader } from "./Header";
-import useInput from "../util/useInput";
-import Registry from "../workspace/CellRegistry";
-import { makeNewCellFromLauncher } from "../workspace/Cell";
+} from "../../workspace/Workspace";
+import Error from "../Cells/Error";
+import { BaseHeader } from "../Header";
+import useInput from "../../util/useInput";
+import Registry from "../../workspace/CellRegistry";
+import { makeNewCellFromLauncher } from "../../workspace/Cell";
 import { Helmet } from "react-helmet-async";
-import { Footer } from "./Footer";
-import { useAppDispatch, useAppSelector } from "../exegete/hooks";
-import { WorkspaceProvider } from "../workspace/WorkspaceProvider";
-import { TextSize } from "../workspace/Types";
-import { GospelParallelModal } from "./GospelParallelModal";
-import { downloadWorkspaceAPI } from "../workspace/APIWorkspaceStorage";
+import { Footer } from "../Footer";
+import { useAppDispatch, useAppSelector } from "../../exegete/hooks";
+import { WorkspaceProvider } from "../../workspace/WorkspaceProvider";
+import { TextSize } from "../../workspace/Types";
+import { GospelParallelModal } from "../GospelParallelModal";
+import { downloadWorkspaceAPI } from "../../workspace/APIWorkspaceStorage";
 
 type RefsFC = React.FC<React.PropsWithChildren<{ refs: React.MutableRefObject<(HTMLDivElement | null)[]> }>>;
 
@@ -448,7 +448,7 @@ const WorkspaceHeader: RefsFC = ({ refs }) => {
     );
 };
 
-const WorkspaceView = () => {
+const Workspace = () => {
     const { id } = useParams();
     const refs = React.useRef<(HTMLDivElement | null)[]>([]);
     const userState = useAppSelector(selectUser);
@@ -478,4 +478,4 @@ const WorkspaceView = () => {
     );
 };
 
-export default WorkspaceView;
+export default Workspace;

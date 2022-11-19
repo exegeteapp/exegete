@@ -1,20 +1,20 @@
 import React from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { UserProvider } from "./user/User";
-import Home from "./components/Home";
-import Register from "./components/Register";
-import Verify from "./components/Verify";
-import Workspace from "./components/WorkspaceView";
+import Home from "./components/Routes/Home/Home";
+import Register from "./components/Routes/Register";
+import VerifyEmail from "./components/Routes/VerifyEmail";
+import Workspace from "./components/Routes/Workspace";
 import { Helmet, HelmetProvider } from "react-helmet-async";
 import "./App.css";
-import ForgotPassword from "./components/ForgotPassword";
-import ResetPassword from "./components/ResetPassword";
-import ModuleInfo from "./components/ModuleInfo";
-import NotFound from "./components/NotFound";
-import { Privacy } from "./components/Privacy";
-import { Disclaimer } from "./components/Disclaimer";
-import { About } from "./components/About";
-import ScrollToTop from "./components/ScrollToTop";
+import ForgotPassword from "./components/Routes/ForgotPassword";
+import ResetPassword from "./components/Routes/ResetPassword";
+import Module from "./components/Routes/Module";
+import NotFound from "./components/Routes/NotFound";
+import { Privacy } from "./components/Routes/Privacy";
+import { Disclaimer } from "./components/Routes/Disclaimer";
+import { About } from "./components/Routes/About";
+import ScrollToTop from "./util/ScrollToTop";
 import { useGetConfigQuery } from "./api/api";
 
 function RouterComponent() {
@@ -33,10 +33,10 @@ function RouterComponent() {
                 <Route path="/privacy" element={<Privacy />} />
                 <Route path="/disclaimer" element={<Disclaimer />} />
                 <Route path="/workspace/:id" element={<Workspace />} />
-                <Route path="/module/:shortcode" element={<ModuleInfo />} />
+                <Route path="/module/:shortcode" element={<Module />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/forgotpassword" element={<ForgotPassword />} />
-                <Route path="/verify/:token" element={<Verify />} />
+                <Route path="/verify/:token" element={<VerifyEmail />} />
                 <Route path="/resetpassword/:token" element={<ResetPassword />} />
                 <Route path="*" element={<NotFound />} />
             </Routes>

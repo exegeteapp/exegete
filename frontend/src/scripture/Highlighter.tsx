@@ -1,5 +1,5 @@
 import { DistinguishableColours } from "../colours/distinguishable";
-import { WordPosition } from "../components/ScriptureAnnotation";
+import { WordPosition } from "./ScriptureAnnotation";
 import { ScriptureBookChapters } from "../verseref/VerseRef";
 import { ScriptureObject } from "./ScriptureAPI";
 

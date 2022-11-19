@@ -8,7 +8,7 @@ import {
     ScriptureWordAnnotation,
     ScriptureWordAnnotationFunctions,
     WordPosition,
-} from "./ScriptureAnnotation";
+} from "../scripture/ScriptureAnnotation";
 import { useGetScriptureCatalogQuery } from "../api/api";
 
 export interface ScriptureViewerData {

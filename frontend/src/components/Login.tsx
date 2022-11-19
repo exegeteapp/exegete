@@ -4,7 +4,7 @@ import useInput from "../util/useInput";
 import { Login as DLogin, selectUser } from "../user/User";
 import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 
-function Login() {
+export const Login: React.FC = () => {
     const email = useInput("");
     const password = useInput("");
     const dispatch = useAppDispatch();
@@ -46,6 +46,6 @@ function Login() {
             </Form>
         </div>
     );
-}
+};
 
 export default Login;

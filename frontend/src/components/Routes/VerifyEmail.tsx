@@ -2,11 +2,11 @@ import React from "react";
 import { Row, Col, Container } from "reactstrap";
 import axios from "axios";
 import { useParams } from "react-router";
-import Header from "./Header";
+import Header from "../Header";
 import { Helmet } from "react-helmet-async";
-import { Footer } from "./Footer";
+import { Footer } from "../Footer";
 
-function Verify() {
+function VerifyEmail() {
     const { token } = useParams();
     const [message, setMessage] = React.useState("Please wait a moment, your email is being validated.");
 
@@ -41,4 +41,4 @@ function Verify() {
     );
 }
 
-export default Verify;
+export default VerifyEmail;

@@ -1,11 +1,11 @@
 import React from "react";
 import { Container } from "reactstrap";
-import NewWorkspaceButton from "./NewWorkspaceButton";
-import WorkspaceList from "./WorkspaceList";
-import { useAppSelector } from "../exegete/hooks";
-import { selectUser } from "../user/User";
-import { News } from "./News";
-import { listWorkspacesAPI } from "../workspace/APIWorkspaceStorage";
+import NewWorkspaceButton from "../../NewWorkspaceButton";
+import WorkspaceList from "../../WorkspaceList";
+import { useAppSelector } from "../../../exegete/hooks";
+import { selectUser } from "../../../user/User";
+import { News } from "../../News";
+import { listWorkspacesAPI } from "../../../workspace/APIWorkspaceStorage";
 
 // we want to convert the JSON object described below into
 // an object with JS data types
@@ -40,7 +40,7 @@ function UserHome() {
         }
 
         get();
-    });
+    }, []);
 
     return (
         <>

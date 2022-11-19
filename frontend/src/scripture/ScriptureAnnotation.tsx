@@ -1,4 +1,4 @@
-import { AnnotationArray } from "./Cells/Scripture";
+import { AnnotationArray } from "../components/Cells/Scripture";
 
 export interface WordPosition {
     readonly shortcode: string;

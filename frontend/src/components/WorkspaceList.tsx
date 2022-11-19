@@ -1,6 +1,6 @@
 import { Table } from "reactstrap";
 import { Link } from "react-router-dom";
-import { SortableWorkspaceListingMetadata } from "./UserHome";
+import { SortableWorkspaceListingMetadata } from "./Routes/Home/UserHome";
 
 const WorkspaceList = ({ workspaces }: { workspaces: SortableWorkspaceListingMetadata[] }) => {
     const render_date = (d: Date | null) => {

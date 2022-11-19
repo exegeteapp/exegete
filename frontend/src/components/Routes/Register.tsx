@@ -1,14 +1,14 @@
 import React from "react";
 import { Alert, Input, Form, FormGroup, Label, Row, Button, Col, Container } from "reactstrap";
 import { useNavigate } from "react-router";
-import useInput from "../util/useInput";
+import useInput from "../../util/useInput";
 import ReCAPTCHA from "react-google-recaptcha";
-import { Register as RegisterD, selectUser } from "../user/User";
-import Header from "./Header";
+import { Register as RegisterD, selectUser } from "../../user/User";
+import Header from "../Header";
 import { Helmet } from "react-helmet-async";
-import { Footer } from "./Footer";
-import { useGetConfigQuery } from "../api/api";
-import { useAppDispatch, useAppSelector } from "../exegete/hooks";
+import { Footer } from "../Footer";
+import { useGetConfigQuery } from "../../api/api";
+import { useAppDispatch, useAppSelector } from "../../exegete/hooks";
 
 function Register() {
     const navigate = useNavigate();

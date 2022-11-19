@@ -1,9 +1,9 @@
 import { Button, Col, Container, Row } from "reactstrap";
-import { Footer } from "./Footer";
-import Header from "./Header";
+import { Footer } from "../Footer";
+import Header from "../Header";
 import React from "react";
 import { Link } from "react-router-dom";
-import { useGetScriptureCatalogQuery } from "../api/api";
+import { useGetScriptureCatalogQuery } from "../../api/api";
 
 const AboutText: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (

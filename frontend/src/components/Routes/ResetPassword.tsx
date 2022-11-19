@@ -1,11 +1,11 @@
 import React from "react";
 import axios from "axios";
 import { Container, Row, Col, Input, Form, FormGroup, Label, Button, Alert } from "reactstrap";
-import useInput from "../util/useInput";
+import useInput from "../../util/useInput";
 import { useParams } from "react-router";
-import Header from "./Header";
+import Header from "../Header";
 import { Helmet } from "react-helmet-async";
-import { Footer } from "./Footer";
+import { Footer } from "../Footer";
 
 function ResetPassword() {
     const params = useParams();

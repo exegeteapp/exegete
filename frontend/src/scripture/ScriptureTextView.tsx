@@ -1,5 +1,5 @@
 import React from "react";
-import { ScriptureWordAnnotation, WordPosition } from "../components/ScriptureAnnotation";
+import { ScriptureWordAnnotation, WordPosition } from "./ScriptureAnnotation";
 import { getSource } from "../sources/Sources";
 import { ScriptureObject, ScriptureWord } from "./ScriptureAPI";
 import { languageClass, ModuleInfo } from "./ScriptureCatalog";

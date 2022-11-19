@@ -13,7 +13,7 @@ import {
     ScriptureWordAnnotation,
     ScriptureWordAnnotationFunctions,
     WordPosition,
-} from "../ScriptureAnnotation";
+} from "../../scripture/ScriptureAnnotation";
 import { ModuleButton } from "../ModuleButton";
 import { HighlightRepetitionButton } from "../HighlightRepetition";
 import { useAppDispatch, useAppSelector } from "../../exegete/hooks";
