@@ -13,7 +13,7 @@ import NotFound from "./components/Routes/NotFound";
 import { Privacy } from "./components/Routes/Privacy";
 import { Disclaimer } from "./components/Routes/Disclaimer";
 import { About } from "./components/Routes/About";
-import ScrollToTop from "./util/ScrollToTop";
+import ScrollToTop from "./util/Scroll";
 import { useGetConfigQuery } from "./api/api";
 import { UserProvider } from "./components/UserProvider";
 

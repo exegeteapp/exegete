@@ -1,5 +1,6 @@
 import React from "react";
 import { useAppSelector } from "../../../exegete/hooks";
+import { ScrollToLastCell } from "../../../util/Scroll";
 import { selectWorkspaceId, selectWorkspaceTitle } from "../../../workspace/Workspace";
 import { GospelParallelModal } from "../../GospelParallelModal";
 import { BaseHeader } from "../../Header";
@@ -18,12 +19,22 @@ export const WorkspaceHeader: RefsFC = ({ refs }) => {
     const [showRenameWorkspaceModal, setShowRenameWorkspaceModal] = React.useState(false);
     const [showDeleteWorkspaceModal, setShowDeleteWorkspaceModal] = React.useState(false);
 
+    // if one of the various modals or menus adds a new cell, we want to scroll the user to it
+    const [newlyAdded, setNewlyAdded] = React.useState<boolean>(false);
+    React.useEffect(() => {
+        if (newlyAdded) {
+            ScrollToLastCell(refs);
+            setNewlyAdded(false);
+        }
+    }, [refs, newlyAdded]);
+
     // there's no point having modals in the DOM all the time, and it complicates state management.
     // we pop them into existence when needed.
     const modals: JSX.Element[] = [];
     if (showGospelParallelModal) {
         modals.push(
             <GospelParallelModal
+                setNewlyAdded={setNewlyAdded}
                 key={modals.length + 1}
                 show={showGospelParallelModal}
                 setShow={setShowGospelParallelModal}
@@ -61,7 +72,11 @@ export const WorkspaceHeader: RefsFC = ({ refs }) => {
                 />
                 <EditMenu />
                 <ViewMenu />
-                <ToolsMenu refs={refs} setShowGospelParallelModal={setShowGospelParallelModal} />
+                <ToolsMenu
+                    refs={refs}
+                    setNewlyAdded={setNewlyAdded}
+                    setShowGospelParallelModal={setShowGospelParallelModal}
+                />
             </BaseHeader>
         </>
     );

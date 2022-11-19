@@ -12,8 +12,8 @@ import { selectWorkspace, workspaceCellAdd } from "../workspace/Workspace";
 import { ScriptureCellColumn, ScriptureCellData, ScriptureSlug } from "./Cells/Scripture";
 
 export const GospelParallelModal: React.FC<
-    React.PropsWithChildren<{ show: boolean; setShow: (v: boolean) => void }>
-> = ({ show, setShow }) => {
+    React.PropsWithChildren<{ setNewlyAdded: (v: boolean) => void; show: boolean; setShow: (v: boolean) => void }>
+> = ({ show, setNewlyAdded, setShow }) => {
     const state = useAppSelector(selectWorkspace);
     const dispatch = useAppDispatch();
     const search = useInput("");
@@ -81,6 +81,7 @@ export const GospelParallelModal: React.FC<
         const sc = makeSC();
         if (sc) {
             dispatch(workspaceCellAdd(makeNewCell(state.workspace!.data, ScriptureSlug, defn, sc)));
+            setNewlyAdded(true);
         }
         setShow(false);
     };
@@ -111,7 +112,18 @@ export const GospelParallelModal: React.FC<
                         ></Input>
                     </FormGroup>
                     <FormGroup>
-                        <Input value={selected} onChange={(e) => setSelected(e.target.value)} type="select" size={10}>
+                        <Input
+                            value={selected}
+                            onChange={(e) => setSelected(e.target.value)}
+                            onClick={(e) => {
+                                if (e.detail === 2) {
+                                    // double click
+                                    open();
+                                }
+                            }}
+                            type="select"
+                            size={10}
+                        >
                             {options}
                         </Input>
                     </FormGroup>
