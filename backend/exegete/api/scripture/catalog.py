@@ -1,7 +1,6 @@
 from exegete.api.db import async_engine, sync_engine
 from exegete.text.library.manager import Manager
 from exegete.text.library.schema.v1 import Module as V1Module
-from exegete.settings import settings
 import sqlalchemy
 
 
@@ -171,9 +170,12 @@ class ScriptureCatalog:
         object = ent["object"]
         bk = object.columns["book_id"]
         cs = object.columns["chapter_start"]
-        ce = object.columns["chapter_end"]
+        # FIXME: that `ce` and `ve` aren't used indicates a potential bug with
+        # multi-verse or multi-chapter objects (which we don't actually have at
+        # the moment.
+        # ce = object.columns["chapter_end"]
         vs = object.columns["verse_start"]
-        ve = object.columns["verse_end"]
+        # ve = object.columns["verse_end"]
         li = object.columns["linear_id"]
 
         # a bit fiddly, we have four cases:

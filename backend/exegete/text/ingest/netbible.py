@@ -83,7 +83,6 @@ You can download it at https://bible.org/downloads
         with mod.open_and_log(fname, path) as fd:
             text = json.load(fd)
 
-        chapter = int(text[0]["chapter"])
         strongs_re = re.compile(r"^\d+[b]?$")
         parser = etree.HTMLParser()
 
