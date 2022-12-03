@@ -169,11 +169,13 @@ export const calculateSnowballHighlights = (column_scriptures: (readonly Scriptu
                     continue; // we don't want to annotate footnotes or titles...
                 }
                 for (const word of obj.text) {
-                    if (!word["s-snowball"]) {
+                    // if snowball annotation is just the value, it will have been ommitted
+                    const snowball = word["s-snowball"] || word["value"];
+                    if (!snowball) {
                         continue;
                     }
-                    if (!stopWords.has(word["s-snowball"])) {
-                        snowballCount.set(word["s-snowball"], (snowballCount.get(word["s-snowball"]) || 0) + 1);
+                    if (!stopWords.has(snowball)) {
+                        snowballCount.set(snowball, (snowballCount.get(snowball) || 0) + 1);
                     }
                 }
             }
@@ -221,7 +223,8 @@ export const calculateSnowballAnnotations = (
             }
             for (let wi = 0; wi < obj.text.length; wi++) {
                 const word = obj.text[wi];
-                const snowball = word["s-snowball"];
+                // if snowball annotation is just the value, it will have been ommitted
+                const snowball = word["s-snowball"] || word["value"];
                 if (snowball) {
                     const highlight = snowballHighlight.get(snowball);
                     if (highlight) {

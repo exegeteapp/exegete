@@ -19,7 +19,6 @@ import { TextSize } from "../workspace/Types";
 
 export const Cell: React.FC<React.PropsWithChildren<unknown>> = ({ children }) => {
     const global = useAppSelector(selectWorkspaceGlobal);
-
     let textSize = TextSize.MEDIUM;
     if (global) {
         textSize = global.view.textSize;

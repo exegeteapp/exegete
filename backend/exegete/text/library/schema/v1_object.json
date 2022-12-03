@@ -48,6 +48,9 @@
         "s-snowball": {
           "type": "string"
         },
+        "s-nopunct": {
+          "type": "string"
+        },
         "language": {
           "type": "string",
           "enum": ["hbo", "ecg", "eng"]

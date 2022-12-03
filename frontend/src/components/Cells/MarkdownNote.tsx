@@ -79,7 +79,12 @@ export const MarkdownNote: CellFC = ({ uuid }) => {
             <CellFooter>
                 <div>
                     {editing ? (
-                        <a className="body-link" target="_other" href="https://www.markdownguide.org/cheat-sheet/">
+                        <a
+                            className="body-link"
+                            rel="noreferrer"
+                            target="_blank"
+                            href="https://www.markdownguide.org/cheat-sheet/"
+                        >
                             Markdown syntax guide
                         </a>
                     ) : (

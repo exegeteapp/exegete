@@ -39,7 +39,7 @@ const Module: React.FC<React.PropsWithChildren<unknown>> = () => {
                             <td>
                                 <pre className="w-100 module-license">{module.license_text}</pre>
                                 <p>
-                                    <a href={module.license_url} target="_other">
+                                    <a href={module.license_url} rel="noreferrer" target="_blank">
                                         {module.license_url}
                                     </a>
                                 </p>

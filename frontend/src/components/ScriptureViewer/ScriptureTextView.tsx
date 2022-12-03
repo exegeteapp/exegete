@@ -3,6 +3,9 @@ import { ScriptureWordAnnotation, WordPosition } from "../../scripture/Scripture
 import { getSource } from "../../sources/Sources";
 import { ScriptureObject, ScriptureWord } from "../../scripture/ScriptureAPI";
 import { languageClass, ModuleInfo } from "../../scripture/ScriptureCatalog";
+import { IntertextureContext } from "../IntertextureToolbar/Types";
+import { useAppDispatch } from "../../exegete/hooks";
+import { toolbarShow } from "../../exegete/toolbar";
 
 interface RenderState {
     readonly book: string | null;
@@ -23,6 +26,8 @@ export const ScriptureTextView: React.FC<
         separateverses: boolean;
     }>
 > = ({ module, getAnno, scriptures, last_book, book, last_scripture_object, markup, shortcode, separateverses }) => {
+    const dispatch = useAppDispatch();
+
     if (!scriptures) {
         return <></>;
     }
@@ -30,6 +35,20 @@ export const ScriptureTextView: React.FC<
         book: last_book,
         chapter: last_scripture_object ? last_scripture_object.chapter_end : null,
         verse: last_scripture_object ? last_scripture_object.verse_end : null,
+    };
+
+    const WordMenuEventHandler = (event: React.MouseEvent<HTMLElement>) => {
+        event.stopPropagation();
+        const t = event.currentTarget;
+        const rect = t.getBoundingClientRect();
+        const context: IntertextureContext = {
+            word: t.getAttribute("data-np") || t.innerText,
+            top: rect.top,
+            left: rect.left,
+            width: rect.width,
+            language: t.getAttribute("data-lang") || module.language,
+        };
+        dispatch(toolbarShow(["intertexture", context]));
     };
 
     const renderText = (words: ReadonlyArray<ScriptureWord>, startingPosition: WordPosition) => {
@@ -48,9 +67,11 @@ export const ScriptureTextView: React.FC<
                 }
             }
 
-            let className = "";
-            if (text.language && text.language !== module.language) {
-                className = languageClass(text.language);
+            let className = "scripture-word";
+            // specific language for this word, if any
+            const language = text.language && text.language !== module.language ? text.language : undefined;
+            if (language) {
+                className += " " + languageClass(text.language);
             }
             const sourceDefn = anno ? getSource(anno.source) : undefined;
             let td = "none";
@@ -75,7 +96,14 @@ export const ScriptureTextView: React.FC<
                 <span key={"span" + i}>
                     {elems}
                     {anno ? anno.preText : ""}
-                    <span className={className} style={style} key={i}>
+                    <span
+                        className={className}
+                        data-np={text["s-nopunct"]}
+                        data-language={language}
+                        style={style}
+                        key={i}
+                        onClick={WordMenuEventHandler}
+                    >
                         {text.value}
                     </span>
                     {anno && anno.postText ? anno.postText : " "}

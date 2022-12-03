@@ -5,6 +5,7 @@ export interface ScriptureWord {
     readonly value: string;
     readonly "c-strongs": ReadonlyArray<string> | undefined;
     readonly "s-snowball": string | undefined;
+    readonly "s-nopunct": string | undefined;
     readonly language: string;
 }
 

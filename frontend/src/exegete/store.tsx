@@ -1,10 +1,11 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import { Action, configureStore, ThunkAction } from "@reduxjs/toolkit";
 import { setupListeners } from "@reduxjs/toolkit/query/react";
 import { backendApi } from "../api/api";
-import workspaceReducer from "../workspace/Workspace";
-import userReducer from "../user/User";
 import { backendAuthApi } from "../api/apiauth";
 import { mdcontentApi } from "../api/mdcontent";
+import toolbarReducer from "./toolbar";
+import userReducer from "../user/User";
+import workspaceReducer from "../workspace/Workspace";
 
 export const store = configureStore({
     reducer: {
@@ -12,6 +13,7 @@ export const store = configureStore({
         [backendAuthApi.reducerPath]: backendAuthApi.reducer,
         [mdcontentApi.reducerPath]: mdcontentApi.reducer,
         workspace: workspaceReducer,
+        toolbar: toolbarReducer,
         user: userReducer,
     },
     middleware: (getDefaultMiddleware) =>

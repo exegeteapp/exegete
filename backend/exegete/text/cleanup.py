@@ -64,10 +64,16 @@ def clean_words(fragments_iter, stem=False):
     if len(buf) > 0:
         words.append(buf_to_word(buf))
 
-    if stem:
-        stemmer = SnowballStemmer("english")
-        trans = str.maketrans("", "", string.punctuation + "‘’“”\"'—,…")
-        for word in words:
-            word["s-snowball"] = stemmer.stem(word["value"].translate(trans))
+    trans = str.maketrans("", "", string.punctuation + "‘’“”\"'—,…")
+    stemmer = SnowballStemmer("english")
+    for word in words:
+        value = word["value"]
+        nopunct = word["value"].translate(trans)
+        if nopunct != value:
+            word["s-nopunct"] = nopunct
+        if stem:
+            snowball = stemmer.stem(nopunct)
+            if snowball != value:
+                word["s-snowball"] = snowball
 
     return words

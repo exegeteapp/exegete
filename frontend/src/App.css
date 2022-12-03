@@ -134,3 +134,7 @@ html {
 .sponsors a {
     text-decoration: none;
 }
+
+.scripture-word {
+    cursor: pointer;
+}

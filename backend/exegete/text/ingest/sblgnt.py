@@ -173,7 +173,7 @@ The SBLGNT may not be used in a Greek-English diglot without a license, regardle
                     text = str(t)
                     buf.append(attrs | {"value": text})
                 elif typ is etree._Element and t.tag == "b":
-                    buf += make_words(t.xpath("./child::node()"), attrs)
+                    buf += clean_words(make_words(t.xpath("./child::node()"), attrs))
                 else:
                     raise Exception([t, typ])
             return buf
