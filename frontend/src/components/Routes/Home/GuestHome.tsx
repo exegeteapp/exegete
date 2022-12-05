@@ -8,7 +8,7 @@ const WelcomeColumn: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <Col md={{ size: 7, offset: 0 }}>
             <p className="lead">
-                exegete.app is an online environment for Biblical exegesis. A project of{" "}
+                exegete.app is an online environment for biblical exegesis. A project of{" "}
                 <a className="text-muted" href="http://wtc.perth.anglican.org" target="_blank" rel="noreferrer">
                     Wollaston Theological College
                 </a>

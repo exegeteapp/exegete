@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://exegete.app/schema/v1_object.json",
-  "title": "Object within a Biblical text",
-  "description": "Each object is placed within an ordered linear stream of objects which represents an Biblical text",
+  "title": "Object within a biblical text",
+  "description": "Each object is placed within an ordered linear stream of objects which represents an biblical text",
   "type": "object",
   "properties": {
     "type": {

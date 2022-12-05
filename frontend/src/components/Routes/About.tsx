@@ -9,7 +9,7 @@ const AboutText: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <>
             <p className="lead">
-                exegete.app is an online environment for Biblical exegesis. A project of{" "}
+                exegete.app is an online environment for biblical exegesis. A project of{" "}
                 <a className="text-muted" href="http://wtc.perth.anglican.org" target="_blank" rel="noreferrer">
                     Wollaston Theological College
                 </a>
@@ -20,7 +20,7 @@ const AboutText: React.FC<React.PropsWithChildren<unknown>> = () => {
                 .
             </p>
             <p>
-                We aim to enable close reading of Biblical texts, assisting the identification of linguistic patterns,
+                We aim to enable close reading of biblical texts, assisting the identification of linguistic patterns,
                 structural elements, and intertextual phenomena, including redactional parallels, within a selected
                 pericope.
             </p>
@@ -62,7 +62,7 @@ const Texts: React.FC<React.PropsWithChildren<unknown>> = () => {
     return (
         <div>
             <p>
-                exegete.app is made possible by the provision of freely-licensed Biblical translations, and other
+                exegete.app is made possible by the provision of freely-licensed biblical translations, and other
                 resources. Our thanks go to{" "}
                 <a className="text-muted" href="https://sefaria.org" target="_blank" rel="noreferrer">
                     Sefaria
@@ -79,7 +79,7 @@ const Texts: React.FC<React.PropsWithChildren<unknown>> = () => {
                     target="_blank"
                     rel="noreferrer"
                 >
-                    White, Gregory A. The NET Bible: Synopsis of the Four Gospels. Richardson: Biblical Studies Press,
+                    White, Gregory A. The NET Bible: Synopsis of the Four Gospels. Richardson: biblical Studies Press,
                     2005
                 </a>
                 .
@@ -120,9 +120,10 @@ const Bios: React.FC<React.PropsWithChildren<unknown>> = () => {
                     <h3>Dr Robert Myles</h3>
                     <h5>Academic Lead</h5>
                     <p>
-                        Dr Robert J. Myles is a Senior Lecturer in New Testament at Wollaston Theological College.
-                        Robert previously taught and researched full-time at the University of Auckland (2015-2016) and
-                        Murdoch University (2017-2021).
+                        Dr Robert J. Myles is Senior Lecturer in New Testament and Director of Research at Wollaston
+                        Theological College, a college of the University of Divinity. Robert previously taught and
+                        researched full-time at the University of Auckland (2015-2016) and Murdoch University
+                        (2017-2021).
                     </p>
                     <Button href="https://www.robertjmyles.com/" target="_blank" rel="noreferrer">
                         Robert's website
@@ -132,9 +133,9 @@ const Bios: React.FC<React.PropsWithChildren<unknown>> = () => {
                     <h3>Grahame Bowland</h3>
                     <h5>Development Lead</h5>
                     <p>
-                        Grahame Bowland is a student in the formation programme at Wollaston Theological College.
-                        Grahame has a background as software engineer, and is also studying for a Master of Divinity
-                        through Trinity College Theological School.
+                        Grahame Bowland is an ordinand in the Anglican Diocese of Perth. Grahame has a background as a
+                        software engineer, and is also studying for a Master of Divinity through Wollaston Theological
+                        College.
                     </p>
                     <Button href="https://grahame.dev/" target="_blank" rel="noreferrer">
                         Grahame's website
