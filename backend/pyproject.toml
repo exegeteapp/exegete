@@ -6,11 +6,11 @@ authors = ["Grahame Bowland <grahame@oreamnos.com.au>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.87.0"
-uvicorn = {extras = ["standard"], version = "^0.19.0"}
+fastapi = "^0.88.0"
+uvicorn = {extras = ["standard"], version = "^0.20.0"}
 fastapi-users = {extras = ["sqlalchemy"], version = "^10.2.1"}
 pydantic = "^1.10.2"
-jsonschema = "^4.17.0"
+jsonschema = "^4.17.3"
 lxml = "^4.9.1"
 aiohttp = "^3.8.3"
 alembic = "^1.8.1"
@@ -24,7 +24,7 @@ psycopg2 = "^2.9.5"
 black = "*"
 
 [tool.poetry.group.dev.dependencies]
-pyright = "^1.1.281"
+pyright = "^1.1.283"
 flake8 = "^6.0.0"
 
 [build-system]
