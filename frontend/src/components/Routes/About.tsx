@@ -130,10 +130,10 @@ const Bios: React.FC<React.PropsWithChildren<unknown>> = () => {
                     </Button>
                 </Col>
                 <Col md={{ size: 6, offset: 0 }}>
-                    <h3>Grahame Bowland</h3>
+                    <h3>The Reverend Grahame Bowland</h3>
                     <h5>Development Lead</h5>
                     <p>
-                        Grahame Bowland is an ordinand in the Anglican Diocese of Perth. Grahame has a background as a
+                        Grahame Bowland is a deacon in the Anglican Diocese of Perth. Grahame has a background as a
                         software engineer, and is also studying for a Master of Divinity through Wollaston Theological
                         College.
                     </p>
