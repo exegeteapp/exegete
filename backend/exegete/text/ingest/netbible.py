@@ -213,7 +213,7 @@ You can download it at https://bible.org/downloads
 
                 book_id = dir_id[bookdir]
                 linear_id = 0
-                for fname in glob(os.path.join(bookdir, "*.json")):
+                for fname in sorted(glob(os.path.join(bookdir, "*.json"))):
                     linear_id = mod.import_book_stream(
                         linear_id, book_id, load_book(fname)
                     )
