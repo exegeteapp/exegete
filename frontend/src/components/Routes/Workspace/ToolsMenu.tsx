@@ -31,7 +31,7 @@ export const ToolsMenu: React.FC<
             items.push(
                 <DropdownItem key={`${key}.${i}`} onClick={newCell}>
                     Add {launcher.title}
-                </DropdownItem>
+                </DropdownItem>,
             );
         }
     }

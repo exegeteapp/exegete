@@ -62,7 +62,7 @@ function Register() {
                 {
                     captcha: captcha,
                 },
-            ])
+            ]),
         );
     }
 

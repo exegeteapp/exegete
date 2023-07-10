@@ -19,7 +19,7 @@ export const MarkdownNoteSlug = "markdown-note";
 const placeholderText = "# New Note\n\nWrite your note here.";
 
 export const newMarkdownNoteCell: NewCellDataFn<MarkdownNoteCellData> = (
-    workspace: WorkspaceData
+    workspace: WorkspaceData,
 ): MarkdownNoteCellData => {
     return {
         text: "",
@@ -58,7 +58,7 @@ export const MarkdownNote: CellFC = ({ uuid }) => {
                     ...cell.data,
                     text,
                 },
-            ])
+            ]),
         );
     };
 

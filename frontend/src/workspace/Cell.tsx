@@ -14,7 +14,7 @@ export const makeNewCellFromLauncher = (
     data: WorkspaceData,
     slug: string,
     defn: RegistryEntry,
-    launcher: RegistryLauncher
+    launcher: RegistryLauncher,
 ) => {
     return {
         cell_type: slug,

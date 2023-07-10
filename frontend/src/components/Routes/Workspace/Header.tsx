@@ -38,7 +38,7 @@ export const WorkspaceHeader: RefsFC = ({ refs }) => {
                 key={modals.length + 1}
                 show={showGospelParallelModal}
                 setShow={setShowGospelParallelModal}
-            />
+            />,
         );
     }
     if (showRenameWorkspaceModal) {
@@ -47,7 +47,7 @@ export const WorkspaceHeader: RefsFC = ({ refs }) => {
                 key={modals.length + 1}
                 show={showRenameWorkspaceModal}
                 setShow={setShowRenameWorkspaceModal}
-            />
+            />,
         );
     }
     if (showDeleteWorkspaceModal) {
@@ -56,7 +56,7 @@ export const WorkspaceHeader: RefsFC = ({ refs }) => {
                 key={modals.length + 1}
                 show={showDeleteWorkspaceModal}
                 setShow={setShowDeleteWorkspaceModal}
-            />
+            />,
         );
     }
 

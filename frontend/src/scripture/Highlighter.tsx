@@ -208,7 +208,7 @@ export const calculateSnowballAnnotations = (
     shortcode: string,
     sbcs: ScriptureBookChapters,
     scriptures: (readonly ScriptureObject[])[],
-    snowballHighlight: Map<string, string>
+    snowballHighlight: Map<string, string>,
 ) => {
     const result: Array<[WordPosition, string]> = [];
     for (let i = 0; i < scriptures.length; i++) {

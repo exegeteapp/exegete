@@ -141,13 +141,13 @@ export const ScriptureTextView: React.FC<
                         <strong key={verse_elems.length + 1}>
                             {br}
                             {book} {d.chapter_start}:{d.verse_start}{" "}
-                        </strong>
+                        </strong>,
                     );
                 } else {
                     verse_elems.push(
                         <sup key={verse_elems.length + 1}>
                             <strong>{d.verse_start} </strong>
-                        </sup>
+                        </sup>,
                     );
                 }
             }
@@ -157,14 +157,14 @@ export const ScriptureTextView: React.FC<
                     <div key={elems.length}>
                         {verse_elems}
                         {renderText(d.text, startingPosition)}
-                    </div>
+                    </div>,
                 );
             } else {
                 elems.push(
                     <span key={elems.length}>
                         {verse_elems}
                         {renderText(d.text, startingPosition)}
-                    </span>
+                    </span>,
                 );
             }
         }

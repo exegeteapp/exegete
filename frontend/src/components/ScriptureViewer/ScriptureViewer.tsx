@@ -98,7 +98,7 @@ export const ScriptureViewer: React.FC<React.PropsWithChildren<ScriptureViewerDa
                     scriptures={scriptures[i]}
                     markup={!hidemarkup}
                     separateverses={separateverses}
-                />
+                />,
             );
         }
     }

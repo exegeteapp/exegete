@@ -84,13 +84,13 @@ export const makeLanguage = (module: ModuleInfo) => {
                 P.alt(
                     P.regex(/\s*(-|–)\s*/).result<ScriptureToken>({ type: "op", value: "-" }),
                     P.regex(/\s*;\s*/).result<ScriptureToken>({ type: "op", value: ";" }),
-                    P.regex(/\s*,\s*/).result<ScriptureToken>({ type: "op", value: "," })
+                    P.regex(/\s*,\s*/).result<ScriptureToken>({ type: "op", value: "," }),
                 ).desc("range"),
                 r.ref_value,
                 P.alt(P.eof, r.sep_refs),
                 (op: ScriptureToken, ref, other_refs) => {
                     return [op, ref, ...(other_refs || [])];
-                }
+                },
             ),
 
         book_ref_value: (r) => P.alt(r.b_c_v, r.b_c, r.b),
@@ -108,7 +108,7 @@ export const makeLanguage = (module: ModuleInfo) => {
                     book: b,
                     chapter: c,
                     verse: v,
-                })
+                }),
             ),
         b_c: (r) =>
             P.seqMap(r.book.skip(P.whitespace), r.ref_number, (b, c) => ({
@@ -129,7 +129,7 @@ export const makeLanguage = (module: ModuleInfo) => {
                     to: "chapter_verse",
                     chapter: c,
                     verse: v,
-                })
+                }),
             ),
         b: (r) => r.book.map((b) => ({ type: "ref", abs: true, to: "book", book: b })),
         c_or_v: (r) =>

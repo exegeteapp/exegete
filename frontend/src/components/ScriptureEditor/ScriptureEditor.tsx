@@ -71,7 +71,7 @@ const calculateInitialValue = async (
     annotation: ScriptureWordAnnotationFunctions,
     repAnnotation: AnnotationArray,
     separateverses: boolean,
-    hidemarkup: boolean
+    hidemarkup: boolean,
 ): Promise<Descendant[]> => {
     const scripturePromises = res.sbcs.map((sbc) => getScripture({ ...sbc, shortcode: shortcode }));
     const scriptures = await Promise.all(scripturePromises);
@@ -178,7 +178,7 @@ const calculateInitialValue = async (
 
 const calculateAnnotations = (
     value: Descendant[],
-    separateverses: boolean
+    separateverses: boolean,
 ): [WordPosition, ScriptureWordAnnotation][] => {
     // build a fast lookup table for annotations by position
     // we don't need to keep existing annotations, we're rebuilding them
@@ -371,10 +371,10 @@ export const ScriptureEditor: React.FC<
                                     renderElement={renderElement}
                                     onKeyDown={onKeyDown}
                                 />
-                            </Slate>
+                            </Slate>,
                         );
                     }
-                }
+                },
             );
         } else {
             setError();

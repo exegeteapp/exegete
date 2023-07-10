@@ -39,7 +39,7 @@ export const GospelParallelModal: React.FC<
                         {parallel.title}
                     </option>
                 );
-            })
+            }),
         );
     }, [catalog, search.value]);
 

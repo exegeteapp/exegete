@@ -47,7 +47,7 @@ const columnWidth: { [key: number]: number } = {
 export const newScriptureCell = (
     workspace: WorkspaceData,
     columns: ScriptureCellColumn[],
-    hidemarkup: boolean
+    hidemarkup: boolean,
 ): ScriptureCellData => {
     // we clone the last cell if it has the same number of columns as our target template
     for (let i = workspace.cells.length - 1; i >= 0; i--) {
@@ -142,7 +142,7 @@ export const Scripture: CellFC = ({ uuid }) => {
                     ...cell.data,
                     hidemarkup,
                 },
-            ])
+            ]),
         );
     };
 
@@ -154,7 +154,7 @@ export const Scripture: CellFC = ({ uuid }) => {
                     ...cell.data,
                     separateverses,
                 },
-            ])
+            ]),
         );
     };
 
@@ -168,7 +168,7 @@ export const Scripture: CellFC = ({ uuid }) => {
                     ...cell.data,
                     columns: new_columns,
                 },
-            ])
+            ]),
         );
     };
 
@@ -182,7 +182,7 @@ export const Scripture: CellFC = ({ uuid }) => {
                     ...cell.data,
                     columns: new_columns,
                 },
-            ])
+            ]),
         );
     };
 
@@ -198,7 +198,7 @@ export const Scripture: CellFC = ({ uuid }) => {
                     <p>
                         <strong>{data.columns[i].verseref}</strong>
                     </p>
-                </Col>
+                </Col>,
             );
         } else {
             header.push(
@@ -208,7 +208,7 @@ export const Scripture: CellFC = ({ uuid }) => {
                         data={{ shortcode: data.columns[i].shortcode, verseref: data.columns[i].verseref }}
                         setData={(vr) => updateVR(i, vr)}
                     />
-                </Col>
+                </Col>,
             );
         }
         inner.push(
@@ -222,14 +222,14 @@ export const Scripture: CellFC = ({ uuid }) => {
                     separateverses={data.separateverses}
                     editing={editing}
                 />
-            </Col>
+            </Col>,
         );
         footer.push(
             <Col xs={{ size: cw, offset: 0 }} key={i}>
                 <ButtonGroup className="float-end mb-1">
                     <ModuleButton shortcode={data.columns[i].shortcode} />
                 </ButtonGroup>
-            </Col>
+            </Col>,
         );
     }
 
@@ -277,7 +277,7 @@ export const Scripture: CellFC = ({ uuid }) => {
                     ...cell.data,
                     columns: new_columns,
                 },
-            ])
+            ]),
         );
     };
 
@@ -290,7 +290,7 @@ export const Scripture: CellFC = ({ uuid }) => {
                     ...cell.data,
                     columns: new_columns,
                 },
-            ])
+            ]),
         );
     };
 
@@ -374,7 +374,7 @@ export const ScriptureDefinition: RegistryEntry = {
                             repAnnotation: [],
                         },
                     ],
-                    false
+                    false,
                 ),
         },
         {
@@ -402,7 +402,7 @@ export const ScriptureDefinition: RegistryEntry = {
                             repAnnotation: [],
                         },
                     ],
-                    false
+                    false,
                 ),
         },
     ],

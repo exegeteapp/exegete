@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 async def okay_to_send(to, typ):
     key = sha1("{}:{}".format(to, typ).encode("utf8")).hexdigest()
     async with redis.pipeline(transaction=True) as pipe:
-        nx, _ = await (pipe.setnx(key, "1").expire(key, 5 * 60)).execute()
+        nx, _ = await pipe.setnx(key, "1").expire(key, 5 * 60).execute()
     return nx
 
 

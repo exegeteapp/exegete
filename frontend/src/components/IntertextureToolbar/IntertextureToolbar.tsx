@@ -24,13 +24,13 @@ const IntertextureMenu = React.forwardRef<HTMLDivElement, { show: boolean; conte
             buttons.push(
                 <Button key="r" href={GreekWordStudy(context.word)} target="_blank" rel="noreferrer">
                     Perseus study for <strong>"{context.word}"</strong>
-                </Button>
+                </Button>,
             );
         } else if (context.language === "eng") {
             buttons.push(
                 <Button key="r" href={EnglishWordSearch(context.word)} target="_blank" rel="noreferrer">
                     Perseus search for <strong>"{context.word}"</strong>
-                </Button>
+                </Button>,
             );
         }
 
@@ -60,7 +60,7 @@ const IntertextureMenu = React.forwardRef<HTMLDivElement, { show: boolean; conte
                 </ButtonToolbar>
             </div>
         );
-    }
+    },
 );
 
 export const IntertextureToolbar: React.FC = () => {

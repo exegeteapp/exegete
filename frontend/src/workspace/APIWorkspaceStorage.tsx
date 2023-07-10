@@ -27,7 +27,7 @@ export const saveWorkspaceAPI = async (workspace: WorkspaceMetadata) => {
     const resp = await axios.put<WorkspaceMetadata>(
         `/api/v1/workspace/${workspace.id}`,
         workspace,
-        ApiAxiosRequestConfig()
+        ApiAxiosRequestConfig(),
     );
     if (resp.status === 200) {
         return true;

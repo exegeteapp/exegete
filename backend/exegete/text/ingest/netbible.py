@@ -210,7 +210,6 @@ You can download it at https://bible.org/downloads
     def load_books(dir_id):
         for division in ("ot", "nt"):
             for bookdir in sorted(glob(os.path.join(path, division, "*/"))):
-
                 book_id = dir_id[bookdir]
                 linear_id = 0
                 for fname in sorted(glob(os.path.join(bookdir, "*.json"))):

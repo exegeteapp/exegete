@@ -167,7 +167,7 @@ const expand_contextual_ref = (
     module: ModuleInfo,
     from_sbc: ScriptureBookChapter,
     at_level: ParserLevel,
-    ref: ContextualScriptureRef
+    ref: ContextualScriptureRef,
 ): ExpandResult => {
     const merge_level = (ex: ExpandResult, level: ParserLevel): ExpandResult => {
         if (!ex.success) {
@@ -227,7 +227,7 @@ const expand_ref = (
     module: ModuleInfo,
     from_sbc: ScriptureBookChapter | undefined,
     at_level: ParserLevel,
-    ref: ScriptureRef
+    ref: ScriptureRef,
 ): ExpandResult => {
     if (ref.abs) {
         return expand_absolute_ref(module, ref);

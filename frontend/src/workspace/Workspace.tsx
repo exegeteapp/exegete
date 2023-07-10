@@ -254,7 +254,7 @@ export const LoadWorkspace = createAsyncThunk(
                 local: local,
             };
         }
-    }
+    },
 );
 
 export const SaveWorkspace = createAsyncThunk("workspace/save", async (arg, thunkAPI) => {

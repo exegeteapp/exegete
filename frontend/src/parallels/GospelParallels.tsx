@@ -754,7 +754,7 @@ export const ParallelSearch = (
     module: ModuleInfo,
     shortcode: string,
     db: Database,
-    s: string
+    s: string,
 ): ParallelSearchResult => {
     // a simple interface: we search for `s` against the title of each parallel text,
     // and also interpreting it as a verse reference. if it is a valid verse reference,
