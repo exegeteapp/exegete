@@ -30,6 +30,8 @@ class WorkspaceOut(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+        orm_mode = True
+        from_attributes = True
 
 
 class WorkspaceListingOut(BaseModel):
@@ -40,6 +42,8 @@ class WorkspaceListingOut(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+        orm_mode = True
+        from_attributes = True
 
 
 class WorkspaceIn(BaseModel):

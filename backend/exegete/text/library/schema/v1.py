@@ -3,7 +3,8 @@ from sqlalchemy.schema import Table, Column, MetaData, ForeignKey
 from sqlalchemy.sql.schema import UniqueConstraint
 from sqlalchemy.types import Text, DateTime, Integer, String
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import REGCONFIG
+from sqlalchemy import func, literal, cast
 from jsonschema import validate
 import jsonschema
 import hashlib
@@ -129,7 +130,7 @@ class Module:
             ),
             Index(
                 "index_plaintext_tsvector",
-                func.to_tsvector("english", plaintext),
+                func.to_tsvector(cast(literal("english"), type_=REGCONFIG), plaintext),
                 postgresql_using="gin",
             ),
         )

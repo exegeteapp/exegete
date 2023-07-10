@@ -23,6 +23,7 @@ services:
       - PG_DSN=postgresql+psycopg2://postgres:localdev@db:5432/localdev
       - PG_ASYNC_DSN=postgresql+asyncpg://postgres:localdev@db:5432/localdev
       - BASE_URL=http://localhost:3000
+      - WATCHFILES_FORCE_POLLING=true
     env_file:
       - .env_local
     depends_on:

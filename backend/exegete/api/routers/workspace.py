@@ -10,7 +10,7 @@ from exegete.workspace.manager import WorkspaceManager
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
-from ..db import User, Workspace, async_engine
+from ..db import User, Workspace, async_engine, async_session_maker
 from ..schemas import WorkspaceIn, WorkspaceOut, WorkspaceListingOut
 from ..users import current_user
 
@@ -20,24 +20,24 @@ workspace_manager = WorkspaceManager()
 
 async def fetch_workspace_from_db(user, id):
     """
-    this function won't return the database if the user doesn't own it.
+    this function won't return the workspace if the user doesn't own it.
     """
-    async with async_engine.connect() as conn:
-        workspace = Workspace.__table__.select().filter(
-            Workspace.owner_id == user.id, Workspace.id == id
-        )
+    async with async_session_maker() as session:
         try:
-            return (await conn.execute(workspace)).one()
+            result = await session.execute(
+                sqlalchemy.select(Workspace).filter(
+                    Workspace.owner_id == user.id, Workspace.id == id
+                )
+            )
+            return result.scalars().one()
         except sqlalchemy.exc.NoResultFound:
             raise HTTPException(403, "Workspace not found or permissions error.")
 
 
 @workspace_router.get("/{id:uuid}", response_model=WorkspaceOut)
-async def get_workspace(
-    id,
-    user: User = Depends(current_user),
-):
-    return await fetch_workspace_from_db(user, id)
+async def get_workspace(id, user: User = Depends(current_user)):
+    resp = await fetch_workspace_from_db(user, id)
+    return WorkspaceOut.from_orm(resp)
 
 
 @workspace_router.get("/download/{id:uuid}")
@@ -47,7 +47,7 @@ async def download_workspace(id, user: User = Depends(current_user)):
         return "".join(c for c in s if c.isalnum() or c in keepcharacters).rstrip()
 
     fd = io.BytesIO()
-    workspace_data = WorkspaceOut.parse_obj(await fetch_workspace_from_db(user, id))
+    workspace_data = WorkspaceOut.from_orm(await fetch_workspace_from_db(user, id))
     with zipfile.ZipFile(
         fd, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9
     ) as zip_file:
@@ -69,10 +69,14 @@ async def download_workspace(id, user: User = Depends(current_user)):
 async def list_workspaces(
     user: User = Depends(current_user),
 ):
-    async with async_engine.connect() as conn:
-        workspaces = Workspace.__table__.select().filter(Workspace.owner_id == user.id)
-        res = (await conn.execute(workspaces)).all()
-        return res
+    async with async_session_maker() as session:
+        try:
+            result = await session.execute(
+                sqlalchemy.select(Workspace).filter(Workspace.owner_id == user.id)
+            )
+            return [WorkspaceListingOut.from_orm(t) for t in result.scalars()]
+        except sqlalchemy.exc.NoResultFound:
+            raise HTTPException(403, "Workspace not found or permissions error.")
 
 
 # we only allow PUT. UUIDs for new documents are generated on the client-side

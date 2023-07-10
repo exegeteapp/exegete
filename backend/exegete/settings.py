@@ -1,10 +1,6 @@
 import sqlalchemy
 from sqlalchemy.ext.asyncio import create_async_engine
-from pydantic import (
-    BaseSettings,
-    PostgresDsn,
-    EmailStr,
-)
+from pydantic import PostgresDsn, EmailStr, BaseSettings
 
 
 class Settings(BaseSettings):
@@ -21,14 +17,14 @@ class Settings(BaseSettings):
 
     def create_sync_engine(self, **kwargs):
         return sqlalchemy.create_engine(
-            self.pg_dsn,
+            str(self.pg_dsn),
             future=True,
             **kwargs,
         )
 
     def create_async_engine(self, **kwargs):
         return create_async_engine(
-            self.pg_async_dsn,
+            str(self.pg_async_dsn),
             future=True,
             **kwargs,
         )
