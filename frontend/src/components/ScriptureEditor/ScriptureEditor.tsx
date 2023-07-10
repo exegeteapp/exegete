@@ -364,7 +364,7 @@ export const ScriptureEditor: React.FC<
                 (initialValue) => {
                     if (isSubscribed) {
                         setEditorElem(
-                            <Slate editor={editor} value={initialValue} onChange={onChange}>
+                            <Slate editor={editor} initialValue={initialValue} onChange={onChange}>
                                 <HoveringToolbar groups={eligibleGroups} />
                                 <Editable
                                     className={languageClass(module.language)}
