@@ -9,7 +9,7 @@ python = "^3.10"
 fastapi = "^0.100.0"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
 fastapi-users = {extras = ["sqlalchemy"], version = "^12.0.0"}
-pydantic = "^1.10.11"  # 2.0 breaks fastapi-users at the moment
+pydantic = "^1.10.11,<2"  # 2.0 breaks fastapi-users at the moment
 jsonschema = "^4.18.0"
 lxml = "^4.9.3"
 aiohttp = "^3.8.4"
