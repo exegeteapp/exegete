@@ -1,4 +1,5 @@
-import { BookInfo, ModuleInfo } from "../scripture/ScriptureCatalog";
+import { ModuleInfo } from "../scripture/ScriptureCatalog";
+import { BookInfo } from "verseref/dist/Types";
 
 export interface SourceDefinition {
     readonly description: string;

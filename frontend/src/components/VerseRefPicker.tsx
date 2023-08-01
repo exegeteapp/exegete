@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Input, Alert, Form, Row, Col } from "reactstrap";
-import parseReference from "../verseref/VerseRef";
+import parseReference from "verseref/dist/VerseRef";
 import useInput from "../util/useInput";
 import { getModuleParser } from "../scripture/ParserCache";
 import { useGetScriptureCatalogQuery } from "../api/api";
@@ -69,7 +69,7 @@ export const VerseRefPicker: React.FC<
 
         const module = catalog[sc];
         const parser = getModuleParser(module, sc);
-        const res = parseReference(module, parser, vr.value);
+        const res = parseReference(module.books, parser, vr.value);
 
         if (res.success) {
             setParserError("");

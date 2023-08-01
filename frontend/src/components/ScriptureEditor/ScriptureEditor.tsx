@@ -14,9 +14,10 @@ import {
     WordPosition,
 } from "../../scripture/ScriptureAnnotation";
 import { getScripture } from "../../scripture/ScriptureAPI";
-import { BookInfo, FindBook, languageClass, ModuleInfo } from "../../scripture/ScriptureCatalog";
+import { languageClass, ModuleInfo } from "../../scripture/ScriptureCatalog";
+import { BookInfo, FindBook } from "verseref/dist/Types";
 import { applicableGroups } from "../../sources/Sources";
-import parseReference, { ParseResultSuccess, ScriptureBookChapters } from "../../verseref/VerseRef";
+import parseReference, { ParseResultSuccess, ScriptureBookChapters } from "verseref/dist/VerseRef";
 import { workspaceCanApplyHistory, workspaceCannotApplyHistory } from "../../workspace/Workspace";
 import { AnnotationArray } from "../Cells/Scripture";
 import { HoveringToolbar } from "./HoveringToolbar";
@@ -319,7 +320,7 @@ export const ScriptureEditor: React.FC<
         // down into us via cell data
         const module = catalog[shortcode];
         const parser = getModuleParser(module, shortcode);
-        const res = parseReference(module, parser, verseref);
+        const res = parseReference(module.books, parser, verseref);
 
         const onChange = (value: Descendant[]) => {
             annotation.set(calculateAnnotations(value, separateverses));
@@ -350,7 +351,7 @@ export const ScriptureEditor: React.FC<
         const determineEligibleGroups = (module: ModuleInfo, sbcs: ScriptureBookChapters) => {
             const books = new Set<BookInfo>();
             for (const sbc of sbcs) {
-                const book = FindBook(module, sbc.book);
+                const book = FindBook(module.books, sbc.book);
                 if (book) {
                     books.add(book);
                 }

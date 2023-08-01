@@ -1,4 +1,5 @@
 import axios from "axios";
+import { ScriptureBookChapter } from "verseref/dist/Types";
 
 // typescript version of `v1_object.json`
 export interface ScriptureWord {
@@ -18,14 +19,6 @@ export interface ScriptureObject {
     readonly text: ReadonlyArray<ScriptureWord>;
 }
 // end of `v1_object.json`
-
-export interface ScriptureBookChapter {
-    readonly book: string;
-    readonly chapter_start: number;
-    readonly verse_start: number;
-    readonly chapter_end: number;
-    readonly verse_end: number;
-}
 
 export interface ScriptureParams extends ScriptureBookChapter {
     readonly shortcode: string;

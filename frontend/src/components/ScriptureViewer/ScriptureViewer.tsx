@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import parseReference from "../../verseref/VerseRef";
+import parseReference from "verseref/dist/VerseRef";
 import { getScripture, ScriptureObject } from "../../scripture/ScriptureAPI";
 import { ScriptureTextView } from "./ScriptureTextView";
 import { getModuleParser } from "../../scripture/ParserCache";
@@ -38,7 +38,7 @@ export const ScriptureViewer: React.FC<React.PropsWithChildren<ScriptureViewerDa
 
         const module = catalog[shortcode];
         const parser = getModuleParser(module, shortcode);
-        const res = parseReference(module, parser, verseref);
+        const res = parseReference(module.books, parser, verseref);
 
         if (res.success) {
             setBooks(res.sbcs.map((sbc) => sbc.book));

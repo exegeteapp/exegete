@@ -10,8 +10,8 @@
 
 import { getModuleParser } from "../scripture/ParserCache";
 import { ModuleInfo } from "../scripture/ScriptureCatalog";
-import { CompareResult, cv_compare, cv_end, cv_start } from "../verseref/VerseComparison";
-import parseReference, { ScriptureBookChapters } from "../verseref/VerseRef";
+import { CompareResult, cv_compare, cv_end, cv_start } from "verseref/dist/VerseComparison";
+import parseReference, { ScriptureBookChapters } from "verseref/dist/VerseRef";
 
 interface GospelParallelText {
     title: string;
@@ -725,7 +725,7 @@ export const MakeGospelParallelsDatabase = (module: ModuleInfo, shortcode: strin
             return;
         }
         const s = prefix + ref;
-        const res = parseReference(module, parser, s);
+        const res = parseReference(module.books, parser, s);
         if (!res.success) {
             throw new Error("Broken reference in parallel text database: " + s);
         }
@@ -762,7 +762,7 @@ export const ParallelSearch = (
 
     const parse = () => {
         const parser = getModuleParser(module, shortcode);
-        const res = parseReference(module, parser, s);
+        const res = parseReference(module.books, parser, s);
         if (res.success) {
             return res.sbcs;
         }

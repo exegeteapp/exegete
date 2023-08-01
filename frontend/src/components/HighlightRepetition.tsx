@@ -7,7 +7,7 @@ import { useAppDispatch } from "../exegete/hooks";
 import { calculateSnowballAnnotations, calculateSnowballHighlights } from "../scripture/Highlighter";
 import { getModuleParser } from "../scripture/ParserCache";
 import { getScripture, ScriptureObject } from "../scripture/ScriptureAPI";
-import parseReference, { ScriptureBookChapters } from "../verseref/VerseRef";
+import parseReference, { ScriptureBookChapters } from "verseref/dist/VerseRef";
 import { WorkspaceCell } from "../workspace/Types";
 import { workspaceCellSet } from "../workspace/Workspace";
 import { ScriptureCellData } from "./Cells/Scripture";
@@ -46,7 +46,7 @@ export const HighlightRepetitionButton: React.FC<
             const column = cell.data.columns[index];
             const module = catalog[column.shortcode];
             const parser = getModuleParser(module, column.shortcode);
-            const res = parseReference(module, parser, column.verseref);
+            const res = parseReference(module.books, parser, column.verseref);
             if (res.success) {
                 column_sbcs.push(res.sbcs);
                 column_promises.push(res.sbcs.map((sbc) => getScripture({ ...sbc, shortcode: column.shortcode })));

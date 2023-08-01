@@ -1,6 +1,6 @@
 import { DistinguishableColours } from "../colours/distinguishable";
 import { WordPosition } from "./ScriptureAnnotation";
-import { ScriptureBookChapters } from "../verseref/VerseRef";
+import { ScriptureBookChapters } from "verseref/dist/VerseRef";
 import { ScriptureObject } from "./ScriptureAPI";
 
 // from postgresql: https://github.com/postgres/postgres/blob/master/src/backend/snowball/stopwords/english.stop
