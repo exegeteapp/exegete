@@ -10,8 +10,8 @@
 
 import { getModuleParser } from "../scripture/ParserCache";
 import { ModuleInfo } from "../scripture/ScriptureCatalog";
-import { CompareResult, cv_compare, cv_end, cv_start } from "verseref/dist/VerseComparison";
-import parseReference, { ScriptureBookChapters } from "verseref/dist/VerseRef";
+import { CompareResult, cv_compare, cv_end, cv_start } from "verseref/VerseComparison";
+import parseReference, { ScriptureBookChapters } from "verseref/VerseRef";
 
 interface GospelParallelText {
     title: string;

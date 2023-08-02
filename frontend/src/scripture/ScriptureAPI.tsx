@@ -1,5 +1,5 @@
 import axios from "axios";
-import { ScriptureBookChapter } from "verseref/dist/Types";
+import { ScriptureBookChapter } from "verseref/Types";
 
 // typescript version of `v1_object.json`
 export interface ScriptureWord {

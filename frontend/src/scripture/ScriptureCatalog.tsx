@@ -1,4 +1,4 @@
-import { BookArray } from "verseref/dist/Types";
+import { BookArray } from "verseref/Types";
 
 export interface ModuleInfo {
     readonly type: string;

@@ -15,9 +15,9 @@ import {
 } from "../../scripture/ScriptureAnnotation";
 import { getScripture } from "../../scripture/ScriptureAPI";
 import { languageClass, ModuleInfo } from "../../scripture/ScriptureCatalog";
-import { BookInfo, FindBook } from "verseref/dist/Types";
+import { BookInfo, FindBook } from "verseref/Types";
 import { applicableGroups } from "../../sources/Sources";
-import parseReference, { ParseResultSuccess, ScriptureBookChapters } from "verseref/dist/VerseRef";
+import parseReference, { ParseResultSuccess, ScriptureBookChapters } from "verseref/VerseRef";
 import { workspaceCanApplyHistory, workspaceCannotApplyHistory } from "../../workspace/Workspace";
 import { AnnotationArray } from "../Cells/Scripture";
 import { HoveringToolbar } from "./HoveringToolbar";

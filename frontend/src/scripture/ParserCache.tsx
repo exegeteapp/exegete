@@ -1,5 +1,5 @@
 import { ModuleInfo } from "./ScriptureCatalog";
-import { makeParser, ModuleParser } from "verseref/dist/VerseRef";
+import { makeParser, ModuleParser } from "verseref/VerseRef";
 
 let cache = new Map<string, ModuleParser>();
 
