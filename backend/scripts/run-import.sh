@@ -1,5 +1,10 @@
 #!/bin/bash
 
+bp="$1"
+if [ -z "$bp" ]; then
+  bp="/data/exegete-data"
+fi
+
 ingest() {
   mod="$1"
   arg="$2"
@@ -7,6 +12,6 @@ ingest() {
   time python -m exegete.text.ingest."$mod" "$arg"
 }
 
-ingest netbible /data/exegete-data/NET-bible/json/
-ingest sblgnt /data/exegete-data/SBLGNT/
-ingest njps /data/exegete-data/NJPS/
+ingest netbible "$bp"/NET-bible/json/
+ingest sblgnt "$bp"/SBLGNT/
+ingest njps "$bp"/NJPS/
