@@ -192,7 +192,7 @@ You can download it at https://bible.org/downloads
                 except Exception as e:
                     print(node)
                     raise e
-            assert all(type(t) is dict for t in words)
+            assert all(isinstance(t, dict) for t in words)
 
             # exegete requires words to really be words, not multiple words, and not containing whitespace.
             # (we are focussed upon exegesis/analysis, not presentation)

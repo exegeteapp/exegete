@@ -46,7 +46,7 @@ jobs:
         working-directory: backend
         run: |
           source .venv/bin/activate
-          flake8 --extend-ignore=E501,W291,E203 --exclude alembic,.venv
+          ruff check exegete
           black --check exegete
 
   frontend-test:
