@@ -40,7 +40,7 @@
         "slate-react": "^0.97.1",
         "typescript": "^5.1.6",
         "uuid": "^9.0.0",
-        "verseref": "^1.0.3",
+        "verseref": "^1.0.5",
         "web-vitals": "^3.3.2"
     },
     "scripts": {
@@ -72,6 +72,11 @@
         "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
         "prettier": "^3.0.0",
         "react-scripts": "5.0.1"
+    },
+    "jest": {
+        "transformIgnorePatterns": [
+            "node_modules/(?!verseref)"
+        ]
     },
     "overrides": {
         "nth-check": "2.0.1",
