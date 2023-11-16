@@ -1,5 +1,5 @@
 import { ModuleInfo } from "../scripture/ScriptureCatalog";
-import { BookInfo } from "verseref/Types";
+import { BookInfo } from "verseref";
 
 export interface SourceDefinition {
     readonly description: string;

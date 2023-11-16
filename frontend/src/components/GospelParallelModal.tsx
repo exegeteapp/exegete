@@ -4,7 +4,7 @@ import { useGetScriptureCatalogQuery } from "../api/api";
 import { useAppDispatch, useAppSelector } from "../exegete/hooks";
 import { ParallelSearch, ParallelSearchResult } from "../parallels/GospelParallels";
 import { getParallelDatabase } from "../parallels/ParallelsCache";
-import { ScriptureBookChapter } from "verseref/Types";
+import { ScriptureBookChapter } from "verseref";
 import useInput from "../util/useInput";
 import { makeNewCell } from "../workspace/Cell";
 import Registry from "../workspace/CellRegistry";

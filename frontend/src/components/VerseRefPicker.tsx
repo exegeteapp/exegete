@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Input, Alert, Form, Row, Col } from "reactstrap";
-import parseReference from "verseref/VerseRef";
+import { parseReference } from "verseref";
 import useInput from "../util/useInput";
 import { getModuleParser } from "../scripture/ParserCache";
 import { useGetScriptureCatalogQuery } from "../api/api";

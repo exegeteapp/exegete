@@ -3,6 +3,7 @@ import React from "react";
 import { createEditor, Descendant, Editor } from "slate";
 import { withHistory } from "slate-history";
 import { Editable, RenderElementProps, Slate, withReact } from "slate-react";
+import { parseReference, BookInfo, FindBook, ParseResultSuccess, ScriptureBookChapters } from "verseref";
 import { useGetScriptureCatalogQuery } from "../../api/api";
 import { useAppDispatch } from "../../exegete/hooks";
 import { getModuleParser } from "../../scripture/ParserCache";
@@ -15,9 +16,7 @@ import {
 } from "../../scripture/ScriptureAnnotation";
 import { getScripture } from "../../scripture/ScriptureAPI";
 import { languageClass, ModuleInfo } from "../../scripture/ScriptureCatalog";
-import { BookInfo, FindBook } from "verseref/Types";
 import { applicableGroups } from "../../sources/Sources";
-import parseReference, { ParseResultSuccess, ScriptureBookChapters } from "verseref/VerseRef";
 import { workspaceCanApplyHistory, workspaceCannotApplyHistory } from "../../workspace/Workspace";
 import { AnnotationArray } from "../Cells/Scripture";
 import { HoveringToolbar } from "./HoveringToolbar";

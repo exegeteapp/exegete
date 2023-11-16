@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import parseReference from "verseref/VerseRef";
+import { parseReference } from "verseref";
 import { getScripture, ScriptureObject } from "../../scripture/ScriptureAPI";
 import { ScriptureTextView } from "./ScriptureTextView";
 import { getModuleParser } from "../../scripture/ParserCache";

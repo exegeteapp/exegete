@@ -7,7 +7,7 @@ import { useAppDispatch } from "../exegete/hooks";
 import { calculateSnowballAnnotations, calculateSnowballHighlights } from "../scripture/Highlighter";
 import { getModuleParser } from "../scripture/ParserCache";
 import { getScripture, ScriptureObject } from "../scripture/ScriptureAPI";
-import parseReference, { ScriptureBookChapters } from "verseref/VerseRef";
+import { parseReference, ScriptureBookChapters } from "verseref";
 import { WorkspaceCell } from "../workspace/Types";
 import { workspaceCellSet } from "../workspace/Workspace";
 import { ScriptureCellData } from "./Cells/Scripture";

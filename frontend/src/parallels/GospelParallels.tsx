@@ -8,10 +8,9 @@
 // have been excluded.
 //
 
+import { CompareResult, ScriptureBookChapters, cv_compare, cv_end, cv_start, parseReference } from "verseref";
 import { getModuleParser } from "../scripture/ParserCache";
 import { ModuleInfo } from "../scripture/ScriptureCatalog";
-import { CompareResult, cv_compare, cv_end, cv_start } from "verseref/VerseComparison";
-import parseReference, { ScriptureBookChapters } from "verseref/VerseRef";
 
 interface GospelParallelText {
     title: string;
