@@ -8,7 +8,14 @@
 // have been excluded.
 //
 
-import { CompareResult, ScriptureBookChapters, cv_compare, cv_end, cv_start, parseReference } from "verseref";
+import {
+    CompareResult,
+    ScriptureBookChapters,
+    chapter_verse_compare,
+    chapter_verse_end,
+    chapter_verse_start,
+    parseReference,
+} from "verseref";
 import { getModuleParser } from "../scripture/ParserCache";
 import { ModuleInfo } from "../scripture/ScriptureCatalog";
 
@@ -778,19 +785,19 @@ export const ParallelSearch = (
         }
         if (s_sbcs) {
             for (const entry of entries) {
-                const cv_entry_start = cv_start(entry);
-                const cv_entry_end = cv_end(entry);
+                const cv_entry_start = chapter_verse_start(entry);
+                const cv_entry_end = chapter_verse_end(entry);
                 // if any part of `sbc` intersects with the entry, then we have a match
                 for (const sbc of s_sbcs) {
                     if (sbc.book !== entry.book) {
                         continue;
                     }
-                    const cv_sbc_start = cv_start(sbc);
-                    const cv_sbc_end = cv_end(sbc);
-                    if (cv_compare(cv_sbc_start, cv_entry_end) === CompareResult.AFTER) {
+                    const cv_sbc_start = chapter_verse_start(sbc);
+                    const cv_sbc_end = chapter_verse_end(sbc);
+                    if (chapter_verse_compare(cv_sbc_start, cv_entry_end) === CompareResult.AFTER) {
                         continue;
                     }
-                    if (cv_compare(cv_sbc_end, cv_entry_start) === CompareResult.BEFORE) {
+                    if (chapter_verse_compare(cv_sbc_end, cv_entry_start) === CompareResult.BEFORE) {
                         continue;
                     }
                     // we have an overlap!

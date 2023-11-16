@@ -40,7 +40,7 @@
         "slate-react": "^0.98.4",
         "typescript": "^5.2.2",
         "uuid": "^9.0.1",
-        "verseref": "^1.1.4",
+        "verseref": "^1.1.5",
         "web-vitals": "^3.4.0"
     },
     "scripts": {
