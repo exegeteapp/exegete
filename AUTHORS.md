@@ -1,5 +1,5 @@
 Authors:
 
-Grahame Bowland <grahame@oreamnos.com.au>
-Robert J. Myles <rmyles@perth.anglican.org>
+The Revd Grahame Bowland <revdgrahame@bowland.au>
+Dr Robert J. Myles <rmyles@perth.anglican.org>
 

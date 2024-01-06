@@ -6,19 +6,19 @@ authors = ["Grahame Bowland <grahame@oreamnos.com.au>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-fastapi = "^0.100.1"
-uvicorn = {extras = ["standard"], version = "^0.22.0"}
+fastapi = "^0.104.1"
+uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
 fastapi-users = {extras = ["sqlalchemy"], version = "^12.1.2"}
-pydantic = "^1.10.11,<2"  # 2.0 breaks fastapi-users at the moment
+pydantic = "^2.5.1"  # 2.0 breaks fastapi-users at the moment
 jsonschema = "^4.20.0"
 lxml = "^4.9.3"
 aiohttp = "^3.9.0"
 alembic = "^1.12.1"
 nltk = "^3.8.1"
 requests = "^2.31.0"
-asyncpg = "^0.28.0"
-redis = "^4.6.0"
-watchfiles = "^0.19.0"
+asyncpg = "^0.29.0"
+redis = "^5.0.1"
+watchfiles = "^0.21.0"
 psycopg2 = "^2.9.9"
 
 [tool.poetry.dev-dependencies]
