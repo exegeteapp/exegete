@@ -1,6 +1,7 @@
 import sqlalchemy
 from sqlalchemy.ext.asyncio import create_async_engine
-from pydantic import PostgresDsn, EmailStr, BaseSettings
+from pydantic import PostgresDsn, EmailStr
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
