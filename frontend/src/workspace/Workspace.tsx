@@ -3,7 +3,7 @@ import { arrayMoveMutable } from "array-move";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../exegete/store";
 import { deleteWorkspace } from "./WorkspaceProvider";
-import { CellListingEntry, TextSize, WorkspaceCell, WorkspaceMetadata } from "./Types";
+import { CellListingEntry, TextSize, WorkspaceCell, WorkspaceData, WorkspaceMetadata } from "./Types";
 import { loadWorkspaceLocal, saveWorkspaceLocal } from "./LocalWorkspaceStorage";
 import { loadWorkspaceAPI, saveWorkspaceAPI } from "./APIWorkspaceStorage";
 import { MigrateWorkspace } from "./WorkspaceMigrations";
@@ -145,7 +145,7 @@ export const workspaceSlice = createSlice({
             if (!delta) {
                 return;
             }
-            const newData = patch(JSON.parse(JSON.stringify(state.workspace.data)), delta);
+            const newData = patch(JSON.parse(JSON.stringify(state.workspace.data)), delta) as WorkspaceData;
             state.workspace.data = {
                 ...newData,
                 history: {
@@ -173,7 +173,7 @@ export const workspaceSlice = createSlice({
                 return;
             }
             // jsondiffpatch mutates the original object, so we need to clone it
-            const newData = patch(JSON.parse(JSON.stringify(state.workspace.data)), rev);
+            const newData = patch(JSON.parse(JSON.stringify(state.workspace.data)), rev) as WorkspaceData;
             state.workspace.data = {
                 ...newData,
                 history: {
