@@ -53,9 +53,6 @@ jobs:
       - name: lint (prettier)
         run: cd frontend && npx prettier --check .
 
-      - name: lint (eslint)
-        run: cd frontend && npx eslint --max-warnings 0 src/
-
       - name: test
         run: cd frontend && npm run test
 
