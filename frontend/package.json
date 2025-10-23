@@ -21,6 +21,7 @@
     "array-move": "^4.0.0",
     "axios": "^1.12.2",
     "bootstrap": "^5.3.8",
+    "core-js": "^3.46.0",
     "http-proxy-middleware": "^3.0.5",
     "immutable": "^5.1.4",
     "jsondiffpatch": "^0.7.3",

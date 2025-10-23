@@ -5,7 +5,6 @@ import "core-js/es/promise";
 import "core-js/es/symbol/iterator";
 import "core-js/es/object/assign";
 import "core-js/es/string/replace-all";
-import "raf/polyfill";
 import { config } from "@fortawesome/fontawesome-svg-core";
 
 import React from "react";
