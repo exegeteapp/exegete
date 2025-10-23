@@ -2,4 +2,4 @@
 
 set -a
 . ../.env_local
-poetry run ./scripts/run-import.sh "$1"
+uv run ./scripts/run-import.sh "$1"
