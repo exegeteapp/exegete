@@ -22,6 +22,11 @@ export default defineConfig(({ mode }) => {
 
             setupProxyPlugin(),
         ],
+        test: {
+            globals: true, // Makes Vitest globals like `describe`, `it`, `expect` available globally
+            environment: "jsdom", // Simulates a browser environment for testing React components
+            setupFiles: "./src/setupTests.js", // Or './src/setupTests.ts'
+        },
     };
 });
 
