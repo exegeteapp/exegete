@@ -32,7 +32,7 @@
     "react-helmet-async": "^2.0.5",
     "react-markdown": "^10.1.0",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^6.21.1",
+    "react-router-dom": "^6.30.3",
     "reactstrap": "^9.2.3",
     "sanitize-filename": "^1.6.3",
     "slate": "^0.118.1",
