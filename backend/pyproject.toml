@@ -37,4 +37,6 @@ build-backend = "hatchling.build"
 packages = ["exegete"]
 
 [tool.ruff.lint]
+# keep ruff's pre-0.17 default rule set
+select = ["E4", "E7", "E9", "F"]
 ignore = ["E501"]
