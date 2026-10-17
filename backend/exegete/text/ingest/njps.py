@@ -11,7 +11,6 @@ import argparse
 import requests
 import re
 
-
 footnote_re = re.compile(r"^-?[a-z]{1,2}-?$")
 expected_tags = set(["big", "br", "i", "small", "strong", "sup"])
 

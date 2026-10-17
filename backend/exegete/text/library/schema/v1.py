@@ -39,6 +39,7 @@ class ObjectType(enum.Enum):
 
 class Language(enum.Enum):
     "ISO 639.3 codes"
+
     biblical_hebrew = "hbo"
     koine_greek = "ecg"
     english = "eng"

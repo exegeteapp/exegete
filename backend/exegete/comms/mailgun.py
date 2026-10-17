@@ -5,7 +5,6 @@ from exegete.api.redis import redis
 from hashlib import sha1
 import logging
 
-
 logger = logging.getLogger(__name__)
 
 

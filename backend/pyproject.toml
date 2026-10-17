@@ -24,9 +24,9 @@ dependencies = [
 
 [dependency-groups]
 dev = [
-    "black>=24.1.1,<25",
-    "pyright>=1.1.283,<2",
-    "ruff>=0.0.290,<0.0.291",
+    "black>=26.10.1",
+    "pyright>=1.1.414,<2",
+    "ruff>=0.17.1",
 ]
 
 [build-system]
@@ -36,5 +36,5 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["exegete"]
 
-[tool.ruff]
+[tool.ruff.lint]
 ignore = ["E501"]
