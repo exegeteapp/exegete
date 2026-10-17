@@ -158,18 +158,3 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
-  push-staging:
-    name: Deploy
-    runs-on: ubuntu-latest
-    needs: [frontend-build, backend-build]
-    if: github.ref == 'refs/heads/main'
-    steps:
-      - name: Set up SSH
-        run: 'mkdir -p /home/runner/.ssh && echo "$SSH_KEY" > /home/runner/.ssh/id_rsa && chmod 600 /home/runner/.ssh/id_rsa'
-        shell: bash
-        env:
-          SSH_KEY: ${{secrets.SSH_KEY}}
-      - name: Trigger deployment
-        run: ssh -o StrictHostKeyChecking=no -p 6237 ci@194.195.126.153
-        shell: bash
