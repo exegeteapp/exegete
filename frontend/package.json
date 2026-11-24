@@ -24,7 +24,7 @@
     "core-js": "^3.46.0",
     "http-proxy-middleware": "^3.0.5",
     "immutable": "^5.1.4",
-    "jsondiffpatch": "^0.7.3",
+    "jsondiffpatch": "^0.7.6",
     "lz-string": "^1.5.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
